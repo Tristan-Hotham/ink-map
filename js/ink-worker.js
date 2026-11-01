@@ -590,6 +590,31 @@ async function hillPoints(z, x, y) {
   return res.slice(0, 300);
 }
 
+// ---------------- villages and hamlets (Wikidata, data/places/{x}_{y}.json), Britain and Ireland, where OpenStreetMap's tiles leave a place out ----------------
+let placeIdx = null; const placeTiles = new Map();
+async function placePoints(z, x, y) {
+  if (z < 10 || !CFG.places) return [];
+  if (!placeIdx) placeIdx = (async () => { try { const r = await fetch(CFG.places + 'index.json'); if (!r.ok) return null; const j = await r.json(); j.set = new Set(j.tiles); return j; } catch (e) { return null; } })();
+  const I = await placeIdx; if (!I) return [];
+  const sh = z - 6, k = (x >> sh) + '_' + (y >> sh);
+  if (!I.set.has(k)) return [];
+  if (!placeTiles.has(k)) placeTiles.set(k, (async () => { try { const r = await fetch(CFG.places + k + '.json'); return r.ok ? await r.json() : []; } catch (e) { return []; } })());
+  const rows = await placeTiles.get(k), n = Math.pow(2, z), out = [];
+  for (const r of rows) {
+    if (r[3] / 10 > z + 1) continue;
+    const nx = mercX(r[0] / 1e5), ny = mercY(r[1] / 1e5);
+    if (Math.floor(nx * n) !== x || Math.floor(ny * n) !== y) continue;
+    out.push({ nx, ny, z: r[3] / 10, k: r[2], n: r[4] });
+  }
+  if (!out.length) return out;
+  // a place the OpenStreetMap tile (or, beyond its last zoom, the tile it is cut from) already names is left to it
+  const oz = Math.min(z, CFG.ofmMax || 14), d = z - oz;
+  const buf = CFG.ofm ? await fetchOfm(oz, x >> d, y >> d) : null;
+  const names = new Set();
+  if (buf) { const L = decodeLayers(buf, new Set(['place'])).place; if (L) for (const span of L.feats) { const F = featureOf(buf, L, span); for (const key of ['name', 'name_en', 'name:en', 'name:latin']) if (F.props[key]) names.add(String(F.props[key]).toLowerCase()); } }
+  return out.filter(p => !names.has(p.n.toLowerCase())).slice(0, 200);
+}
+
 // ---------------- drawn towns (zoom 12 and closer): townhouses along the real streets of built-up land ----------------
 function lineParts(buf, g) {
   const R = new Reader(buf); R.p = g[0];
@@ -686,17 +711,17 @@ async function townPoints(z, x, y, avoid) {
     }
   }
   // townhouses: both sides of every street, facing it, densest at the centre and thinning outwards with the buildings
-  const T = Ls.transportation;
+  const T = Ls.transportation, cand = [];
   if (T) {
     const STREET = { primary: 1, secondary: 1, tertiary: 1, minor: 1, service: 0.5, residential: 1, living_street: 1, pedestrian: 1 };
     const sc = 512 / T.extent, step = 10.5, off = 8;
     for (const span of T.feats) {
-      if (out.length >= CFG.TMAX) break;
+      if (cand.length >= 8000) break;
       const F = featureOf(buf, T, span); if (F.type !== 2) continue;
       const w = STREET[F.props.class]; if (!w || F.props.brunnel === 'tunnel' || F.props.brunnel === 'bridge') continue;
       for (const part of lineParts(buf, F.geom)) {
         let carry = step * 0.5;
-        for (let k = 1; k < part.length && out.length < CFG.TMAX; k++) {
+        for (let k = 1; k < part.length; k++) {
           const ax = part[k - 1][0] * sc, ay = part[k - 1][1] * sc, bx = part[k][0] * sc, by = part[k][1] * sc;
           const L = Math.hypot(bx - ax, by - ay); if (L < 0.5) continue;
           const ux = (bx - ax) / L, uy = (by - ay) / L;
@@ -714,9 +739,8 @@ async function townPoints(z, x, y, avoid) {
               // keep share: the old core is packed; beyond it, houses only where OpenStreetMap maps buildings
               const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
-              if (h >= keep || !free(hx, hy, 0)) continue;
-              take(hx, hy, 0);
-              out.push({ nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 6), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 });
+              if (h >= keep) continue;
+              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 6), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
             }
           }
           carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
@@ -727,7 +751,7 @@ async function townPoints(z, x, y, avoid) {
   // blocks between the streets (and towns whose small streets the tile leaves out): fill the built-up land on a
   // jittered grid, houses turned to the nearest street direction found above, or square to the map
   const G = 10.5;
-  for (let gy = G / 2; gy < 512 && out.length < CFG.TMAX; gy += G) for (let gx = G / 2; gx < 512 && out.length < CFG.TMAX; gx += G) {
+  for (let gy = G / 2; gy < 512; gy += G) for (let gx = G / 2; gx < 512; gx += G) {
     const gnx0 = (x + gx / 512) / n, gny0 = (y + gy / 512) / n;
     const hx = gx + (hash3(Math.round(gnx0 * 4e7), Math.round(gny0 * 4e7), 41) - 0.5) * G * 0.6, hy = gy + (hash3(Math.round(gny0 * 4e7), Math.round(gnx0 * 4e7), 43) - 0.5) * G * 0.6;
     const tx = hx / 512, ty = hy / 512;
@@ -737,9 +761,15 @@ async function townPoints(z, x, y, avoid) {
     const ins = at(built, tx, ty), dn = dens(tx, ty);
     if (!ins && dn < 0.2 && dr > 0.4) continue;            // the old core counts as built even where the tile maps nothing
     const keep = dr < 0.18 ? 0.95 : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
-    if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep || !free(hx, hy, 0)) continue;
-    take(hx, hy, 0);
-    out.push({ nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 6), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 });
+    if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
+    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 6), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+  }
+  // place from the centre outwards, so the cap on drawings per tile thins the edges, never the old core
+  cand.sort((a, b) => a.dr - b.dr);
+  for (const c of cand) {
+    if (out.length >= CFG.TMAX) break;
+    if (!free(c.hx, c.hy, 0)) continue;
+    take(c.hx, c.hy, 0); out.push(c.it);
   }
   return out;
 }
@@ -829,6 +859,8 @@ async function buildTile(z, x, y) {
   if (z >= 10) {
     const hills = await hillPoints(z, x, y);
     if (hills.length) T.bytes(3, encodeLayer('hills', hills, ['z', 'e', 'n'], z, x, y));
+    const xp = await placePoints(z, x, y);
+    if (xp.length) T.bytes(3, encodeLayer('xplaces', xp, ['z', 'k', 'n'], z, x, y));
   }
   if (z >= 12) {
     const town = await townPoints(z, x, y, her);

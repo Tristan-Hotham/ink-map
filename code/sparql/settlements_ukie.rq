@@ -1,0 +1,12 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+# Ink map: villages, hamlets and other settlements in the UK and Ireland, to fill places missing from the OpenStreetMap tiles. -> raw12/settlements_ukie.tsv
+SELECT ?item ?label ?coord (SAMPLE(?tl) AS ?type) ?sl WHERE {
+  ?item wdt:P31/wdt:P279* wd:Q486972 ; wdt:P625 ?coord ; wikibase:sitelinks ?sl .
+  ?item wdt:P17 ?country . VALUES ?country { wd:Q145 wd:Q27 }
+  ?item rdfs:label ?label . FILTER (LANG(?label) = "en")
+  OPTIONAL { ?item wdt:P31 ?t . ?t rdfs:label ?tl . FILTER (LANG(?tl) = "en") }
+}
+GROUP BY ?item ?label ?coord ?sl

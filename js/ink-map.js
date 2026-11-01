@@ -517,6 +517,14 @@
         'text-font': ['Ink Roman'], 'text-size': iz(10, 10.5, 13, 12.5), 'icon-image': 's-peak', 'icon-size': iz(10, 0.4, 13, 0.5), 'text-variable-anchor': ['top', 'bottom', 'left', 'right'], 'text-radial-offset': 0.55,
         'text-justify': 'auto', 'symbol-sort-key': HZ, 'icon-overlap': 'never' }),
       paint: { 'text-color': INK.ink, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
+    // villages and hamlets of Britain and Ireland that OpenStreetMap's tiles leave out (Wikidata; js/ink-worker.js drops any the tile already names)
+    L({ id: 'xplaces', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10,
+      layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Roman'], 'text-size': ['case', ['==', ['get', 'k'], 1], iz(10, 10.5, 13, 14), iz(10, 10, 15, 13)],
+        'icon-image': ['case', ['==', ['get', 'k'], 1], 's-village', 's-hamlet'], 'icon-size': ['case', ['==', ['get', 'k'], 1], iz(10, 0.6, 13, 0.72), iz(10, 0.8, 15, 1)],
+        'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.75, 'text-justify': 'auto', 'text-max-width': 9, 'text-letter-spacing': 0.04,
+        'symbol-sort-key': ['+', HZ, ['get', 'k']], 'icon-overlap': 'never', 'icon-optional': false }),
+      paint: { 'text-color': ['case', ['==', ['get', 'k'], 1], INK.red, INK.redDeep], 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-halo-blur': 0.5,
+        'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
     for (const [id, geom] of [['lake-names', 'Point'], ['lake-names-l', 'LineString']]) {
       L({ id, type: 'symbol', source: 'ofm', 'source-layer': 'water_name', minzoom: 8.8,
         filter: ['all', ['==', ['get', 'class'], 'lake'], ['==', ['geometry-type'], geom]],
@@ -578,7 +586,7 @@
 
     // placement priority is top-down: reorder so names come in a sensible order (most important on top)
     const order = ['countries', 'regions-sea', 'regions-world', 'seas', 'landmarks', 'famous-peaks', 'cities', 'regions-land', 'states', 'towns', 'landmark-names', 'landmarks-near',
-      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
+      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     const final = rest.concat(named.reverse());
@@ -620,7 +628,7 @@
   // a small pool of workers; each tile always goes to the same worker (by x) so elevation caches are reused
   let pool = null;
   function setupProtocol(o, ofmTemplate) {
-    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', walls: o.base + 'data/walls.geojson' }, o.workerConfig || {}) };
+    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls.geojson' }, o.workerConfig || {}) };
     if (pool) { pool.forEach(w => w.postMessage(cfg)); return; }
     const n = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
     pool = [];
