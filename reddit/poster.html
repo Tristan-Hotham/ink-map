@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Britain and Ireland in Ink</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+@font-face{font-family:"Ink Caps";src:url(../fonts/ttf/MedievalSharp.ttf)}
+@font-face{font-family:"Ink Roman";src:url(../fonts/ttf/IMFeENrm28P.ttf)}
+@font-face{font-family:"Ink Italic";src:url(../fonts/ttf/IMFeGPit28P.ttf)}
+@font-face{font-family:"Ink SC";src:url(../fonts/ttf/IMFeENsc28P.ttf)}
+html,body{margin:0;height:100%;background:#F3E5BF}
+#map{position:absolute;inset:0}
+#map::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;box-shadow:inset 0 0 160px rgba(120,84,30,.20)}
+.frame{position:absolute;inset:22px;border:3px solid #2B2119;outline:1px solid #2B2119;outline-offset:6px;pointer-events:none;z-index:4}
+.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-bottom-left{display:none}
+.cart{position:absolute;z-index:5;background:rgba(246,236,206,.97);border:3px double #2B2119;padding:26px 34px 22px;text-align:center;color:#2B2119;box-shadow:0 0 0 7px rgba(246,236,206,.97),0 0 0 8px #A3261B}
+.cart .k{font:400 21px/1 "Ink SC";letter-spacing:.32em;color:#2B2119}
+.cart .t{font:400 78px/0.98 "Ink Caps";color:#A3261B;letter-spacing:.06em;margin:12px 0 8px}
+.cart .s{font:400 25px/1.25 "Ink Italic";color:#2B2119}
+.cart .rule{height:0;border-top:1px solid #2B2119;border-bottom:1px solid #2B2119;padding-top:3px;margin:16px auto 14px;width:72%}
+.cart .b{font:400 19px/1.35 "Ink Roman";color:#4A3A2A}
+.key{position:absolute;z-index:5;background:rgba(246,236,206,.96);border:2px solid #2B2119;padding:16px 20px 14px;color:#2B2119;font:400 19px/1.2 "Ink Roman"}
+.key h3{margin:0 0 10px;font:400 22px/1 "Ink Caps";letter-spacing:.24em;color:#A3261B}
+.key .row{display:flex;align-items:center;gap:12px;margin:5px 0}
+.key canvas{width:58px;height:40px}
+.key .ln{width:58px;height:40px;position:relative}
+.foot{position:absolute;z-index:5;left:44px;right:44px;bottom:38px;text-align:center;font:400 17px/1.35 "Ink Roman";color:#4A3A2A}
+.foot b{font:400 21px "Ink Caps";color:#A3261B;letter-spacing:.06em}
+.foot span{background:rgba(246,236,206,.92);padding:4px 10px;display:inline-block}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="frame"></div>
+<div class="cart" id="cart">
+  <div class="k">A MAP OF</div>
+  <div class="t">BRITAIN<br>&amp; IRELAND</div>
+  <div class="s">drawn in ink from open data</div>
+  <div class="rule"></div>
+  <div class="b">Every peak stands on the highest point of its<br>patch of ground, sized by how far it rises<br>above the land around it.<br>Every tree stands in a mapped wood.</div>
+</div>
+<div class="key" id="key"><h3>KEY</h3></div>
+<div class="foot"><span><b>maps.tristanhotham.com/ink-map</b> &nbsp;·&nbsp; Dr Tristan Hotham, Independent researcher, 2026<br>
+Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles · Elevation: AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1) · Lettering lines: Natural Earth, ONS (OGL v3)</span></div>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="../js/curated.js"></script>
+<script src="../js/ink-map.js"></script>
+<script>
+(async function () {
+  const qs = new URLSearchParams(location.search);
+  const opts = { base: new URL('../', location.href).href, textScale: 1.35, curvedScale: 1.08 };
+  if (qs.get('tj')) opts.tilejson = qs.get('tj');
+  if (qs.get('dem')) opts.dem = qs.get('dem');
+  if (qs.get('demmax')) opts.demMax = +qs.get('demmax');
+  const B = (qs.get('b') || '-11.4,49.75,3.6,59.25').split(',').map(Number);
+  opts.mapOptions = { bounds: [[B[0], B[1]], [B[2], B[3]]], fitBoundsOptions: { padding: 0 }, interactive: false, fadeDuration: 0, attributionControl: false, preserveDrawingBuffer: true };
+  const map = await InkMap.create('map', opts);
+  for (const id of ['towns', 'cities']) { map.setPaintProperty(id, 'text-opacity', 1); map.setPaintProperty(id, 'icon-opacity', 1); }
+  for (const id of ['countries', 'regions-land', 'regions-world', 'regions-sea']) map.setPaintProperty(id, 'text-opacity', 1);
+  window.__map = map;
+  // place the cartouche and key on open sea
+  const put = (el, lon, lat, ax, ay) => { const p = map.project([lon, lat]); el.style.left = (p.x - el.offsetWidth * ax) + 'px'; el.style.top = (p.y - el.offsetHeight * ay) + 'px'; };
+  const C = (qs.get('cart') || '3.2,58.9').split(',').map(Number), K = (qs.get('key') || '-11.25,49.98').split(',').map(Number);
+  put(document.getElementById('cart'), C[0], C[1], 1, 0);
+  // key with the real glyphs
+  const S = InkMap.sprites, key = document.getElementById('key');
+  const row = (draw, label) => { const r = document.createElement('div'); r.className = 'row'; const c = document.createElement('canvas'); c.width = 116; c.height = 80; draw(c.getContext('2d')); r.appendChild(c); const s = document.createElement('span'); s.textContent = label; r.appendChild(s); key.appendChild(r); };
+  const img = (x, sp, sc, dx, dy) => x.drawImage(sp, dx || (116 - sp.width * sc) / 2, dy || (80 - sp.height * sc) / 2, sp.width * sc, sp.height * sc);
+  row(x => { img(x, S.mountainSprite(1), 0.95, 6, 14); img(x, S.mountainSprite(4), 0.8, 50, 22); }, 'Mountains: high ground well above its surroundings');
+  row(x => { img(x, S.hillSprite(2), 1.0, 4, 30); img(x, S.hillSprite(5), 0.9, 52, 36); }, 'Hills: lower, rolling ground');
+  row(x => { for (const [v, c, dx, dy] of [[0, 0, 14, 14], [1, 0, 44, 20], [2, 1, 74, 12], [3, 0, 30, 34], [1, 1, 60, 36]]) img(x, S.treeSprite(v, !!c), 1.25, dx, dy); }, 'Woods and forests (OpenStreetMap)');
+  row(x => { img(x, S.settleSprite('city'), 1.6, 36, 18); }, 'City');
+  row(x => { img(x, S.settleSprite('town'), 1.6, 36, 18); }, 'Town');
+  row(x => { x.strokeStyle = InkMap.INK.blue; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(8, 60); x.bezierCurveTo(40, 20, 70, 70, 108, 24); x.stroke(); }, 'River');
+  row(x => { x.lineCap = 'round'; [[InkMap.INK.ink, 3, 1], [InkMap.INK.ink, 1.2, 9], [InkMap.INK.blue, 1.2, 16], [InkMap.INK.blue, 1.2, 23], [InkMap.INK.blueSoft, 1.2, 30]].forEach(([c, w, o]) => { x.strokeStyle = c; x.lineWidth = w; x.beginPath(); x.moveTo(8, 18 + o); x.bezierCurveTo(40, 6 + o, 70, 30 + o, 108, 14 + o); x.stroke(); }); }, 'Coast, with ripples out to sea');
+  row(x => { x.setLineDash([12, 5, 2, 5]); x.strokeStyle = InkMap.INK.ink; x.lineWidth = 2; x.beginPath(); x.moveTo(8, 40); x.lineTo(108, 40); x.stroke(); }, 'National border');
+  put(key, K[0], K[1], 0, 1);
+  map.once('idle', () => { window.__posterReady = true; });
+})();
+</script>
+</body>
+</html>

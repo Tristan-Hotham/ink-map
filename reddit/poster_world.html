@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>The Inked World Poster</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+@font-face{font-family:"Ink Caps";src:url(../fonts/ttf/MedievalSharp.ttf)}
+@font-face{font-family:"Ink Roman";src:url(../fonts/ttf/IMFeENrm28P.ttf)}
+@font-face{font-family:"Ink Italic";src:url(../fonts/ttf/IMFeGPit28P.ttf)}
+@font-face{font-family:"Ink SC";src:url(../fonts/ttf/IMFeENsc28P.ttf)}
+html,body{margin:0;height:100%;background:#F3E5BF;overflow:hidden}
+#map{position:absolute;inset:0}
+#map::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;box-shadow:inset 0 0 180px rgba(120,84,30,.18)}
+.frame{position:absolute;inset:20px;border:3px solid #2B2119;outline:1px solid #2B2119;outline-offset:6px;pointer-events:none;z-index:6}
+.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-bottom-left{display:none}
+.box{position:absolute;z-index:5;background:rgba(246,236,206,.97);color:#2B2119}
+.cart{border:3px double #2B2119;padding:22px 30px 18px;text-align:center;box-shadow:0 0 0 7px rgba(246,236,206,.97),0 0 0 8px #A3261B}
+.cart .k{font:400 19px/1 "Ink SC";letter-spacing:.32em}
+.cart .t{font:400 70px/1 "Ink Caps";color:#A3261B;letter-spacing:.07em;margin:12px 0 6px}
+.cart .s{font:400 23px/1.25 "Ink Italic"}
+.cart .rule{border-top:1px solid #2B2119;border-bottom:1px solid #2B2119;padding-top:3px;margin:14px auto 12px;width:72%}
+.cart .b{font:400 18px/1.35 "Ink Roman";color:#4A3A2A}
+.inset{border:3px solid #2B2119;box-shadow:0 0 0 6px rgba(246,236,206,.97),0 0 0 7px #2B2119}
+.inset #uk{position:absolute;inset:0}
+.inset .cap{position:absolute;left:0;right:0;top:0;z-index:3;text-align:center;font:400 30px/1 "Ink Caps";letter-spacing:.2em;color:#A3261B;background:rgba(246,236,206,.94);padding:12px 0 10px;border-bottom:1px solid #2B2119}
+.inset .cap small{display:block;font:400 17px/1.3 "Ink Italic";letter-spacing:.02em;color:#2B2119;margin-top:4px}
+.key{border:2px solid #2B2119;padding:14px 18px 12px;font:400 18px/1.2 "Ink Roman"}
+.key h3{margin:0 0 8px;font:400 21px/1 "Ink Caps";letter-spacing:.24em;color:#A3261B}
+.key .row{display:flex;align-items:center;gap:12px;margin:4px 0}
+.key canvas{width:54px;height:36px}
+.foot{font:400 16px/1.4 "Ink Roman";color:#4A3A2A;padding:8px 14px;text-align:right}
+.foot b{font:400 20px "Ink Caps";color:#A3261B;letter-spacing:.06em}
+.loc{position:absolute;z-index:4;border:2px solid #A3261B;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="frame"></div>
+<div class="loc" id="loc"></div>
+<div class="box cart" id="cart">
+  <div class="k">A MAP OF</div>
+  <div class="t">THE INKED<br>WORLD</div>
+  <div class="s">drawn in ink from open data</div>
+  <div class="rule"></div>
+  <div class="b">Every peak stands on the highest point<br>of its patch of ground, sized by how far<br>it rises above the land around it.</div>
+</div>
+<div class="box inset" id="inset"><div id="uk"></div><div class="cap">BRITAIN &amp; IRELAND<small>the same map, zoomed in</small></div></div>
+<div class="box key" id="key"><h3>KEY</h3></div>
+<div class="box foot" id="foot"><b>maps.tristanhotham.com/ink-map</b> &nbsp;·&nbsp; Dr Tristan Hotham, Independent researcher, 2026<br>
+Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles<br>Elevation: AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1) · Biomes: RESOLVE Ecoregions 2017 (CC BY 4.0) · Lettering lines: Natural Earth, ONS (OGL v3)</div>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="../js/curated.js"></script>
+<script src="../js/ink-map.js"></script>
+<script>
+window.__posterReady = false;
+(async function () {
+  const qs = new URLSearchParams(location.search);
+  const common = { base: new URL('../', location.href).href };
+  if (qs.get('tj')) common.tilejson = qs.get('tj');
+  if (qs.get('dem')) common.dem = qs.get('dem');
+  if (qs.get('demmax')) common.demMax = +qs.get('demmax');
+  const mo = { interactive: false, fadeDuration: 0, attributionControl: false, preserveDrawingBuffer: true, renderWorldCopies: false };
+  const W = innerWidth;
+  const zoom = Math.log2(W / 512);
+  const map = await InkMap.create('map', Object.assign({}, common, { textScale: 1.3, curvedScale: 1.12, mapOptions: Object.assign({ center: [10, 14], zoom }, mo) }));
+  const pt = (lon, lat) => map.project([lon, lat]);
+  const place = (el, lon, lat, ax, ay, w, h) => { const p = pt(lon, lat); if (w) el.style.width = w + 'px'; if (h) el.style.height = h + 'px'; el.style.left = (p.x - el.offsetWidth * ax) + 'px'; el.style.top = (p.y - el.offsetHeight * ay) + 'px'; };
+  // everything sits on open ocean: title in the North Pacific, inset in the South Pacific, key in the southern Indian Ocean
+  place(document.getElementById('cart'), -171, 47, 0, 0);
+  const inset = document.getElementById('inset');
+  place(inset, -171, -6, 0, 0, 640, 730);
+  Object.assign(document.getElementById('foot').style, { right: '44px', bottom: '44px' });
+  // red locator round Britain and Ireland
+  const a = pt(-11, 59.5), b = pt(2.5, 49.6), loc = document.getElementById('loc');
+  Object.assign(loc.style, { left: a.x + 'px', top: a.y + 'px', width: (b.x - a.x) + 'px', height: (b.y - a.y) + 'px' });
+  const uk = await InkMap.create('uk', Object.assign({}, common, { mapOptions: Object.assign({ center: [-4.2, 55.2], zoom: 5.05 }, mo) }));
+  // key, drawn with the map's own glyphs
+  const S = InkMap.sprites, key = document.getElementById('key');
+  const row = (draw, label) => { const r = document.createElement('div'); r.className = 'row'; const c = document.createElement('canvas'); c.width = 108; c.height = 72; draw(c.getContext('2d')); r.appendChild(c); const s = document.createElement('span'); s.textContent = label; r.appendChild(s); key.appendChild(r); };
+  const img = (x, sp, sc, dx, dy) => x.drawImage(sp, dx, dy, sp.width * sc, sp.height * sc);
+  row(x => { img(x, S.mountainSprite(1), 0.9, 4, 12); img(x, S.mountainSprite(4), 0.75, 46, 20); }, 'Mountains: high ground well above its surroundings');
+  row(x => { img(x, S.hillSprite(2), 0.95, 4, 26); img(x, S.hillSprite(5), 0.85, 50, 32); }, 'Hills: lower, rolling ground');
+  row(x => { for (const [v, c, dx, dy] of [[0, 0, 12, 12], [1, 0, 40, 18], [2, 1, 68, 10], [3, 0, 28, 32], [1, 1, 56, 34]]) img(x, S.treeSprite(v, !!c), 1.15, dx, dy); }, 'Woods and forests, close in');
+  row(x => { img(x, S.duneSprite(0), 1.4, 18, 16); }, 'Desert dunes');
+  row(x => { img(x, S.grassSprite(0), 1.6, 18, 26); img(x, S.grassSprite(1), 1.6, 58, 30); }, 'Grassland and steppe');
+  row(x => { img(x, S.rainSprite(0), 1.2, 6, 14); img(x, S.rainSprite(3), 1.2, 56, 18); }, 'Tropical rainforest');
+  row(x => { for (const [v, dx] of [[0, 18], [1, 44], [2, 70]]) img(x, S.taigaSprite(v), 1.35, dx, 14); }, 'Boreal forest (taiga)');
+  row(x => { img(x, S.iceSprite(0), 1.3, 8, 20); img(x, S.iceSprite(1), 1.3, 52, 34); }, 'Ice sheets and glaciers');
+  row(x => { img(x, S.settleSprite('city'), 1.5, 34, 16); }, 'City');
+  row(x => { x.lineCap = 'round'; [[InkMap.INK.ink, 3, 1], [InkMap.INK.ink, 1.2, 9], [InkMap.INK.blue, 1.2, 16], [InkMap.INK.blue, 1.2, 23], [InkMap.INK.blueSoft, 1.2, 30]].forEach(([c, w, o]) => { x.strokeStyle = c; x.lineWidth = w; x.beginPath(); x.moveTo(8, 14 + o); x.bezierCurveTo(40, 4 + o, 66, 26 + o, 102, 10 + o); x.stroke(); }); }, 'Coast, with ripples out to sea');
+  row(x => { x.setLineDash([12, 5, 2, 5]); x.strokeStyle = InkMap.INK.ink; x.lineWidth = 2; x.beginPath(); x.moveTo(8, 36); x.lineTo(102, 36); x.stroke(); }, 'National border');
+  place(key, 55, -24, 0, 0);
+  // the key sits on the Southern Ocean, so that one name is left off the poster (it stays on the live map)
+  map.setFilter('regions-sea', ['all', map.getFilter('regions-sea'), ['!=', ['get', 'name'], 'SOUTHERN OCEAN']]);
+  for (const m of [map, uk]) for (const id of ['countries', 'regions-land', 'regions-world', 'regions-sea', 'cities', 'towns']) { try { m.setPaintProperty(id, 'text-opacity', 1); } catch (e) {} }
+  window.__map = map;
+  await Promise.all([map, uk].map(m => new Promise(r => m.once('idle', r))));
+  window.__posterReady = true;
+})();
+</script>
+</body>
+</html>
