@@ -519,8 +519,8 @@
       paint: { 'text-color': INK.ink, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
     // villages and hamlets of Britain and Ireland that OpenStreetMap's tiles leave out (Wikidata; js/ink-worker.js drops any the tile already names)
     L({ id: 'xplaces', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10,
-      layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Roman'], 'text-size': ['case', ['==', ['get', 'k'], 1], iz(10, 10.5, 13, 14), iz(10, 10, 15, 13)],
-        'icon-image': ['case', ['==', ['get', 'k'], 1], 's-village', 's-hamlet'], 'icon-size': ['case', ['==', ['get', 'k'], 1], iz(10, 0.6, 13, 0.72), iz(10, 0.8, 15, 1)],
+      layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Roman'], 'text-size': iz(10, ['case', ['==', ['get', 'k'], 1], 10.5, 10], 13, ['case', ['==', ['get', 'k'], 1], 14, 12.2], 15, ['case', ['==', ['get', 'k'], 1], 14.5, 13]),
+        'icon-image': ['case', ['==', ['get', 'k'], 1], 's-village', 's-hamlet'], 'icon-size': iz(10, ['case', ['==', ['get', 'k'], 1], 0.6, 0.8], 13, ['case', ['==', ['get', 'k'], 1], 0.72, 0.9], 15, ['case', ['==', ['get', 'k'], 1], 0.75, 1]),
         'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.75, 'text-justify': 'auto', 'text-max-width': 9, 'text-letter-spacing': 0.04,
         'symbol-sort-key': ['+', HZ, ['get', 'k']], 'icon-overlap': 'never', 'icon-optional': false }),
       paint: { 'text-color': ['case', ['==', ['get', 'k'], 1], INK.red, INK.redDeep], 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-halo-blur': 0.5,
