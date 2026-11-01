@@ -1,8 +1,11 @@
 /* Ink map worker: turns elevation and land cover into hand-drawn glyph positions.
- * For each requested tile (z, x, y) it returns a Mapbox Vector Tile with three point layers:
+ * For each requested tile (z, x, y) it returns a Mapbox Vector Tile with these point layers:
  *   relief  mountains and hills, placed on local high points of Terrarium elevation tiles
  *   trees   tree glyphs scattered inside OpenStreetMap woods and forests (OpenFreeMap landcover)
  *   tufts   marsh and moorland tufts inside wetland and heath
+ *   biome   desert, grassland, rainforest, taiga, ice, marsh and tundra glyphs (RESOLVE Ecoregions 2017)
+ *   heritage  castles, churches, stone circles and other sites (Wikidata, zoom 6 and closer)
+ *   town    townhouses along real streets, market squares, churches and town walls (zoom 12 and closer)
  * Every point carries the rank (r) at which it first appears, so the map can fade new glyphs in
  * smoothly as you zoom: the set at one zoom is always contained in the set at the next.
  * Dr Tristan Hotham, Independent researcher, 2026. MIT licence. */
@@ -10,7 +13,7 @@
 let CFG = {
   dem: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png', demMax: 15,
   ofm: null, ofmMax: 14,
-  C: 14, RS: 99, RMAX: 12, HILL: 0.4, SAT_NB: 6, SAT_HI: 3, SAT_Q: 2.2, CAP_M: 0.75, CAP_T: 1.05, CAP_SAT: 0.45, SAT_INK: 1.6, PLAT: 2.5, G0: 1, GT: [4, 4.5, 5.5, 7.5, 10, 12, 13, 22, 30, 38, 48, 60, 70], GH: 0.45, MONT: 0.3, OPEN: 1.5, CB: 20, biomes: null, demScale: 1, // no new peaks beyond rank RMAX: close in, cells would measure slopes, not summits
+  C: 14, RS: 99, RMAX: 12, HILL: 0.4, SAT_NB: 6, SAT_HI: 3, SAT_Q: 2.2, SNOWF: 700, HMAX: 650, TMAX: 1100, CAP_M: 0.75, CAP_T: 1.05, CAP_SAT: 0.45, SAT_INK: 1.6, PLAT: 2.5, G0: 1, GT: [4, 4.5, 5.5, 7.5, 10, 12, 13, 22, 30, 38, 48, 60, 70], GH: 0.45, MONT: 0.3, OPEN: 1.5, CB: 20, biomes: null, demScale: 1, // no new peaks beyond rank RMAX: close in, cells would measure slopes, not summits
   // (RS: optional rank from which a rank reuses the previous rank's cells, to thin close-up glyphs)
       // mountain cell size in screen px at the rank's home zoom (512 px tiles)
   CT: 10,     // tree cell size
@@ -92,6 +95,11 @@ async function mosaic(d, nx0, ny0, nx1, ny1) {
 }
 
 // ---------------- relief glyphs ----------------
+// a simple snow line by latitude (metres): about 3,500 m in the tropics, 2,900 m at 45 degrees, 1,300 m at 60, 300 m at 75
+function snowLine(lat) {
+  const a = Math.abs(lat);
+  return a <= 25 ? 3500 : a <= 45 ? 3500 - 30 * (a - 25) : a <= 60 ? 2900 - 106.7 * (a - 45) : a <= 75 ? 1300 - 66.7 * (a - 60) : 0;
+}
 const J0cell = (L, jj) => L.j0 + jj;
 const biomeAt = (BR, nx, ny) => { if (!BR) return 0; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return BR.a[j * BR.n + i] >> 2; };
 const montaneAt = (BR, nx, ny) => { if (!BR) return false; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return (BR.a[j * BR.n + i] & 2) === 2; };
@@ -227,7 +235,19 @@ async function reliefPoints(z, x, y) {
       const s = k === 0 ? Math.min(1.3, 0.8 + 0.22 * (q - 1)) : Math.min(1.0, 0.72 + 0.45 * (q - 0.42));
       seen.add(a);
       const I = L.i0 + ii, J = L.j0 + jj;
-      out.push({ nx, ny, r: Math.max(r, 0), k, s: Math.round(s * 100) / 100, v: Math.floor(hash3(I, J, r + 99) * 8), e: Math.round(v * CFG.demScale), rl: Math.round(rel[c]), rg: Math.round(rug[c] * 10) / 10 });
+      const eM = v * CFG.demScale, sl = snowLine(latOfY(ny)) + (plateauAt(BR, nx, ny) ? 1500 : 0);
+      out.push({ nx, ny, r: Math.max(r, 0), k, s: Math.round(s * 100) / 100, v: Math.floor(hash3(I, J, r + 99) * 8), e: Math.round(eM), rl: Math.round(rel[c]), rg: Math.round(rug[c] * 10) / 10,
+                 sn: k === 0 && eM >= sl ? 1 : 0 });
+    }
+    // snowfields and glaciers: pale blue hatching on high, rugged ground well above the snow line (finest cells only)
+    if (L === R[R.length - 1]) for (let jj = 1; jj < nJ - 1; jj++) for (let ii = 1; ii < nI - 1; ii++) {
+      const c = jj * nI + ii, a = am[c];
+      if (a < 0 || kind[c] < 0 || seen.has(a)) continue;
+      const ax = a % W, ay = (a - ax) / W, ny = (py0 + ay + 0.5) / S, nx = (px0 + ax + 0.5) / S;
+      if (nx < tnx0 || nx >= tnx1 || ny < tny0 || ny >= tny1) continue;
+      if (mn[c] * CFG.demScale < snowLine(latOfY(ny)) + CFG.SNOWF + (plateauAt(BR, nx, ny) ? 1500 : 0)) continue;
+      const I = L.i0 + ii, J = L.j0 + jj;
+      out.push({ nx: nx + (hash3(I, J, 5) - 0.5) * cell * 0.5, ny: ny + cell * 0.3, r: Math.max(r, 0), k: 2, s: 1, v: Math.floor(hash3(I, J, 6) * 3), e: Math.round(mn[c] * CFG.demScale), rl: 0, rg: 0, sn: 1 });
     }
   }
   return out;
@@ -487,9 +507,174 @@ function encodeLayer(name, pts, keys, z, x, y) {
     L.bytes(2, F.a);
   }
   for (const k of keys) L.str(3, k);
-  for (const v of vals) { const V = new Writer(); V.double(3, v); L.bytes(4, V.a); }
+  for (const v of vals) { const V = new Writer(); if (typeof v === 'string') V.str(1, v); else V.double(3, v); L.bytes(4, V.a); }
   L.tag(5, 0); L.varint(ext);
   return L.a;
+}
+
+
+// ---------------- heritage (Wikidata and the data studies, data/heritage/{x}_{y}.json on a zoom-6 grid) ----------------
+let herIdx = null; const herTiles = new Map();
+function heritageIndex() {
+  if (!herIdx) herIdx = (async () => {
+    if (!CFG.heritage) return null;
+    try { const r = await fetch(CFG.heritage + 'index.json'); if (!r.ok) return null; const j = await r.json(); j.set = new Set(j.tiles); return j; } catch (e) { return null; }
+  })();
+  return herIdx;
+}
+function heritageBin(bx, by) {
+  const k = bx + '_' + by;
+  if (!herTiles.has(k)) herTiles.set(k, (async () => {
+    try { const r = await fetch(CFG.heritage + k + '.json'); return r.ok ? await r.json() : []; } catch (e) { return []; }
+  })());
+  return herTiles.get(k);
+}
+const mercX = lon => (lon + 180) / 360;
+const mercY = lat => { const s = Math.sin(Math.max(-85.05, Math.min(85.05, lat)) * DEG); return 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI); };
+async function heritagePoints(z, x, y) {
+  if (z < 6) return [];
+  const I = await heritageIndex(); if (!I) return [];
+  const sh = z - 6, bx = x >> sh, by = y >> sh;
+  if (!I.set.has(bx + '_' + by)) return [];
+  const rows = await heritageBin(bx, by), n = Math.pow(2, z), out = [];
+  for (const r of rows) {
+    const mz = r[3] / 10; if (mz > z + 1) continue;
+    const nx = mercX(r[0] / 1e5), ny = mercY(r[1] / 1e5);
+    if (Math.floor(nx * n) !== x || Math.floor(ny * n) !== y) continue;
+    out.push({ nx, ny, i: I.icons[r[2]], z: mz, n: r[4] || '', q: r[5] ? 'Q' + r[5] : '' });
+  }
+  out.sort((a, b) => a.z - b.z);
+  return out.slice(0, CFG.HMAX);
+}
+
+// ---------------- drawn towns (zoom 12 and closer): townhouses along the real streets of built-up land ----------------
+function lineParts(buf, g) {
+  const R = new Reader(buf); R.p = g[0];
+  let x = 0, y = 0; const parts = []; let cur = null;
+  while (R.p < g[1]) {
+    const ci = R.varint(), cmd = ci & 7, cnt = ci >> 3;
+    if (cmd === 7) continue;
+    for (let i = 0; i < cnt; i++) {
+      const dx = R.varint(), dy = R.varint();
+      x += (dx >>> 1) ^ -(dx & 1); y += (dy >>> 1) ^ -(dy & 1);
+      if (cmd === 1) { cur = [[x, y]]; parts.push(cur); } else cur.push([x, y]);
+    }
+  }
+  return parts;
+}
+function pointOf(buf, g) { const R = new Reader(buf); R.p = g[0]; R.varint(); const dx = R.varint(), dy = R.varint(); return [(dx >>> 1) ^ -(dx & 1), (dy >>> 1) ^ -(dy & 1)]; }
+// radius of the drawn town (km) and of its walled old core, by kind of place
+const TOWN_R = { capital: 4.2, city: 2.6, town: 1.25, village: 0.45 };
+async function townPoints(z, x, y, avoid) {
+  if (z < 12 || !CFG.ofm || z > CFG.ofmMax) return [];
+  const [buf, pbuf] = await Promise.all([fetchOfm(z, x, y), fetchOfm(z - 2, x >> 2, y >> 2)]);
+  if (!buf || !pbuf) return [];
+  const n = Math.pow(2, z), Ls = decodeLayers(buf, new Set(['transportation', 'landuse', 'building', 'water']));
+  // places from the parent tile two zooms up, so a town just over the tile's edge still sets the density here
+  const PL = decodeLayers(pbuf, new Set(['place'])).place, n2 = n / 4, places = [];
+  if (PL) for (const span of PL.feats) {
+    const F = featureOf(pbuf, PL, span); if (F.type !== 1) continue;
+    const cl = F.props.class; if (!TOWN_R[cl] && cl !== 'city') continue;
+    const [px, py] = pointOf(pbuf, F.geom);
+    const nx = ((x >> 2) + px / PL.extent) / n2, ny = ((y >> 2) + py / PL.extent) / n2;
+    const kind = cl === 'city' && (F.props.capital === 2 || F.props.capital === '2') ? 'capital' : cl;
+    places.push({ nx, ny, kind, R: TOWN_R[kind] || 1, rank: F.props.rank || 9 });
+  }
+  if (!places.length) return [];
+  const kmPerN = 40075 * Math.cos(latOfY((y + 0.5) / n) * DEG);   // km per unit of normalised x at this latitude
+  // built-up land: residential, commercial and retail land use and the buildings themselves
+  const built = Ls.landuse ? polyMask(buf, Ls.landuse, p => ['residential', 'commercial', 'retail', 'suburb', 'neighbourhood', 'quarter'].includes(p.class)) : null;
+  const bld = Ls.building ? polyMask(buf, Ls.building, null) : null;
+  const wet = Ls.water ? polyMask(buf, Ls.water, null) : null;
+  const at = (m, tx, ty) => m && m[Math.max(0, Math.min(MS - 1, Math.floor(ty * MS))) * MS + Math.max(0, Math.min(MS - 1, Math.floor(tx * MS)))] === 1;
+  // building density round a point (share of a 5 x 5 mask window covered)
+  const dens = (tx, ty) => { if (!bld) return 0; let c = 0; const i0 = Math.floor(tx * MS), j0 = Math.floor(ty * MS); for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) { const i = i0 + di, j = j0 + dj; if (i >= 0 && j >= 0 && i < MS && j < MS && bld[j * MS + i]) c++; } return c / 25; };
+  const near = (nx, ny) => { let best = null, bd = 1e9; for (const P of places) { const d = Math.hypot((nx - P.nx) * kmPerN, (ny - P.ny) * kmPerN) / P.R; if (d < bd) { bd = d; best = P; } } return [best, bd]; };
+  // occupancy grid in tile pixels (512 a tile), so houses never overprint each other or a heritage drawing
+  const OC = 7, occ = new Set();
+  const key = (px, py) => Math.floor(px / OC) + ',' + Math.floor(py / OC);
+  const free = (px, py, r) => { for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) if (occ.has((Math.floor(px / OC) + di) + ',' + (Math.floor(py / OC) + dj))) return false; return true; };
+  const take = (px, py, r) => { for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) occ.add((Math.floor(px / OC) + di) + ',' + (Math.floor(py / OC) + dj)); };
+  for (const p of avoid) take((p.nx * n - x) * 512, (p.ny * n - y) * 512, 2);
+  const out = [];
+  // the centre of each place in this tile: a market square and its church, and for capitals and cities a wall with towers round the old core
+  for (const P of places) {
+    const px = (P.nx * n - x) * 512, py = (P.ny * n - y) * 512;
+    if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind !== 'village') {
+      // set just below the name, which sits on the place point
+      out.push({ nx: P.nx - 8 / 512 / n, ny: P.ny + 20 / 512 / n, t: 'market', a: 0, o: 0 }); take(px - 8, py + 20, 2);
+      out.push({ nx: P.nx + 14 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 14, py + 16, 2);
+    } else if (px >= 0 && px < 512 && py >= 0 && py < 512) { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2); }
+    if (P.kind === 'capital' || (P.kind === 'city' && P.rank <= 3)) {
+      const rk = P.R * 0.32 / kmPerN, segs = Math.max(24, Math.round(2 * Math.PI * rk * n * 512 / 13));
+      for (let s = 0; s < segs; s++) {
+        const th = s / segs * 2 * Math.PI, wob = 1 + 0.06 * Math.sin(th * 3 + P.nx * 1e4);
+        const wx = P.nx + Math.cos(th) * rk * wob, wy = P.ny + Math.sin(th) * rk * wob;
+        const tx = (wx * n - x), ty = (wy * n - y);
+        if (tx < 0 || tx >= 1 || ty < 0 || ty >= 1 || at(wet, tx, ty)) continue;
+        const tower = s % 5 === 0;
+        out.push({ nx: wx, ny: wy, t: tower ? 'walltower' : 'wallseg', a: tower ? 0 : (th * 180 / Math.PI + 90) % 360, o: 1 });
+        take(tx * 512, ty * 512, 1);
+      }
+    }
+  }
+  // townhouses: both sides of every street, facing it, densest at the centre and thinning outwards with the buildings
+  const T = Ls.transportation;
+  if (T) {
+    const STREET = { primary: 1, secondary: 1, tertiary: 1, minor: 1, service: 0.5, residential: 1, living_street: 1, pedestrian: 1 };
+    const sc = 512 / T.extent, step = 10.5, off = 8;
+    for (const span of T.feats) {
+      if (out.length >= CFG.TMAX) break;
+      const F = featureOf(buf, T, span); if (F.type !== 2) continue;
+      const w = STREET[F.props.class]; if (!w || F.props.brunnel === 'tunnel' || F.props.brunnel === 'bridge') continue;
+      for (const part of lineParts(buf, F.geom)) {
+        let carry = step * 0.5;
+        for (let k = 1; k < part.length && out.length < CFG.TMAX; k++) {
+          const ax = part[k - 1][0] * sc, ay = part[k - 1][1] * sc, bx = part[k][0] * sc, by = part[k][1] * sc;
+          const L = Math.hypot(bx - ax, by - ay); if (L < 0.5) continue;
+          const ux = (bx - ax) / L, uy = (by - ay) / L;
+          for (let d = carry; d < L; d += step) {
+            const cx = ax + ux * d, cy = ay + uy * d;
+            for (const side of [1, -1]) {
+              const nxv = -uy * side, nyv = ux * side, hx = cx + nxv * off, hy = cy + nyv * off;
+              if (hx < 0 || hx >= 512 || hy < 0 || hy >= 512) continue;
+              const tx = hx / 512, ty = hy / 512;
+              if (at(wet, tx, ty)) continue;
+              const gnx = (x + tx) / n, gny = (y + ty) / n, [P, dr] = near(gnx, gny);
+              if (!P || dr > 1.6) continue;
+              const ins = at(built, tx, ty), dn = dens(tx, ty);
+              if (!ins && dn < 0.12 && dr > 0.5) continue;
+              // keep share: the old core is packed; beyond it, houses only where OpenStreetMap maps buildings
+              const keep = Math.min(1, (dr < 0.35 ? 1 : Math.max(0, 1.15 - dr * 0.85)) * w * (0.55 + 0.9 * dn) + (dr < 0.2 ? 0.4 : 0));
+              const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
+              if (h >= keep || !free(hx, hy, 0)) continue;
+              take(hx, hy, 0);
+              out.push({ nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 6), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 });
+            }
+          }
+          carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
+        }
+      }
+    }
+  }
+  // blocks between the streets (and towns whose small streets the tile leaves out): fill the built-up land on a
+  // jittered grid, houses turned to the nearest street direction found above, or square to the map
+  const G = 10.5;
+  for (let gy = G / 2; gy < 512 && out.length < CFG.TMAX; gy += G) for (let gx = G / 2; gx < 512 && out.length < CFG.TMAX; gx += G) {
+    const gnx0 = (x + gx / 512) / n, gny0 = (y + gy / 512) / n;
+    const hx = gx + (hash3(Math.round(gnx0 * 4e7), Math.round(gny0 * 4e7), 41) - 0.5) * G * 0.6, hy = gy + (hash3(Math.round(gny0 * 4e7), Math.round(gnx0 * 4e7), 43) - 0.5) * G * 0.6;
+    const tx = hx / 512, ty = hy / 512;
+    if (tx < 0 || ty < 0 || tx >= 1 || ty >= 1 || at(wet, tx, ty)) continue;
+    const gnx = (x + tx) / n, gny = (y + ty) / n, [P, dr] = near(gnx, gny);
+    if (!P || dr > 1.3) continue;
+    const ins = at(built, tx, ty), dn = dens(tx, ty);
+    if (!ins && dn < 0.2 && dr > 0.4) continue;            // the old core counts as built even where the tile maps nothing
+    const keep = dr < 0.4 ? 0.9 : Math.min(1, Math.max(0, 1.1 - dr) * (0.45 + 0.8 * dn));
+    if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep || !free(hx, hy, 0)) continue;
+    take(hx, hy, 0);
+    out.push({ nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 6), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 });
+  }
+  return out;
 }
 
 async function buildTile(z, x, y) {
@@ -507,7 +692,8 @@ async function buildTile(z, x, y) {
     for (let dj = -ER; dj <= ER; dj++) for (let di = -ER; di <= ER; di++) if (wetAt(i + di, j + dj)) return true;
     return false;
   };
-  const relief = inkCap(relief0.filter(p => !nearWet(p)), z, x, y);
+  const snowf = relief0.filter(p => p.k === 2 && !nearWet(p));
+  const relief = inkCap(relief0.filter(p => p.k !== 2 && !nearWet(p)), z, x, y).concat(snowf);
   relief.sort((a, b) => a.ny - b.ny);
   // ---- biome glyphs: dunes, grass, rainforest, taiga, ice, marsh, tundra
   const BR = await biomeRaster();
@@ -538,7 +724,7 @@ async function buildTile(z, x, y) {
     pts.sort((a, b) => a.ny - b.ny);
     if (pts.length) T.bytes(3, encodeLayer('biome', pts, ['r', 'b', 'v'], z, x, y));
   }
-  if (relief.length) T.bytes(3, encodeLayer('relief', relief, ['r', 'k', 's', 'v', 'e', 'rl', 'rg'], z, x, y));
+  if (relief.length) T.bytes(3, encodeLayer('relief', relief, ['r', 'k', 's', 'v', 'e', 'rl', 'rg', 'sn'], z, x, y));
   if (z >= 7 && CFG.ofm) {
     const oz = Math.min(z, CFG.ofmMax);
     if (oz === z) {
@@ -569,6 +755,14 @@ async function buildTile(z, x, y) {
         }
       }
     }
+  }
+  // heritage drawings and, close in, the drawn towns
+  const her = await heritagePoints(z, x, y);
+  if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q'], z, x, y));
+  if (z >= 12) {
+    const town = await townPoints(z, x, y, her);
+    town.sort((a, b) => a.ny - b.ny);
+    if (town.length) T.bytes(3, encodeLayer('town', town, ['t', 'a', 'o'], z, x, y));
   }
   return new Uint8Array(T.a).buffer;
 }

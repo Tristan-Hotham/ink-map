@@ -47,7 +47,7 @@ post = (
     + para('The little drawings are painted by the page itself when it loads, with a slight wobble in every stroke: eight mountains with hatched shadow sides, eight rounded hills, broadleaf and conifer trees, '
            'tufts of marsh grass in blue and of moorland in black, and small symbols for cities, towns and villages. Trees only grow inside woods mapped in OpenStreetMap, and tufts inside its '
            f'wetlands and heaths, so close in you can see the real forests (from zoom {m["trees_from_zoom"]}) and moors (from zoom {m["tufts_from_zoom"]}).')
-    + img('b_glyphs.png', 'A sheet of hand-drawn style glyphs on parchment: eight inked mountains with hatched shading, eight rounded hills, broadleaf and conifer trees, blue marsh tufts, black moorland tufts, crescent dunes, grass tufts, rainforest crowns and a palm, small taiga conifers, blue ice hatching, and settlement symbols',
+    + img('b_glyphs.png', 'A sheet of hand-drawn style glyphs on parchment: eight inked mountains with hatched shading, eight rounded hills, broadleaf and conifer trees, blue marsh tufts, black moorland tufts, crescent dunes, grass tufts, rainforest crowns and a palm, small taiga conifers, blue ice hatching, then walled cities, townhouses, snowy peaks, castles, churches, stone circles and other heritage drawings, famous monuments such as the Eiffel Tower and Taj Mahal, animals, a whale, a sea serpent, a sailing ship, a flying machine and a balloon',
           'The glyph set. Each one is drawn with a slight wobble so no line is perfectly straight.')
     + h2('Lettering the world')
     + para(f'On a hand-drawn map the names matter as much as the mountains. Countries are lettered in red capitals along a gentle curve fitted to their shape, and for {L["country_curves_by_hand"]} awkward ones, '
@@ -75,6 +75,15 @@ post = (
            f'{f(S["lakes"]["tufts"])} tufts of moorland and marsh, each one placed by a rule.')
     + img('b_lakes.png', 'Close-up of the ink map over the central Lake District: inked peaks over the fells with names and heights such as Helvellyn 950 m, blue rivers and lakes including Grasmere, red village names such as Ambleside, small trees in the valleys and moorland tufts',
           'The central fells at zoom 11.')
+    + h2('Castles, whales and flying machines')
+    + para('Old maps were never only land and water, so the map now draws what people built and what lives there. More than a quarter of a million heritage sites from Wikidata fade in as you zoom, '
+           'the best known first: castles, palaces and parliaments, cathedrals and village churches, monasteries, mosques and temples, great houses, ruins, stone circles, barrows and hillforts, '
+           'battlefields and lighthouses, each a small ink drawing with its name in red italic. About 150 world-famous monuments, from the Eiffel Tower to the Sydney Opera House, have drawings of their own '
+           'and show from the world view, and Hadrian\'s Wall, Offa\'s Dyke and the Great Wall follow their real lines.')
+    + para('The highest summits get a finer drawing with snow and their name and height over a red flourish, and every peak above the snow line for its latitude gets a white cap. Close in, towns fill '
+           'with little townhouses along the real streets, packed round a market square and church and thinning out at the edges. Far out, elephants, tigers, bison and kangaroos stand in their native '
+           'ranges, whales gather where they really do, sailing ships leave the old ports along lanes from real logbooks, and the busiest airports are drawn as Renaissance flying machines taking off. '
+           'The sea serpents and balloons are there for fun, and the key says so.')
     + h2('How I did this')
     + para('The page uses MapLibre, with vector tiles of OpenStreetMap from OpenFreeMap, which is free and needs no key, and the AWS Terrain Tiles for elevation. A small background worker turns '
            'elevation and land cover into glyph positions for each tile as you pan and zoom, so the whole world works with nothing pre-rendered. The lettering uses the free MedievalSharp and IM Fell '
@@ -87,6 +96,7 @@ post = (
         'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> (Open Database Licence), as vector tiles from <a href="https://openfreemap.org/">OpenFreeMap</a> in the <a href="https://openmaptiles.org/">OpenMapTiles</a> schema.',
         'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>, built by Mapzen from SRTM, GMTED2010, ETOPO1 and other sources.',
         'Biomes: RESOLVE <a href="https://ecoregions.appspot.com/">Ecoregions 2017</a> (CC BY 4.0), Dinerstein et al. (2017) <a href="https://doi.org/10.1093/biosci/bix014">BioScience 67, 534 to 545</a>.',
+        'Heritage sites, landmarks and summits: <a href="https://www.wikidata.org/">Wikidata</a> (CC0). Ship lanes: CLIWOC, the Climatological Database for the World\'s Oceans 1750 to 1850.',
         '<a href="https://www.naturalearthdata.com/">Natural Earth</a> country outlines, places and states (public domain), and ONS Local Authority District boundaries (Open Government Licence v3.0), used for the lettering and search.',
         'Fonts: MedievalSharp and the IM Fell types (SIL Open Font License). Map library: <a href="https://maplibre.org/">MapLibre GL JS</a>.',
         'The design is my own; it was inspired by the general look of hand-drawn maps, and no artwork, lettering or emblem from any map was traced or reused.',
@@ -125,7 +135,11 @@ with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
     for d in ('code', 'data', 'js', 'qa_live'):
         for fn in sorted(os.listdir(os.path.join(ROOT, d))):
             p = os.path.join(ROOT, d, fn)
-            if fn == '__pycache__' or fn.endswith('.pyc') or os.path.isdir(p):
+            if fn == '__pycache__' or fn.endswith('.pyc'):
+                continue
+            if os.path.isdir(p):
+                if d == 'data' and fn == 'heritage':          # the heritage tiles
+                    for hf in sorted(os.listdir(p)): z.write(os.path.join(p, hf), f'ink-map/data/heritage/{hf}')
                 continue
             z.write(p, f'ink-map/{d}/{fn}')
     for fn in ('README.md', 'LICENSE', 'index.html'):
@@ -139,7 +153,7 @@ zmeta = {'title': 'The Inked World: A Tolkien-Inspired Map of the Modern Earth, 
          'upload_type': 'publication', 'publication_type': 'workingpaper',
          'description': f'<p>{ab}</p><p>Interactive version: <a href="{PAGE}">{PAGE}</a>. Data and code: <a href="{REPO}">{REPO}</a>. Blog post: https://blog.tristanhotham.com/2026/10/31/ink-map/.</p>'
                         '<p>Data: map data © OpenStreetMap contributors (ODbL 1.0), via OpenFreeMap and OpenMapTiles; elevation from the AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1); '
-                        'RESOLVE Ecoregions 2017 (CC BY 4.0); Natural Earth (public domain); ONS Local Authority District boundaries (OGL v3.0). Fonts under the SIL Open Font License. The archive holds no tile data.</p><p>Inspired by the general style of Tolkien\'s hand-drawn maps; not connected with or endorsed by the Tolkien Estate.</p>',
+                        'RESOLVE Ecoregions 2017 (CC BY 4.0); Wikidata (CC0); CLIWOC ship logbooks; Natural Earth (public domain); ONS Local Authority District boundaries (OGL v3.0). Fonts under the SIL Open Font License. The archive holds no tile data.</p><p>Inspired by the general style of Tolkien\'s hand-drawn maps; not connected with or endorsed by the Tolkien Estate.</p>',
          'subjects': [{'term': 'Tolkien'}, {'term': 'fantasy cartography'}, {'term': 'hand-drawn map style'}, {'term': 'world map'}],
          'creators': [{'name': 'Hotham, Tristan', 'affiliation': 'Independent researcher', 'orcid': '0000-0003-4931-9349'}],
          'keywords': ['Tolkien', 'fantasy cartography', 'hand-drawn map style', 'cartography', 'generative maps', 'fantasy maps', 'OpenStreetMap', 'digital elevation model', 'biomes', 'ecoregions', 'MapLibre', 'label placement', 'open data'],
@@ -163,13 +177,13 @@ I made a Tolkien-inspired map of the whole modern Earth from open data, zoomable
 
 ## Body
 
-No hand drawing: every glyph is placed by a rule. The map lays a grid over the land and puts a little ink peak on the highest point of each cell that rises far enough above its surroundings (a rounded hill if it rises less), and the bar scales with the cell: about {f(m['threshold_world_z2_lat30_m'])} m of relief for a {m['cell_world_z2_lat30_km']} km cell far out, about {m['threshold_lakes_z11_m']} m for a {m['cell_lakes_z11_m']} m cell in the Lake District. Peaks also need rugged ground, so the Sahara, Arabia and the Australian interior stay bare apart from their real ranges; deserts get dunes, rainforest round crowns, taiga small conifers and ice blue hatching (biomes from RESOLVE Ecoregions 2017). Nothing is drawn on water, names are placed first ({f(L['all_hand_placed'])} of them lettered by hand on curves) and the glyphs give way to them. The inset is Britain and Ireland from the same map; the interactive version keeps the same drawn look all the way down to single fells, with trees in OpenStreetMap's woods. Caveat: peaks show local relief, not exact heights, and woods are only as complete as OpenStreetMap.
+No hand drawing: every glyph is placed by a rule. The map lays a grid over the land and puts a little ink peak on the highest point of each cell that rises far enough above its surroundings (a rounded hill if it rises less), and the bar scales with the cell: about {f(m['threshold_world_z2_lat30_m'])} m of relief for a {m['cell_world_z2_lat30_km']} km cell far out, about {m['threshold_lakes_z11_m']} m for a {m['cell_lakes_z11_m']} m cell in the Lake District. Peaks also need rugged ground, so the Sahara, Arabia and the Australian interior stay bare apart from their real ranges; deserts get dunes, rainforest round crowns, taiga small conifers and ice blue hatching (biomes from RESOLVE Ecoregions 2017). Castles, churches, stone circles and other heritage sites from Wikidata appear as you zoom, famous monuments get their own drawings, animals stand in their native ranges and old sailing ships leave historic ports. Nothing is drawn on water, names are placed first ({f(L['all_hand_placed'])} of them lettered by hand on curves) and the glyphs give way to them. The inset is Britain and Ireland from the same map; the interactive version keeps the same drawn look all the way down to single fells, with trees in OpenStreetMap's woods. Caveat: peaks show local relief, not exact heights, and woods are only as complete as OpenStreetMap.
 
 Interactive map: {PAGE}
 
 ## Source comment
 
-Data: map data © OpenStreetMap contributors (ODbL), served as vector tiles by OpenFreeMap (OpenMapTiles schema); elevation from AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1 and others); biomes from RESOLVE Ecoregions 2017 (CC BY 4.0); country outlines from Natural Earth (public domain); UK nation boundaries from the ONS (OGL v3).
+Data: map data © OpenStreetMap contributors (ODbL), served as vector tiles by OpenFreeMap (OpenMapTiles schema); elevation from AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1 and others); biomes from RESOLVE Ecoregions 2017 (CC BY 4.0); heritage sites and summits from Wikidata (CC0); ship lanes from CLIWOC logbooks; country outlines from Natural Earth (public domain); UK nation boundaries from the ONS (OGL v3).
 
 Tools: MapLibre GL JS with a custom web worker that turns elevation and land cover into glyph positions; glyphs drawn on canvas; fonts MedievalSharp and IM Fell (SIL OFL); Playwright for the render.
 

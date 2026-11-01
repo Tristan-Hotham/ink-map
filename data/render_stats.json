@@ -1,81 +1,81 @@
 {
  "world": {
   "zoom": 1.6,
-  "relief": 1202,
-  "mountains": 652,
-  "hills": 550,
+  "relief": 1079,
+  "mountains": 575,
+  "hills": 498,
   "trees": 0,
   "tufts": 0
  },
  "asia": {
   "zoom": 3.5,
-  "relief": 3088,
-  "mountains": 1453,
-  "hills": 1635,
+  "relief": 3044,
+  "mountains": 1385,
+  "hills": 1637,
   "trees": 0,
   "tufts": 0
  },
  "europe": {
   "zoom": 3.8,
-  "relief": 990,
-  "mountains": 597,
-  "hills": 393,
+  "relief": 956,
+  "mountains": 579,
+  "hills": 377,
   "trees": 0,
   "tufts": 0
  },
  "gb": {
   "zoom": 5.3,
-  "relief": 1480,
-  "mountains": 543,
-  "hills": 937,
+  "relief": 1405,
+  "mountains": 525,
+  "hills": 880,
   "trees": 0,
   "tufts": 0
  },
  "yorkshire": {
   "zoom": 8.2,
-  "relief": 4401,
-  "mountains": 1022,
-  "hills": 3379,
-  "trees": 605,
+  "relief": 3911,
+  "mountains": 853,
+  "hills": 3058,
+  "trees": 558,
   "tufts": 0
  },
  "lakes": {
   "zoom": 11,
-  "relief": 4353,
-  "mountains": 1804,
-  "hills": 2549,
-  "trees": 1892,
-  "tufts": 7980
+  "relief": 3689,
+  "mountains": 1473,
+  "hills": 2216,
+  "trees": 1609,
+  "tufts": 7232
  },
  "stress": {
   "zoom": 9,
-  "relief": 4221,
-  "mountains": 3155,
-  "hills": 1066,
-  "trees": 1179,
-  "tufts": 3922
+  "relief": 4556,
+  "mountains": 1952,
+  "hills": 764,
+  "trees": 979,
+  "tufts": 3507
  },
  "sahara": {
   "zoom": 3.45,
-  "relief": 1356,
-  "mountains": 709,
-  "hills": 647,
+  "relief": 1308,
+  "mountains": 698,
+  "hills": 610,
   "trees": 0,
   "tufts": 0
  },
  "amazon": {
   "zoom": 3.45,
-  "relief": 808,
-  "mountains": 404,
-  "hills": 404,
+  "relief": 763,
+  "mountains": 370,
+  "hills": 393,
   "trees": 0,
   "tufts": 0
  },
  "greenland": {
   "zoom": 3.1,
-  "relief": 1948,
-  "mountains": 1172,
-  "hills": 776,
+  "relief": 2110,
+  "mountains": 1145,
+  "hills": 769,
   "trees": 0,
   "tufts": 0
  }

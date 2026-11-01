@@ -31,6 +31,7 @@ figcaption b{display:block}
 <div id="grid"></div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="../js/curated.js"></script>
+<script src="../js/ink-icons.js"></script>
 <script src="../js/ink-map.js"></script>
 <script>
 (async function () {
@@ -56,12 +57,12 @@ figcaption b{display:block}
       const r = { id: v.id, lng: v.lng, lat: v.lat, zoom: v.zoom, seconds: Math.round((performance.now() - t0) / 100) / 10,
         mountains: relief.filter(f => f.properties.k === 0).length, hills: relief.filter(f => f.properties.k === 1).length,
         trees: count('trees'), tufts: count('tufts'), countries: count('countries'), regions: count('regions-land') + count('regions-world') + count('regions-sea'),
-        places: count('cities') + count('towns') + count('villages'), peaks: count('peaks'), check: v.check };
+        places: count('cities') + count('towns') + count('villages'), peaks: count('peaks'), heritage: count('heritage') + count('landmarks'), summits: count('famous-peaks'), houses: count('town'), animals: count('animals') + count('serpents'), ships: count('ships'), flight: count('flyers') + count('balloons') + count('airports'), rivernames: count('river-names') + count('lake-names') + count('lake-names-l'), snow: relief.filter(f => f.properties.sn === 1).length, check: v.check };
       try { const b = map.queryRenderedFeatures({ layers: ['biome'] }); const nm = ['', 'dunes', 'grass', 'rainforest', 'taiga', 'ice', 'marsh', 'tundra']; r.biome = {}; for (const f of b) { const k = nm[f.properties.b]; r.biome[k] = (r.biome[k] || 0) + 1; } } catch (e) { r.biome = {}; }
       r.img = map.getCanvas().toDataURL('image/png');
       results.push(r);
       const f = document.createElement('figure');
-      f.innerHTML = `<img alt="${v.id}" src="${r.img}"><figcaption><b>${v.id}</b>${r.mountains} mountains, ${r.hills} hills, ${r.trees} trees, ${Object.entries(r.biome).map(([k, n]) => n + ' ' + k).join(', ') || 'no biome glyphs'}, ${r.regions + r.countries} curved names, ${r.places} places, ${r.peaks} named peaks, ${r.seconds} s<br>Look for: ${v.check}</figcaption>`;
+      f.innerHTML = `<img alt="${v.id}" src="${r.img}"><figcaption><b>${v.id}</b>${r.mountains} mountains, ${r.hills} hills, ${r.trees} trees, ${Object.entries(r.biome).map(([k, n]) => n + ' ' + k).join(', ') || 'no biome glyphs'}, ${r.regions + r.countries} curved names, ${r.places} places, ${r.peaks} named peaks, ${r.heritage} heritage drawings, ${r.summits} great summits, ${r.snow} snowy peaks, ${r.houses} town drawings, ${r.animals} animals, ${r.ships} ships, ${r.flight} flight, ${r.rivernames} water names, ${r.seconds} s<br>Look for: ${v.check}</figcaption>`;
       f.querySelector('img').addEventListener('click', () => { const w = window.open(); w.document.write(`<img src="${r.img}" style="max-width:100%">`); });
       grid.appendChild(f);
     }

@@ -102,7 +102,7 @@ def figs():
              for n, a, b, z, w, h, wk in FIG_VIEWS]
     for s in shots:
         if not s['wk']: s.pop('wk')
-    shots.append(dict(out=os.path.join(FIGS, 'glyphs.png'), w=1600, h=900, page='code/sprites.html'))
+    shots.append(dict(out=os.path.join(FIGS, 'glyphs.png'), w=1600, h=1120, page='code/sprites.html', full=1))
     render(shots, os.path.join(TMP, 'ink_figs_console.txt'))
     st = {}
     for n, *_ in FIG_VIEWS:

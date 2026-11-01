@@ -1,0 +1,18 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Ink Icon Sheet</title>
+<style>body{margin:0;background:#F3E5BF;font:11px monospace;color:#2B2119}#g{display:flex;flex-wrap:wrap;gap:6px;padding:10px;width:1580px}.c{width:118px;text-align:center}.c canvas{display:block;margin:0 auto}</style></head>
+<body><div id="g"></div>
+<script src="../js/ink-map.js"></script><script src="../js/ink-icons.js"></script>
+<script>
+// every pictogram at twice its map size, with its id: for checking the drawings
+const ids = [], imgs = {};
+const fake = { hasImage: () => false, addImage: (id, img) => { ids.push(id); imgs[id] = img; } };
+InkIcons.addAll(fake, c => c, InkMap.sprites.mountainSprite);
+const only = new URLSearchParams(location.search).get('only');
+const g = document.getElementById('g');
+for (const id of ids) {
+  if (only && !id.startsWith(only)) continue;
+  const im = imgs[id], c = document.createElement('canvas'); c.width = im.width; c.height = im.height; c.getContext('2d').putImageData(im, 0, 0);
+  const d = document.createElement('div'); d.className = 'c'; d.appendChild(c); d.appendChild(document.createTextNode(id)); g.appendChild(d);
+}
+window.__map = { loaded: () => true, areTilesLoaded: () => true, once: (e, f) => setTimeout(f, 50), getZoom: () => 0 };
+</script></body></html>

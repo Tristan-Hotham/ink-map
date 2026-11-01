@@ -36,6 +36,11 @@ Third-party material:
   and ONS Local Authority District boundaries (Open Government Licence v3.0,
   contains OS data (c) Crown copyright and database right 2023).
 - data/gazetteer.json is derived from Natural Earth (public domain).
+- data/heritage/, data/landmarks.geojson and data/peaks_famous.geojson are
+  derived from Wikidata (CC0). data/walls.geojson is derived from OpenStreetMap
+  (c) OpenStreetMap contributors, Open Database Licence 1.0, and is made
+  available under that licence. Ship positions in data/decor.geojson follow
+  passages from the CLIWOC logbook database (1750 to 1850).
 - fonts/ttf/ holds MedievalSharp and IM Fell fonts under the SIL Open Font
   License 1.1 (licence texts alongside). fonts/Ink */ are SDF glyph sets
   generated from them (a modified version, so they carry new names and do not

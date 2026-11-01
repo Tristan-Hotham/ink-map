@@ -18,12 +18,16 @@ Code and data: https://github.com/Tristan-Hotham/ink-map
 - **Forests, marsh and moor.** Tree glyphs on a nested jittered grid inside OpenStreetMap woods (mostly conifers in woods tagged as forest), and tufts inside wetland and heath, from zoom 7 and 9.
 - **Nothing on water.** Every glyph is checked against the OpenStreetMap water layer of its tile; mountains and hills also keep clear of the water's edge and stand above sea level, so seamounts and tiny islands far out never draw a lone peak in the ocean.
 - **Names first.** Names never overlap each other and glyphs give way wherever a name sits. Curved names are stored once per zoom band and cut, or drawn out a little, to fit their text at that zoom; ranges are lettered along their flanks. OpenStreetMap's own label for a hand-lettered sea is hidden from the zoom where the hand lettering fits (`js/curated.js`).
-- **Page tools.** Full-screen button, layers panel (ink mountains, forests, rivers, names, borders, roads, sea shading, hill shading and a plain modern map), search over 12,340 names plus every place and peak in the loaded tiles, start views (World, Europe, Great Britain, Yorkshire, Lake District), and a popup for every name and glyph.
+- **Heritage.** 256,650 heritage sites from Wikidata (castles, palaces, parliaments, churches, cathedrals, monasteries, great houses, ruins, stone circles, barrows, hillforts, battlefields, lighthouses, windmills, tall buildings, parks and natural features) are drawn as small pictograms, each from a zoom set by its number of Wikipedia articles, with names in red italic about a zoom and a half later. They ship as 1,196 JSON files on a zoom 6 grid (14.9 MB in all) read by the worker. 156 world-famous monuments have drawings of their own and show from zoom 2 to 5; 766 walls, dykes and aqueducts follow their OpenStreetMap lines.
+- **Great summits and snow.** 535 summits (each country's and region's highest point and the famous peaks) get a larger drawing with name, height and a red flourish. Mountains above a snow line set by latitude get white caps with fine snow lines, and high rugged ground well above it is hatched pale blue.
+- **Drawn towns.** From zoom 12 the worker lines the real streets with small townhouses facing them, densest round a market square and church at each place's centre and thinning outward with the buildings and built-up land in the tile; capitals and large cities get a wall and towers round the old core.
+- **Animals, ships and flight.** 63 animals in their native ranges and 19 whales where they gather (zoom 2 to 7), 3 decorative sea serpents at world zoom, 62 sailing ships leaving historic ports along CLIWOC passages, 11 busy airports drawn as flying machines taking off, other airports as small sketches, and 10 decorative balloons.
+- **Page tools.** Full-screen button, layers panel (ink mountains, forests, rivers, names, borders, roads, sea shading, heritage, drawn towns, animals and ships, flight, hill shading and a plain modern map), a key drawn with the map's own pictograms, search over 12,340 names plus every place and peak in the loaded tiles, start views (World, Europe, Great Britain, Yorkshire, Lake District), and a popup for every name and glyph.
 
 ## Images
 
-- `reddit/the_inked_world.png` (3840 x 2400 px): the world at zoom 2.64 with 2,153 mountains and 2,125 hills, and Britain and Ireland as an inset.
-- `reddit/britain_and_ireland_in_ink.png` (3600 x 4500 px): Britain and Ireland at zoom 7.14: 5,274 mountain glyphs, 10,433 hill glyphs and 2,920 trees.
+- `reddit/the_inked_world.png` (3840 x 2400 px): the world at zoom 2.64 with 2,035 mountains and 2,053 hills, and Britain and Ireland as an inset.
+- `reddit/britain_and_ireland_in_ink.png` (3600 x 4500 px): Britain and Ireland at zoom 7.14: 4,465 mountain glyphs, 9,031 hill glyphs and 2,570 trees.
 
 ## Files
 
@@ -32,11 +36,15 @@ Code and data: https://github.com/Tristan-Hotham/ink-map
 | `index.html` | The interactive page (MapLibre GL JS 4.7.1 from jsDelivr; live OpenFreeMap vector tiles and AWS Terrain Tiles). |
 | `js/ink-map.js` | The style, the glyph sprites (drawn on canvas in the browser), the paper texture and the `ink://` protocol. |
 | `js/ink-worker.js` | Web worker: elevation, land cover and water to glyph points, returned as vector tiles. |
+| `js/ink-icons.js` | Every pictogram (settlements, townhouses, heritage, landmarks, summits, snow, animals, ships, flight), drawn on canvas at load time. |
 | `js/curated.js` | Hand-lettered sea names and the zoom from which they replace OpenStreetMap's labels (generated). |
 | `fonts/` | SDF glyph sets for MapLibre ("Ink Caps", "Ink Roman", "Ink Italic", "Ink SC") made from MedievalSharp and IM Fell (SIL OFL 1.1); source TTFs and licences in `fonts/ttf/`. |
 | `data/labels_countries.geojson` | Curved lettering lines for 194 countries and the 4 UK nations, one per zoom band. |
 | `data/labels_regions.geojson` | The 167 hand-placed names, one line per zoom band (7 oceans, 38 seas, 31 ranges and 29 deserts and regions worldwide; 40 land and 22 sea names around Britain and Ireland). |
 | `data/biomes.png`, `data/biomes_legend.json` | Biome mask from RESOLVE Ecoregions 2017 (CC BY 4.0): pixel value 32 x class + 16 for ecoregions named for mountains; legend with classes and pixel counts. |
+| `data/heritage/` | Heritage sites on a zoom 6 grid (`{x}_{y}.json`, rows of longitude and latitude times 100,000, icon, first zoom times 10, name, Wikidata number) and `index.json`. |
+| `data/landmarks.geojson`, `data/peaks_famous.geojson`, `data/walls.geojson`, `data/decor.geojson` | Famous monuments, great summits, walls and dykes, and the animals, whales, serpents, ships, balloons and flying machines. |
+| `data/features_summary.json` | Counts for the feature layers. |
 | `data/gazetteer.json` | Search names: Natural Earth countries, populated places and states, and the hand-placed names. |
 | `data/results.json` | Every number quoted on the page, in this README, the paper, the blog and the Reddit post. |
 | `data/*_stats.json`, `data/method_cells.csv` | Glyph counts in the renders; the cells behind the method figure. |
@@ -58,6 +66,7 @@ Needs Python 3 with numpy, shapely, fontTools, matplotlib and Pillow; xelatex an
 node code/01_glyphs.js <folder of TTFs>   # SDF glyph ranges into fonts/
 python3 code/02_labels.py                 # curved lettering lines, gazetteer, js/curated.js
 python3 code/02b_biomes.py                # biome mask from RESOLVE Ecoregions 2017
+python3 code/02d_features.py              # heritage, landmarks, summits, walls, animals and ships (lists in code/02c_curated.py)
 python3 code/03_renders.py zoom           # zoom sequence (offline tiles)
 python3 code/03_renders.py figs           # figure renders into release/figs
 python3 code/03_renders.py views          # QA views; also: page, interact
@@ -86,6 +95,8 @@ python3 code/05_results.py                # checks every quoted number and the h
 - Map data © OpenStreetMap contributors (https://www.openstreetmap.org/copyright), Open Database Licence 1.0, as vector tiles from OpenFreeMap (https://openfreemap.org) in the OpenMapTiles schema (© OpenMapTiles). The repository holds no tile data; renders that show it carry the credit.
 - AWS Terrain Tiles (https://registry.opendata.aws/terrain-tiles/), Terrarium encoding, by Mapzen from SRTM, GMTED2010, ETOPO1, NED, the Canadian DEM and other sources.
 - RESOLVE Ecoregions 2017 (Dinerstein, E. et al. 2017, An ecoregion-based approach to protecting half the terrestrial realm, BioScience 67(6), 534 to 545, https://doi.org/10.1093/biosci/bix014; https://ecoregions.appspot.com/), CC BY 4.0; read from the simplified copy in CatalogueOfLife/col-gazetteers (teow/). The biome mask is a derived raster under CC BY 4.0.
+- Wikidata (CC0), queried in 2026, for heritage sites, landmarks, summits and seats of government, with the architecture styles, tallest buildings, lighthouses, battles and monasteries data sets built from it.
+- CLIWOC, Climatological Database for the World's Oceans 1750 to 1850 (ship passages for the drawn ships).
 - Natural Earth (public domain): 1:50m admin 0 countries, 1:10m populated places and states and provinces.
 - Office for National Statistics, Local Authority Districts (2023), Open Government Licence v3.0; contains OS data © Crown copyright and database right 2023.
 - Fonts: MedievalSharp, IM Fell English, IM Fell English SC, IM Fell Great Primer Italic (SIL Open Font License 1.1).

@@ -88,6 +88,11 @@ footer p{margin:0 0 10px}
 .lp label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer;min-height:30px}
 .lp input{accent-color:#A3261B;width:16px;height:16px}
 .lp hr{border:0;border-top:1px solid #E2D3AE;margin:6px 0}
+.key{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 14px;margin:10px 0 4px}
+.key h3{grid-column:1/-1;margin:12px 0 2px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.key div{display:flex;align-items:center;gap:8px;min-height:34px;font:400 13px/1.25 var(--mono)}
+.key canvas{width:auto;height:30px;max-width:46px;object-fit:contain;flex:none;background:#F3E5BF;border-radius:3px;padding:2px}
+.key i{color:var(--muted);font-style:italic}
 .zbadge{position:absolute;right:52px;top:14px;z-index:5;font:400 11px/1 var(--mono);color:#6E604E;background:rgba(251,245,228,.85);padding:5px 7px;border-radius:3px;border:1px solid #D3C29A}
 .maplibregl-popup-content{background:#FBF5E4;color:#2B2119;font:400 13px/1.45 var(--mono);border:1px solid #9C8656;border-radius:4px;padding:10px 12px;box-shadow:0 3px 12px rgba(60,40,10,.25);max-width:270px}
 .maplibregl-popup-content b.t{display:block;font:400 19px/1.15 var(--hand);color:#A3261B;margin-bottom:3px;letter-spacing:.02em}
@@ -111,7 +116,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
   <h1>The <span class="a">Inked</span> World</h1>
   <p class="dek">A map of everywhere, drawn in the manner of the hand-inked maps at the front of a fantasy novel: little peaks set on the real high ground, forests of tiny trees, rippled coasts, blue rivers and red lettering. Zoom from the whole world to a single Lakeland fell, and the same hand keeps drawing.</p>
 </header>
-<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap via OpenFreeMap; AWS Terrain Tiles; RESOLVE Ecoregions; Natural Earth; ONS</div>
+<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap via OpenFreeMap; AWS Terrain Tiles; RESOLVE Ecoregions; Wikidata; Natural Earth; ONS; CLIWOC</div>
 
 <p class="lede" style="margin-top:22px">Maps in old books and fantasy novels have a look everyone recognises, made famous by the maps Tolkien drew for his books: rows of inked mountains, clusters of trees, coasts traced again and again with thin lines, and names lettered in red across the land. They are drawn by hand, so they only ever show one place at one scale. I wanted a Tolkien-inspired map of the modern Earth that works everywhere and at every zoom, built only from open data, so you can fly from the whole world to Britain to a single Lakeland valley and keep the same drawn feel all the way down.</p>
 <p>Every mountain glyph below sits on the highest point of its patch of ground, sized by how far that point rises above the land around it. Every tree sits inside a wood mapped in OpenStreetMap. Nothing is traced from any artist's map; the drawing rules are mine, and the data do the rest. Start with Great Britain, then try the Lake District, the Alps or the Himalaya.</p>
@@ -136,6 +141,10 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       <label><input type="checkbox" data-g="borders" checked> Borders</label>
       <label><input type="checkbox" data-g="roads" checked> Roads (dotted)</label>
       <label><input type="checkbox" data-g="sea" checked> Sea shading and ripples</label>
+      <label><input type="checkbox" data-g="heritage" checked> Heritage, monuments and parks</label>
+      <label><input type="checkbox" data-g="towns" checked> Drawn towns (zoom 12 and closer)</label>
+      <label><input type="checkbox" data-g="animals" checked> Animals, sea life and ships</label>
+      <label><input type="checkbox" data-g="flight" checked> Flight: airports and balloons</label>
       <label><input type="checkbox" data-g="hillshade"> Hill shading</label>
       <hr>
       <label><input type="checkbox" id="modern"> Plain modern map</label>
@@ -145,7 +154,11 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 </div>
 
 <div class="wrap" style="padding-top:8px">
-<p class="src">Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap using the OpenMapTiles schema. Elevation from AWS Terrain Tiles. Biomes from RESOLVE Ecoregions 2017 (CC BY 4.0). Country and nation outlines for the lettering from Natural Earth and the ONS. Tap any name, peak or glyph for details; the square button at the top right fills the screen.</p>
+<p class="src">Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap using the OpenMapTiles schema. Elevation from AWS Terrain Tiles. Biomes from RESOLVE Ecoregions 2017 (CC BY 4.0). Heritage sites and summits from Wikidata (CC0). Ship lanes from the CLIWOC logbook database. Country and nation outlines for the lettering from Natural Earth and the ONS. Tap any name, peak or drawing for details; the square button at the top right fills the screen.</p>
+
+<details open><summary>Key</summary>
+<div class="key" id="key"></div>
+</details>
 
 <h2><span class="n">01 · What you are looking at</span>One hand, every scale</h2>
 <p>Far out, the world is a sheet of parchment with coasts in black ink, each one shadowed by thin ripple lines and a soft wash of blue, and country names lettered in red capitals along gentle curves. The great ranges show as rows of little peaks: each is drawn on the highest point of its patch of ground, and only where the land rises well above its surroundings.</p>
@@ -167,19 +180,27 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 <p>Mountains only go where the land is rugged, not merely high. Each candidate peak is also tested on how steep the ground is close around it, so the Sahara, the Arabian interior, the Kalahari, the Great Plains and the high floor of the Tibetan Plateau stay bare however far they rise above the sea, while the Ahaggar and Tibesti keep their peaks. Between the ranges the world is drawn by biome, from the RESOLVE Ecoregions map: crescent dunes in the sandy deserts, sparse tufts on the steppe, savanna and shrub steppe, crowded round crowns and palms in the rainforest, small pointed conifers across the taiga, and pale blue hatching on the ice of Greenland and Antarctica.</p>
 <div class="figure"><img src="img/world.jpg" alt="The ink map of the whole world: parchment, black coasts with blue ripples, rows of ink peaks along the Rockies, Andes, Alps, Himalaya and the ranges of central Asia, and red lettering for countries, oceans and seas" loading="lazy" style="width:100%;border:1px solid var(--border)"><p class="src">The world at zoom 1.6. Rendered from saved OpenFreeMap and Terrain Tiles.</p></div>
 
-<h2><span class="n">03 · How I made this</span>Drawing rules, not a drawing</h2>
+<h2><span class="n">03 · The living map</span>Monuments, towns, beasts and ships</h2>
+<p>Old maps were never only land and water. Here, more than a quarter of a million heritage sites from Wikidata fade in as you zoom, the best known first (ranked by how many Wikipedia articles they have): castles, palaces and parliaments, cathedrals, churches and monasteries, mosques and temples, great houses, ruins, stone circles, standing stones, cairns, barrows and hillforts, battlefields, lighthouses, windmills and tall buildings, each as a small ink drawing with its name in red italic once there is room. In Britain and Ireland every one is kept; elsewhere the commoner kinds need a few more articles before they are drawn. About 150 world-famous monuments, from the Eiffel Tower and the Sydney Opera House to Machu Picchu and the Taj Mahal, have drawings of their own and show from the world view; Hadrian's Wall, the Great Wall, Offa's Dyke and hundreds of other walls, dykes and aqueducts follow their real lines in OpenStreetMap.</p>
+<p>The great summits, each country's highest point and the famous peaks, get a finer drawing with snow and their name and height in red over a flourish. Every mountain above the snow line for its latitude (about 3,500 m in the tropics, falling towards the poles) gets a white cap with fine snow lines, and the highest rugged ground is hatched in pale blue for snowfields and glaciers. Capitals are drawn as walled cities, cities as clusters of roofs and spires, towns and villages smaller. From zoom 12 the towns fill in: little townhouses line both sides of the real streets, facing them, densest round a market square and church at the centre and thinning out with the buildings mapped in OpenStreetMap, and great cities keep a ring of wall and towers round the old core.</p>
+<p>Far out, animals stand in their native ranges, as on a medieval map: elephants and lions in Africa, tigers and pandas in Asia, bison and moose in North America, kangaroos in Australia, penguins on the Antarctic coast. Whales gather where they really do, humpbacks off Hawaii and Tonga, blue whales off Sri Lanka and California, sperm whales off the Azores and Kaikoura. Sailing ships leave the great historic ports along lanes taken from real logbooks of 1750 to 1850. The busiest airports are drawn as flying machines in the manner of Renaissance notebooks, taking off along the runway, and a few hot-air balloons drift over places famous for them. The sea serpents and the balloons are decoration, and the key says so.</p>
+
+<h2><span class="n">04 · How I made this</span>Drawing rules, not a drawing</h2>
 <p><b>Mountains and hills.</b> The page reads elevation tiles (the Terrarium encoding of the AWS Terrain Tiles) in a background worker. It lays a grid over the land whose cells are about 14 screen pixels at the zoom where they first appear, and each cell is split into four at the next zoom. In each cell it finds the highest point. That point gets a peak glyph if it rises far enough above the lowest ground in the cells around it. The threshold grows with the size of the cell on the ground: at zoom 2, where a cell spans about 237 km, a range has to rise about 477 m above its surroundings to earn a peak (measured on the coarse elevation tiles used that far out, which smooth the summits down); at zoom 11 in the Lake District, where a cell is about 311 m across, a crag needs about 130 m. Points that rise at least 40% of that get a rounded hill instead. In a great range, where every patch of ground is steep, the worker leaves out a mountain that has three or more higher mountains around it, so the Himalaya reads as ridges and summits and not as a solid mass of ink; in the Lake District this almost never happens. Because the highest point of a cell is also the highest point of one of its four children, every peak drawn at one zoom is still there at the next; new peaks fade in between them, and glyphs are drawn back to front so nearer ones overlap farther ones.</p>
 <p><b>Ruggedness and biomes.</b> Alongside relief, the worker measures the mean slope of the ground in the finest cells around each candidate peak. A mountain needs a slope above a bar that rises with the detail of the elevation tiles; in ecoregions named for mountains, such as the High Atlas, the Tibesti or the Andean puna, the bar is cut to 30%, so narrow ranges smoothed by coarse tiles still count, and in deserts, steppe, rainforest, taiga and tundra it is raised by half, so dissected plateaus are drawn as hills; on the Tibetan Plateau it is raised two and a half times, so only its ranges are peaked. Finally an ink cap keeps paper between the peaks: within each small patch of the map, mountains are taken coarsest and most prominent first until their summed footprints reach three quarters of the patch, or under half where a great range would otherwise be a solid mass of ink. In hill country such as the Lake District this trims fewer than one peak in ten; in the Himalaya it leaves ridgelines. The biome glyphs are scattered on the same nested grid as the trees, kept clear of mountains and water, and the rainforest and taiga glyphs give way to OpenStreetMap's own woods from zoom 7.</p>
 <p><b>Forests, marsh and moor.</b> For each tile the worker reads the OpenStreetMap land cover in the same vector tile the map uses, fills the woods, wetlands and heaths into a small mask, and scatters tree or tuft glyphs on a nested jittered grid inside it. Woods tagged as managed forest get mostly conifers; other woods mostly rounded trees.</p>
 <p><b>Lettering.</b> Country names follow a gentle arc fitted along the long axis of each country (Natural Earth outlines), and England, Scotland, Wales and Northern Ireland are lettered from ONS boundaries. The 62 names of uplands, lowlands and seas around Britain and Ireland, and 105 oceans, seas, ranges and deserts around the world, are placed by hand on curves, ranges along their flanks rather than on the crest. Each curve is cut, or drawn out a little past its ends, so that the name fits at every zoom. Everything else comes live from OpenStreetMap through OpenFreeMap. Names are placed first and never overlap each other; the glyphs then give way wherever a name sits, as a map maker would leave a gap for the lettering.</p>
+<p><b>Heritage, towns and decoration.</b> The heritage sites come from Wikidata queries for castles, palaces, seats of government, churches, cathedrals and abbeys, monasteries, great houses, ruins, prehistoric sites, parks, natural features and World Heritage Sites, joined with architecture, tall building, lighthouse, battle and monastery data sets. Each site gets a first zoom from its number of Wikipedia articles, and they ship as small files, one per zoom 6 tile, that the worker reads as you pan. The towns are drawn by the same worker from the streets, land use and buildings in the OpenStreetMap tile, with an occupancy grid so no two houses overprint and every name still comes first. Animals, whales, ships, balloons and airports sit in a small hand-made list with real places and ranges; the ships follow passages from the CLIWOC logbook database and are never placed on land.</p>
 <p><b>Fonts.</b> MedievalSharp for the capitals and the IM Fell types for everything else, all under the SIL Open Font License, turned into map glyphs with fontnik.</p>
-<p><b>What this is not.</b> It is a picture of open data, not a survey. It is inspired by the general style of Tolkien's hand-drawn maps and is not connected with or endorsed by the Tolkien Estate; it uses none of their artwork, places or lettering. Peaks are placed on the highest point in each grid cell, not on every named summit, and their size shows local relief, not exact height. Woods are only as complete as OpenStreetMap, and woods only appear from zoom 7 because the tiles do not carry them further out. Smaller seas, bays and regions beyond the hand-placed set come from OpenStreetMap as they are, lettered straight.</p>
+<p><b>What this is not.</b> It is a picture of open data, not a survey. It is inspired by the general style of Tolkien's hand-drawn maps and is not connected with or endorsed by the Tolkien Estate; it uses none of their artwork, places or lettering. Peaks are placed on the highest point in each grid cell, not on every named summit, and their size shows local relief, not exact height. Woods are only as complete as OpenStreetMap, and woods only appear from zoom 7 because the tiles do not carry them further out. Smaller seas, bays and regions beyond the hand-placed set come from OpenStreetMap as they are, lettered straight. Heritage sites are only as complete and as well placed as Wikidata, and a few large battles carry one arbitrary point there. The animals stand somewhere in their native range, not at a sighting; the drawn towns follow the real streets but each house is a symbol, not a mapped building. Hills only get names where OpenStreetMap tags them as summits.</p>
 
 <details><summary>Sources and licences</summary>
 <ul class="plain">
 <li>OpenStreetMap contributors, © OpenStreetMap (ODbL 1.0), served as vector tiles by OpenFreeMap (openfreemap.org) in the OpenMapTiles schema (© OpenMapTiles).</li>
 <li>AWS Terrain Tiles (registry.opendata.aws/terrain-tiles), Terrarium encoding, built by Mapzen from SRTM, GMTED2010, ETOPO1, NED, Canadian DEM and other public sources; see the terrain tiles attribution notes.</li>
 <li>RESOLVE Ecoregions 2017 (Dinerstein et al. 2017, BioScience 67, 534 to 545; ecoregions.appspot.com), CC BY 4.0: the biome mask for dunes, grassland, rainforest, taiga, ice and tundra glyphs, simplified to a 2048 pixel raster (data/biomes.png).</li>
+<li>Wikidata (CC0): heritage sites, landmarks, summits and seats of government, queried in 2026; with the architecture styles, tallest buildings, lighthouses, battles and monasteries data sets built from Wikidata.</li>
+<li>CLIWOC, the Climatological Database for the World's Oceans 1750 to 1850: ship passages used for the sea lanes of the drawn ships.</li>
 <li>Natural Earth 1:50m admin 0 countries, populated places and states and provinces (public domain).</li>
 <li>Office for National Statistics, Local Authority Districts (2023) boundaries, contains OS data © Crown copyright and database right 2023 (Open Government Licence v3.0).</li>
 <li>Fonts: MedievalSharp, IM Fell English, IM Fell English SC and IM Fell Great Primer Italic (SIL Open Font License 1.1), from Google Fonts.</li>
@@ -199,6 +220,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="js/curated.js"></script>
+<script src="js/ink-icons.js"></script>
 <script src="js/ink-map.js"></script>
 <script>
 (function () {
@@ -238,6 +260,29 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
     map.on('zoom', upd); upd();
     setupLayers(map); setupSearch(map); setupPopups(map);
   }).catch(e => { console.error(e); const n = document.getElementById('nojs'); if (n) n.textContent = 'The map could not load: ' + e.message; });
+  try { buildKey(); } catch (e) { console.warn('key', e); }
+
+  // ---------------- key: every symbol drawn by the same code as the map
+  function buildKey() {
+    const K = [
+      ['Settlements', [['s-capital', 'Capital: walled city'], ['s-city', 'City'], ['s-town', 'Town'], ['s-village', 'Village'], ['th2', 'Townhouses on real streets, zoom 12 and closer'], ['market', 'Market square'], ['walltower', 'Town wall and tower']]],
+      ['Heritage', [['h-castle', 'Castle'], ['h-palace', 'Palace'], ['h-parliament', 'Parliament'], ['h-cityhall', 'Town or city hall'], ['h-cathedral', 'Cathedral or abbey'], ['h-church', 'Church or chapel'], ['h-monastery', 'Monastery'], ['h-mosque', 'Mosque'], ['h-temple', 'Temple'], ['h-pagoda', 'Pagoda'], ['h-synagogue', 'Synagogue'], ['h-mansion', 'Great house'], ['h-ruins', 'Ruins'], ['h-stone_circle', 'Stone circle'], ['h-standing_stone', 'Standing stone'], ['h-cairn', 'Cairn'], ['h-barrow', 'Barrow'], ['h-hillfort', 'Hillfort'], ['h-battle', 'Battlefield'], ['h-lighthouse', 'Lighthouse'], ['h-windmill', 'Windmill'], ['h-tower', 'Tower'], ['h-skyscraper', 'Tall building'], ['h-bridge', 'Bridge'], ['h-monument', 'Monument'], ['h-park', 'Park or garden'], ['h-natpark', 'National park']]],
+      ['Famous monuments (each drawn in its own way)', [['l-eiffel', 'Eiffel Tower'], ['l-bigben', 'Westminster'], ['l-opera', 'Sydney Opera House'], ['l-tajmahal', 'Taj Mahal'], ['l-pyramids', 'Pyramids of Giza'], ['l-machupicchu', 'Machu Picchu'], ['l-liberty', 'Statue of Liberty'], ['l-stonehenge', 'Stonehenge']]],
+      ['Land and water', [['bigpeak', 'Great summit, with its name and height'], ['ms1', 'Mountain above the snow line'], ['snowf0', 'Snowfield or glacier'], ['m2', 'Mountain'], ['h3', 'Hill'], ['h-waterfall', 'Waterfall'], ['h-cave', 'Cave'], ['h-spring', 'Spring'], ['h-pass', 'Mountain pass'], ['h-gorge', 'Gorge or canyon'], ['h-glacier_mark', 'Glacier']]],
+      ['Animals and the sea', [['a_elephant', 'Animal in its native range'], ['a_humpback_s', 'Whales where they gather'], ['a_turtle', 'Sea turtle'], ['ship', 'Sailing ship on a historic lane'], ['a_serpent', 'Sea serpent <i>(decorative)</i>']]],
+      ['Flight', [['ornithopter', 'Busy airport: a flying machine taking off'], ['airfield', 'Airfield'], ['balloon', 'Hot-air balloon <i>(decorative)</i>']]],
+    ];
+    const el = document.getElementById('key'); if (!el || !window.InkIcons) return;
+    const ms = InkMap.sprites.mountainSprite, hs = InkMap.sprites.hillSprite;
+    for (const [h, items] of K) {
+      const hd = document.createElement('h3'); hd.textContent = h; el.appendChild(hd);
+      for (const [id, label] of items) {
+        let c = /^m\d$/.test(id) ? ms(+id[1]) : /^h\d$/.test(id) ? hs(+id[1]) : InkIcons.draw(id, ms);
+        if (!c) continue;
+        const d = document.createElement('div'); d.appendChild(c); const sp = document.createElement('span'); sp.innerHTML = label; d.appendChild(sp); el.appendChild(d);
+      }
+    }
+  }
 
   // ---------------- layers panel
   function setupLayers(map) {
@@ -312,7 +357,10 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 
   // ---------------- popups
   function setupPopups(map) {
-    const LAY = ['countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
+    const LAY = ['famous-peak-names', 'famous-peaks', 'landmarks', 'landmark-names', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
+    const HT = { barrow: 'Barrow', battle: 'Battlefield', bridge: 'Bridge', cairn: 'Cairn', castle: 'Castle', cathedral: 'Cathedral, abbey or minster', cave: 'Cave', church: 'Church or chapel', cityhall: 'Town or city hall', glacier_mark: 'Glacier', gorge: 'Gorge or canyon', hillfort: 'Hillfort', lighthouse: 'Lighthouse', mansion: 'Great house', monastery: 'Monastery', monument: 'Monument', mosque: 'Mosque', natpark: 'National park or protected area', pagoda: 'Pagoda', palace: 'Palace', park: 'Park or garden', parliament: 'Parliament or seat of government', pass: 'Mountain pass', pyramid: 'Pyramid', ruins: 'Ruins or archaeological site', skyscraper: 'Tall building', spring: 'Spring', standing_stone: 'Standing stone', stone_circle: 'Stone circle', synagogue: 'Synagogue', temple: 'Temple', tower: 'Tower', waterfall: 'Waterfall', windmill: 'Windmill' };
+    const wd = q => q ? `<br><a href="https://www.wikidata.org/wiki/${esc(q)}" target="_blank" rel="noopener">Wikidata ${esc(q)}</a>` : '';
+    const wp = w => w ? `<br><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(String(w).replace(/ /g, '_'))}" target="_blank" rel="noopener">Wikipedia</a>` : '';
     const KIND = { city: 'City', town: 'Town', village: 'Village', hamlet: 'Hamlet', suburb: 'Suburb', neighbourhood: 'Neighbourhood', isolated_dwelling: 'Farm or dwelling', island: 'Island', state: 'State or province', province: 'Province' };
     map.on('click', e => {
       const pad = 6, bb = [[e.point.x - pad, e.point.y - pad], [e.point.x + pad, e.point.y + pad]];
@@ -321,8 +369,18 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       const f = fs[0], p = f.properties, id = f.layer.id;
       const nm = p['name:latin'] || p.name_int || p.name || '';
       let h = '';
-      if (id === 'relief') {
-        h = `<b class="t">${p.k === 0 ? 'Mountain' : 'Hill'}</b>Highest point of this patch: about ${Math.round(p.e).toLocaleString('en-GB')} m.<br>Rises about ${Math.round(p.rl).toLocaleString('en-GB')} m above the lowest ground around it.<br><span style="color:#7A6A52">First drawn at zoom ${p.r}.</span>`;
+      if (id === 'heritage') h = `<b class="t">${esc(p.n || HT[p.i])}</b>${HT[p.i] || cap(p.i)}.${wd(p.q)}`;
+      else if (id === 'landmarks' || id === 'landmark-names') h = `<b class="t">${esc(p.n)}</b>World-famous monument, drawn in its own way.${wp(p.w)}`;
+      else if (id === 'famous-peaks' || id === 'famous-peak-names') h = `<b class="t">${esc(p.n)}</b>Summit, ${Number(p.e).toLocaleString('en-GB')} m.${wp(p.w)}${wd(p.q)}`;
+      else if (id === 'walls' || id === 'wall-names') h = `<b class="t">${esc(p.n || 'Wall')}</b>${p.k === 'dyke' ? 'Earthwork dyke' : p.k === 'aqueduct' ? 'Aqueduct' : 'Historic wall'}, drawn along ${p.src === 'OpenStreetMap' ? 'its line in OpenStreetMap' : 'an approximate line'}.${wd(p.q)}${wp(p.w)}`;
+      else if (id === 'animals' || id === 'serpents') h = `<b class="t">${esc(p.n)}</b>${esc(cap1(p.d))}.`;
+      else if (id === 'ships') h = `<b class="t">${esc(p.n || 'Sailing ship')}</b>${esc(cap1(p.d || 'on a historic sea lane'))}.`;
+      else if (id === 'flyers') h = `<b class="t">${esc(p.n)}</b>${esc(cap1(p.d))}.${wp(p.w)}`;
+      else if (id === 'balloons') h = `<b class="t">${esc(p.n)}</b>Decorative: a place known for its balloon flights.`;
+      else if (id === 'airports') h = `<b class="t">${esc(nm)}</b>${p.class === 'international' ? 'International airport' : 'Airport or airfield'}${p.iata ? ' (' + esc(p.iata) + ')' : ''}.`;
+      else if (id === 'town') h = `<b class="t">${p.t === 'market' ? 'Market square' : p.t === 'townchurch' ? 'Town church' : p.t.startsWith('wall') ? 'Town wall' : 'Townhouses'}</b>Drawn along the streets and built-up land mapped in OpenStreetMap; densest at the centre.`;
+      else if (id === 'relief') {
+        h = `<b class="t">${p.k === 2 ? 'Snowfield' : p.k === 0 ? 'Mountain' : 'Hill'}</b>${p.sn === 1 ? 'Above the snow line for its latitude. ' : ''}Highest point of this patch: about ${Math.round(p.e).toLocaleString('en-GB')} m.<br>Rises about ${Math.round(p.rl).toLocaleString('en-GB')} m above the lowest ground around it.<br><span style="color:#7A6A52">First drawn at zoom ${p.r}.</span>`;
       } else if (id === 'trees') h = `<b class="t">${p.c === 1 ? 'Forest' : 'Woodland'}</b>Inside a wood mapped in OpenStreetMap${p.c === 1 ? ' (tagged as managed forest)' : ''}.`;
       else if (id === 'biome') h = `<b class="t">${['', 'Desert', 'Grassland or steppe', 'Tropical rainforest', 'Boreal forest (taiga)', 'Ice', 'Flooded grassland or marsh', 'Tundra'][p.b] || ''}</b>Biome from RESOLVE Ecoregions 2017${p.b === 5 || p.b === 1 ? ', with OpenStreetMap glaciers and sand close in' : ''}.`;
       else if (id === 'tufts') h = `<b class="t">${p.w === 1 ? 'Marsh or wetland' : 'Heath or moor'}</b>From OpenStreetMap land cover.`;
@@ -337,10 +395,11 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       new maplibregl.Popup({ closeButton: true, maxWidth: '280px' }).setLngLat(e.lngLat).setHTML(h).addTo(map);
     });
     map.on('mousemove', e => {
-      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['cities', 'towns', 'villages', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names'].filter(id => map.getLayer(id)) });
+      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['cities', 'towns', 'villages', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmark-names', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
       map.getCanvas().style.cursor = fs.length ? 'pointer' : '';
     });
   }
+  function cap1(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
   function cap(s) { s = String(s || '').toLowerCase(); return s.replace(/(^|[\s'-])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bOf\b/g, 'of').replace(/\bThe\b(?!^)/g, (m, o) => o ? 'the' : m); }
 
   // ---------------- theme

@@ -19,7 +19,8 @@ abstract = (f"I describe a Tolkien-inspired map of the modern Earth. Hand-drawn 
             f"glyphs off plain slopes, a ruggedness test keeps peaks off high flat plateaus and deserts, and a thinning rule keeps great ranges readable. Between the ranges, "
             f"dunes, grass, rainforest, taiga and ice glyphs follow the RESOLVE Ecoregions biomes; trees fill OpenStreetMap woods, nothing is drawn on water, and names are placed "
             f"before glyphs: {L['countries']} countries along fitted or hand-drawn curves, and {L['all_hand_placed']} hand-placed oceans, seas, ranges, deserts and "
-            f"regions, cut to fit their text at every zoom. Every visual parameter is interpolated over zoom, so the map reads as one drawing from the globe to a single hill. "
+            f"regions, cut to fit their text at every zoom. Heritage sites from Wikidata appear as small drawings ranked by their Wikipedia coverage, towns fill with houses along their real streets "
+            f"close in, peaks above the snow line carry snow, and animals, whales and sailing ships decorate the map in their real ranges and lanes. Every visual parameter is interpolated over zoom, so the map reads as one drawing from the globe to a single hill. "
             f"I set out the rules, show the result from the world to the Lake District, and discuss the limits.")
 T = R['threshold_table_lat45']
 rows = ''.join(f"{t['zoom']} & {t['cell_km']:.2f} & {t['mountain_m']:,} & {t['hill_m']:,}\\\\\n" for t in T)
@@ -37,6 +38,7 @@ tok = {'ABSTRACT': abstract, 'TABLE': table, 'PAGE': PAGE, 'REPO': REPO, 'CELLPX
        'CURVES': L['country_curves_by_hand'], 'HANDTOTAL': f(L['all_hand_placed']), 'UKTOTAL': L['hand_placed_total'], 'WORLDTOTAL': L['world_total'],
        'MF_CELL': MF['cell_m'], 'MF_RANK': MF['rank'], 'MF_T': MF['T_m'], 'MF_HILL': MF['hill_m'],
        'W_M': f(S['world']['mountains']), 'W_H': f(S['world']['hills']), 'A_M': f(S['asia']['mountains']), 'A_H': f(S['asia']['hills']),
+       'HMAX': 650,
        'L_M': f(S['lakes']['mountains']), 'L_H': f(S['lakes']['hills']), 'L_T': f(S['lakes']['trees']), 'L_U': f(S['lakes']['tufts'])}
 t = open(os.path.join(ROOT, 'code', 'paper_template.tex'), encoding='utf-8').read()
 for k, v in tok.items():

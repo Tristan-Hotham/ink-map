@@ -201,5 +201,131 @@
   "lat": 54.45,
   "zoom": 11,
   "check": "regression: Lake District as before"
+ },
+ {
+  "id": "hadrians_wall_z8",
+  "lng": -2.3,
+  "lat": 55.0,
+  "zoom": 8,
+  "check": "Hadrian's Wall drawn along its real line with its name in red italic; forts and heritage drawings along it"
+ },
+ {
+  "id": "hadrians_wall_z11",
+  "lng": -2.37,
+  "lat": 55.005,
+  "zoom": 11,
+  "check": "wall crest pattern along the line near Housesteads; heritage names in small red italic"
+ },
+ {
+  "id": "great_wall_beijing_z7",
+  "lng": 116.3,
+  "lat": 40.4,
+  "zoom": 7,
+  "check": "Great Wall drawn as a line through the hills north of Beijing; Forbidden City drawing at Beijing"
+ },
+ {
+  "id": "cusco_machu_picchu_z8",
+  "lng": -72.25,
+  "lat": -13.35,
+  "zoom": 8,
+  "check": "Machu Picchu drawn in its own way; Andes peaks with snow caps; Cusco lettered"
+ },
+ {
+  "id": "cusco_machu_picchu_z11",
+  "lng": -72.545,
+  "lat": -13.163,
+  "zoom": 11,
+  "check": "Machu Picchu drawing and name; Urubamba river named in blue"
+ },
+ {
+  "id": "versailles_paris_z10",
+  "lng": 2.25,
+  "lat": 48.83,
+  "zoom": 10,
+  "check": "Palace of Versailles drawing; Paris as a walled capital; Eiffel Tower and Notre-Dame drawings"
+ },
+ {
+  "id": "versailles_paris_z13",
+  "lng": 2.33,
+  "lat": 48.86,
+  "zoom": 13,
+  "check": "drawn townhouses along real streets, Louvre, Notre-Dame and Eiffel drawings, park outlines dotted"
+ },
+ {
+  "id": "giza_z9",
+  "lng": 31.13,
+  "lat": 29.98,
+  "zoom": 9,
+  "check": "Pyramids of Giza drawn; Nile named in blue; Cairo lettered"
+ },
+ {
+  "id": "rome_z12",
+  "lng": 12.48,
+  "lat": 41.895,
+  "zoom": 12,
+  "check": "Colosseum and St Peter's drawn; churches and ruins in red italic; townhouses filling the centre"
+ },
+ {
+  "id": "york_centre_z14",
+  "lng": -1.082,
+  "lat": 53.96,
+  "zoom": 14,
+  "check": "York Minster, city walls and towers, market square and townhouses facing the streets, densest at the centre"
+ },
+ {
+  "id": "blagdon_hill_somerset_z11",
+  "lng": -3.09,
+  "lat": 50.95,
+  "zoom": 11,
+  "check": "Blagdon Hill and other named hills lettered with heights where OpenStreetMap tags them as peaks; villages and hamlets"
+ },
+ {
+  "id": "blagdon_hill_somerset_z12",
+  "lng": -3.09,
+  "lat": 50.95,
+  "zoom": 12,
+  "check": "village churches and houses; more hamlet names; heritage drawings in red italic"
+ },
+ {
+  "id": "avebury_stonehenge_z11",
+  "lng": -1.83,
+  "lat": 51.3,
+  "zoom": 11,
+  "check": "Stonehenge and Avebury drawn; barrows, hillforts and standing stones; Salisbury Plain"
+ },
+ {
+  "id": "lake_district_lakes_z11",
+  "lng": -3.05,
+  "lat": 54.45,
+  "zoom": 11,
+  "check": "lake names in blue italic inside Windermere, Coniston, Ullswater; ripple lines inside the lakes; waterfalls"
+ },
+ {
+  "id": "thames_z7",
+  "lng": -0.9,
+  "lat": 51.6,
+  "zoom": 7,
+  "check": "River Thames named in blue along its line; London drawn as a walled capital; Westminster drawing"
+ },
+ {
+  "id": "world_animals_z2.5",
+  "lng": 30,
+  "lat": 10,
+  "zoom": 2.5,
+  "check": "animals in their native ranges, whales at sea, ships near ports, no animal on a name or a peak"
+ },
+ {
+  "id": "himalaya_snow_z6",
+  "lng": 86.9,
+  "lat": 27.98,
+  "zoom": 6,
+  "check": "Everest and other great summits drawn larger with snow, name and height in red with a flourish; snowfields hatched in pale blue"
+ },
+ {
+  "id": "heathrow_z10",
+  "lng": -0.45,
+  "lat": 51.47,
+  "zoom": 10,
+  "check": "Heathrow drawn as a flying machine taking off; airfields as small sketches; airport names close in"
  }
 ]
