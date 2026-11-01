@@ -8,7 +8,7 @@
    "resolve_biomes": [
     13
    ],
-   "pixels": 99325
+   "pixels": 93667
   },
   "2": {
    "name": "grassland",
@@ -17,7 +17,7 @@
     8,
     10
    ],
-   "pixels": 137431
+   "pixels": 143089
   },
   "3": {
    "name": "rainforest",
@@ -55,6 +55,11 @@
    "pixels": 245050
   }
  },
+ "plateau": {
+  "pixels": 8271,
+  "pattern": "Tibet|Yarlung|Changtang|Qaidam"
+ },
+ "sandy_desert_pattern": "desert|dune|erg\\b|Sahara|Namib|Kalahari|Rub|sand|Taklimakan|Karakum|Kyzylkum|Thar|Gobi|Atacama|Sechura|Simpson|Gibson",
  "montane": {
   "ecoregions": 181,
   "pixels": 95996,

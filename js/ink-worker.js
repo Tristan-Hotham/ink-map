@@ -10,7 +10,7 @@
 let CFG = {
   dem: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png', demMax: 15,
   ofm: null, ofmMax: 14,
-  C: 14, RS: 99, RMAX: 12, HILL: 0.4, SAT_NB: 6, SAT_HI: 3, SAT_Q: 2.2, G0: 1, GT: [4, 4.5, 5.5, 7.5, 10, 12, 13, 22, 30, 38, 48, 60, 70], GH: 0.45, MONT: 0.3, OPEN: 1.5, CB: 20, biomes: null, demScale: 1, // no new peaks beyond rank RMAX: close in, cells would measure slopes, not summits
+  C: 14, RS: 99, RMAX: 12, HILL: 0.4, SAT_NB: 6, SAT_HI: 3, SAT_Q: 2.2, CAP_M: 0.75, CAP_T: 1.05, CAP_SAT: 0.45, SAT_INK: 1.6, PLAT: 2.5, G0: 1, GT: [4, 4.5, 5.5, 7.5, 10, 12, 13, 22, 30, 38, 48, 60, 70], GH: 0.45, MONT: 0.3, OPEN: 1.5, CB: 20, biomes: null, demScale: 1, // no new peaks beyond rank RMAX: close in, cells would measure slopes, not summits
   // (RS: optional rank from which a rank reuses the previous rank's cells, to thin close-up glyphs)
       // mountain cell size in screen px at the rank's home zoom (512 px tiles)
   CT: 10,     // tree cell size
@@ -93,8 +93,9 @@ async function mosaic(d, nx0, ny0, nx1, ny1) {
 
 // ---------------- relief glyphs ----------------
 const J0cell = (L, jj) => L.j0 + jj;
-const biomeAt = (BR, nx, ny) => { if (!BR) return 0; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return BR.a[j * BR.n + i] >> 1; };
-const montaneAt = (BR, nx, ny) => { if (!BR) return false; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return (BR.a[j * BR.n + i] & 1) === 1; };
+const biomeAt = (BR, nx, ny) => { if (!BR) return 0; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return BR.a[j * BR.n + i] >> 2; };
+const montaneAt = (BR, nx, ny) => { if (!BR) return false; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return (BR.a[j * BR.n + i] & 2) === 2; };
+const plateauAt = (BR, nx, ny) => { if (!BR) return false; const i = Math.min(BR.n - 1, Math.floor(nx * BR.n)), j = Math.min(BR.n - 1, Math.max(0, Math.floor(ny * BR.n))); return (BR.a[j * BR.n + i] & 1) === 1; };
 async function reliefPoints(z, x, y) {
   const BR = await biomeRaster();
   const n = Math.pow(2, z);
@@ -185,7 +186,11 @@ async function reliefPoints(z, x, y) {
         // and in the great open biomes (desert, steppe, rainforest, taiga, tundra) that are not named for mountains,
         // a dissected plateau has to be a good deal more rugged before it is drawn as a range
         const bAt = biomeAt(BR, (px0 + axp + 0.5) / S, (py0 + ayp + 0.5) / S);
-        const mf = montaneAt(BR, (px0 + axp + 0.5) / S, (py0 + ayp + 0.5) / S) ? CFG.MONT : (bAt >= 1 && bAt <= 4) || bAt === 7 ? CFG.OPEN : 1;
+        // the montane relief applies on coarse tiles (elevation zoom 5 or less) and fades out by zoom 8, where real
+        // slopes show; on the high plateaus the bar is doubled so that only their ranges are peaked
+        const nxp = (px0 + axp + 0.5) / S, nyp = (py0 + ayp + 0.5) / S;
+        const montF = d <= 5 ? CFG.MONT : d >= 8 ? 1 : CFG.MONT + (1 - CFG.MONT) * (d - 5) / 3;
+        const mf = plateauAt(BR, nxp, nyp) ? CFG.PLAT : montaneAt(BR, nxp, nyp) ? montF : (bAt >= 1 && bAt <= 4) || bAt === 7 ? CFG.OPEN : 1;
         kind[c] = relief >= T && rg >= Gm * mf ? 0 : relief >= CFG.HILL * T && rg >= Gh * Math.sqrt(mf) ? 1 : -1;
         if (kind[c] === 1 && bAt === 5) kind[c] = -1;   // the edge of an ice sheet is not a hill
       }
@@ -340,6 +345,42 @@ async function waterMask(z, x, y) {
   return out;
 }
 
+// ---------------- ink cap ----------------
+// Hand-drawn maps leave paper between the peaks. Glyphs are taken coarse ranks first and, within a rank, the most
+// prominent first, at the size the style gives them in the middle of the tile's zoom; a mountain is kept only while
+// the summed footprints of the mountains in its patch (a sixth of the tile each way) stay under CAP_M of the patch, and
+// a hill while all glyphs stay under CAP_T. In a great range the lesser peaks are dropped so the ridgelines show; in
+// hill country such as the Lake District the cap trims fewer than one peak in ten.
+function glyphScale(zv, k, s, r) {
+  const f = zv < 3 ? 0.8 : zv < 5 ? 0.9 : zv <= 7 ? 1 : zv <= 11 ? 1 + (zv - 7) * 0.075 : Math.min(1.6, 1.3 + (zv - 11) * 0.1);
+  const cap = zv <= 11 ? 1.45 : Math.min(1.75, 1.45 + (zv - 11) * 0.1);
+  return (k === 0 ? 0.54 : 0.52) * s * f * Math.min(cap, Math.pow(2, 0.42 * (zv - r)));
+}
+function inkCap(pts, z, x, y) {
+  // ink density per patch: the summed footprints of the glyphs (overlaps counted, as the pen would draw them)
+  const zv = z + 0.5, n = Math.pow(2, z), T = 512 * Math.pow(2, 0.5), NP = 6, P = T / NP;
+  const inkM = new Float32Array(NP * NP), inkT = new Float32Array(NP * NP);
+  const order = pts.map((p, i) => i).sort((a, b) => (pts[a].r - pts[b].r) || (pts[a].k - pts[b].k) || (pts[b].rl - pts[a].rl));
+  // where a patch is saturated (candidate mountains would ink it more than SAT_INK times over, as in the Himalaya or
+  // on a high plateau), the cap is cut to CAP_SAT, so the great ranges come out as ridges with paper between
+  const cand = new Float32Array(NP * NP);
+  const foot = p => { const sc = glyphScale(zv, p.k, p.s, p.r); return p.k === 0 ? 0.5 * 36 * 31 * sc * sc : 0.7 * 27 * 13 * sc * sc; };
+  const cellOf = p => Math.max(0, Math.min(NP - 1, Math.floor((p.ny * n - y) * T / P))) * NP + Math.max(0, Math.min(NP - 1, Math.floor((p.nx * n - x) * T / P)));
+  for (const p of pts) if (p.k === 0) cand[cellOf(p)] += foot(p) / (P * P);
+  const keep = [];
+  for (const i of order) {
+    const p = pts[i], sc = glyphScale(zv, p.k, p.s, p.r);
+    const a = p.k === 0 ? 0.5 * 36 * 31 * sc * sc : 0.7 * 27 * 13 * sc * sc;
+    const cx = (p.nx * n - x) * T, by = (p.ny * n - y) * T;
+    const c = Math.max(0, Math.min(NP - 1, Math.floor(by / P))) * NP + Math.max(0, Math.min(NP - 1, Math.floor(cx / P)));
+    const capM = cand[c] > CFG.SAT_INK ? CFG.CAP_SAT : CFG.CAP_M;
+    if (p.k === 0) { if (inkM[c] + a / (P * P) > capM) continue; inkM[c] += a / (P * P); }
+    else { if (inkM[c] + inkT[c] + a / (P * P) > CFG.CAP_T) continue; inkT[c] += a / (P * P); }
+    keep.push(p);
+  }
+  return keep;
+}
+
 // ---------------- biome mask (RESOLVE Ecoregions 2017, data/biomes.png, 32 x class) ----------------
 let biomeP = null;
 function biomeRaster() {
@@ -351,7 +392,7 @@ function biomeRaster() {
       const c = new OffscreenCanvas(bmp.width, bmp.height), ctx = c.getContext('2d', { willReadFrequently: true });
       ctx.drawImage(bmp, 0, 0);
       const d = ctx.getImageData(0, 0, bmp.width, bmp.height).data, n = bmp.width, a = new Uint8Array(n * n);
-      for (let i = 0; i < n * n; i++) a[i] = Math.round(d[i * 4] / 16);   // 2 x class + montane flag
+      for (let i = 0; i < n * n; i++) a[i] = Math.round(d[i * 4] / 8);   // 4 x class + 2 x montane + plateau
       return { n, a };
     } catch (e) { return null; }
   })();
@@ -466,7 +507,7 @@ async function buildTile(z, x, y) {
     for (let dj = -ER; dj <= ER; dj++) for (let di = -ER; di <= ER; di++) if (wetAt(i + di, j + dj)) return true;
     return false;
   };
-  const relief = relief0.filter(p => !nearWet(p));
+  const relief = inkCap(relief0.filter(p => !nearWet(p)), z, x, y);
   relief.sort((a, b) => a.ny - b.ny);
   // ---- biome glyphs: dunes, grass, rainforest, taiga, ice, marsh, tundra
   const BR = await biomeRaster();
@@ -486,7 +527,7 @@ async function buildTile(z, x, y) {
     const at = (m, p) => { const i = Math.floor((p.nx * n - x) * MS), j = Math.floor((p.ny * n - y) * MS); return m[Math.max(0, Math.min(MS - 1, j)) * MS + Math.max(0, Math.min(MS - 1, i))] === 1; };
     for (const p of nestedPoints(z, x, y, CFG.CB, 0, z + 1, 41)) {
       let b = 0;
-      if (BR) { const bi = Math.min(BR.n - 1, Math.floor(p.nx * BR.n)), bj = Math.min(BR.n - 1, Math.floor(p.ny * BR.n)); b = BR.a[bj * BR.n + bi] >> 1; }
+      if (BR) { const bi = Math.min(BR.n - 1, Math.floor(p.nx * BR.n)), bj = Math.min(BR.n - 1, Math.floor(p.ny * BR.n)); b = BR.a[bj * BR.n + bi] >> 2; }
       if (water && water.ice && at(water.ice, p)) b = 5;           // OpenStreetMap glaciers, at any zoom
       else if (water && water.sand && at(water.sand, p)) b = 1;    // and sand, close in
       if (!b || !BIOME[b] || p.h >= BIOME[b].keep) continue;

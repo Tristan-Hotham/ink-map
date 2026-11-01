@@ -1,6 +1,6 @@
 """Build the paper: fill code/paper_template.tex from data/results.json and compile with xelatex.
 Output: release/paper/Hotham_The_Inked_World.pdf and .tex (figures f_*.png beside them, from code/08_figures.py).
-The DOI stays a placeholder for the publisher."""
+The DOI is 10.5281/zenodo.23860253."""
 import json, os, re, subprocess, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from common import ROOT, DATA
@@ -10,8 +10,8 @@ OUT = os.path.join(ROOT, 'release', 'paper'); NAME = 'Hotham_The_Inked_World'
 PAGE, REPO = 'https://maps.tristanhotham.com/ink-map/', 'https://github.com/Tristan-Hotham/ink-map'
 m, L, S, MF = R['method'], R['labels'], R['render_stats'], R['method_figure']
 f = lambda n: f'{n:,}'
-abstract = (f"Hand-drawn maps, with rows of inked mountains, clusters of tiny trees, coasts traced with thin parallel lines and names lettered in red, "
-            f"are made for one place at one scale. I describe a zoomable map of the whole world in that style, generated in the reader's browser from open data: "
+abstract = (f"I describe a Tolkien-inspired map of the modern Earth. Hand-drawn maps, with rows of inked mountains, clusters of tiny trees, coasts traced with thin parallel lines and names lettered in red, "
+            f"are made for one place at one scale. This is a zoomable map of the whole world in that style, generated in the reader's browser from open data: "
             f"OpenStreetMap vector tiles from OpenFreeMap and the AWS Terrain Tiles elevation model. Mountains and hills are placed on the highest points of a nested grid "
             f"of cells, where the relief clears a bar that grows with the size of the cell on the ground, from about {f(m['threshold_world_z2_lat30_m'])}~m for cells of "
             f"{m['cell_world_z2_lat30_km']}~km at zoom 2 to about {m['threshold_lakes_z11_m']}~m for cells of {m['cell_lakes_z11_m']}~m at zoom 11. Because the highest "
@@ -31,6 +31,8 @@ tok = {'ABSTRACT': abstract, 'TABLE': table, 'PAGE': PAGE, 'REPO': REPO, 'CELLPX
        'A': int(m['relief_A_m']), 'HILLPC': round(m['hill_fraction'] * 100), 'SATNB': m['sat_neighbours'], 'SATHI': m['sat_higher'], 'SATQ': m['sat_q'],
        'RMAX': m['rank_max'], 'RMAXM': int(rmax_m), 'TREEZ': m['trees_from_zoom'], 'TUFTZ': m['tufts_from_zoom'], 'CT': m['cell_px_trees'], 'CU': m['cell_px_tufts'],
        'MONTN': R['biomes']['montane']['ecoregions'], 'GT': ', '.join(f'{g:g}' for g in m['rugged_bar_by_dem_zoom']), 'GHPC': round(m['hill_rugged_fraction'] * 100),
+       'CAPM': m['cap_m'], 'CAPT': m['cap_t'], 'CAPSAT': m['cap_sat'], 'SATINK': m['sat_ink'], 'PLAT': m['plateau_factor'],
+       'CARPET0': f(R['carpet_test']['uncapped']), 'CARPET1': f(R['carpet_test']['capped']),
        'MONT': m['montane_factor'], 'OPEN': m['open_biome_factor'], 'CB': 20,
        'CURVES': L['country_curves_by_hand'], 'HANDTOTAL': f(L['all_hand_placed']), 'UKTOTAL': L['hand_placed_total'], 'WORLDTOTAL': L['world_total'],
        'MF_CELL': MF['cell_m'], 'MF_RANK': MF['rank'], 'MF_T': MF['T_m'], 'MF_HILL': MF['hill_m'],
@@ -42,7 +44,7 @@ for k, v in tok.items():
 assert '@@' not in t.replace('@@DOILINK@@', ''), re.findall(r'@@\w+@@', t)
 for bad in ('--', '—', '–', 'DSIT', 'DCMS', 'civil serv'):
     assert bad not in t, bad
-t = t.replace('@@DOILINK@@', 'https://doi.org/\\{\\{DOI\\}\\}')
+t = t.replace('@@DOILINK@@', '\\url{https://doi.org/10.5281/zenodo.23860253}')
 os.makedirs(OUT, exist_ok=True)
 open(os.path.join(OUT, NAME + '.tex'), 'w', encoding='utf-8').write(t)
 for _ in range(2):

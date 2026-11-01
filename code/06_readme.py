@@ -9,11 +9,11 @@ f = lambda n: f'{n:,}'
 
 readme = f"""# The Inked World
 
-A zoomable map of the whole world in the style of a hand-inked fantasy map, built only from open data: little ink peaks set on the real high ground, forests of tiny trees, black coasts with thin ripple lines and a soft blue wash, blue rivers and red hand-lettered names. It runs live in the browser on MapLibre GL JS, so it works everywhere from the whole world down to a single fell, with no tiles to host. {L['countries']} countries are lettered along curves ({L['country_curves_by_hand']} drawn by hand), and {f(L['all_hand_placed'])} oceans, seas, ranges, deserts, uplands and regions are lettered by hand: {L['world_total']} around the world and {L['hand_placed_total']} around Britain and Ireland.
+A Tolkien-inspired map of the modern Earth: a zoomable map of the whole world in the style of a hand-inked fantasy map, built only from open data: little ink peaks set on the real high ground, forests of tiny trees, black coasts with thin ripple lines and a soft blue wash, blue rivers and red hand-lettered names. It runs live in the browser on MapLibre GL JS, so it works everywhere from the whole world down to a single fell, with no tiles to host. {L['countries']} countries are lettered along curves ({L['country_curves_by_hand']} drawn by hand), and {f(L['all_hand_placed'])} oceans, seas, ranges, deserts, uplands and regions are lettered by hand: {L['world_total']} around the world and {L['hand_placed_total']} around Britain and Ireland.
 
 Interactive page: https://maps.tristanhotham.com/ink-map/
-Paper: {{https://doi.org/10.5281/zenodo.23860253}}
-Blog post: {{https://blog.tristanhotham.com/2026/10/31/ink-map/}}
+Paper: https://doi.org/10.5281/zenodo.23860253
+Blog post: https://blog.tristanhotham.com/2026/10/31/ink-map/
 Code and data: https://github.com/Tristan-Hotham/ink-map
 
 ## What it does
@@ -21,6 +21,7 @@ Code and data: https://github.com/Tristan-Hotham/ink-map
 - **Mountains and hills from elevation.** A background worker reads Terrarium elevation tiles, lays a grid of cells about {m['cell_px_mountains']} screen pixels across at the zoom where they first appear, and puts a peak on the highest point of each cell that rises far enough above the ground around it; lower rises get a rounded hill (at least {round(m['hill_fraction'] * 100)}% of the bar). The bar is relative relief and scales with the size of the cell on the ground: about {f(m['threshold_world_z2_lat30_m'])} m for a {m['cell_world_z2_lat30_km']} km cell at zoom 2 (measured on the coarse tiles used that far out), about {m['threshold_gb_z6_m']} m for a {m['cell_gb_z6_km']} km cell over northern England at zoom 6, and about {m['threshold_lakes_z11_m']} m for a {m['cell_lakes_z11_m']} m cell in the Lake District at zoom 11.
 - **Rugged, not just high.** Each candidate peak is also tested on the mean slope of the ground close around it (metres per km on the elevation tiles), against a bar that rises with the detail of the tiles ({', '.join(str(int(g)) if g == int(g) else str(g) for g in m['rugged_bar_by_dem_zoom'])} for elevation zoom 0 to 12). In the {R['biomes']['montane']['ecoregions']} ecoregions named for mountains the bar is cut to {round(m['montane_factor'] * 100)}%; in deserts, steppe, rainforest, taiga and tundra it is raised by {round((m['open_biome_factor'] - 1) * 100)}%. So high flat plateaus and deserts get no peaks, while the Ahaggar, Tibesti and Atlas keep theirs.
 - **Biomes.** Between the ranges the world is drawn by biome from RESOLVE Ecoregions 2017: crescent dunes (deserts), grass tufts (grassland, savanna and steppe), round crowns and palms (tropical rainforest), small conifers (boreal forest), blue hatching (ice, plus OpenStreetMap glaciers), marsh and tundra tufts. The mask ships as `data/biomes.png` (2048 pixels, web Mercator). Rainforest and taiga glyphs give way to OpenStreetMap woods from zoom 7.
+- **Ink cap.** Within each patch (a sixth of a tile each way), mountains are taken coarsest rank and most prominent first until their summed footprints, at the size the style draws them, reach {m['cap_m']:g} of the patch, or {m['cap_sat']:g} where candidates would ink it more than {m['sat_ink']:g} times over (a great range); hills fill up to {m['cap_t']:g}. On the Tibetan Plateau ecoregions the ruggedness bar is multiplied by {m['plateau_factor']:g}, so only the ranges are peaked. Dunes are drawn only in sandy and true deserts (by ecoregion name) or on OpenStreetMap sand; shrub steppes get grass tufts.
 - **Readable great ranges.** A spacing rule keeps glyphs off plain slopes. Where the ground is saturated with strong relief (at least {m['sat_neighbours']} mountain neighbours, {m['sat_higher']} of them higher, mean relief at least {m['sat_q']} times the bar, cells under 30 km), flank mountains are left out, so the Himalaya reads as ridges and summits rather than a solid mass. In hill country this almost never applies.
 - **One drawing at every zoom.** Each cell splits into four at the next zoom and the highest point of a cell is also the highest point of one of its children, so the peaks drawn at one zoom are all still there at the next. New peaks fade in between them; glyph size, ink widths, letter size and spacing, the number of coastal ripples and the blue wash all change through interpolated expressions. `qa/zoom_sequence.png` (not in the repository) and the page figure show zooms 3 to 11.
 - **Forests, marsh and moor.** Tree glyphs on a nested jittered grid inside OpenStreetMap woods (mostly conifers in woods tagged as forest), and tufts inside wetland and heath, from zoom {m['trees_from_zoom']} and {m['tufts_from_zoom']}.
@@ -101,11 +102,13 @@ python3 code/05_results.py                # checks every quoted number and the h
 
 Code is MIT; text, figures and the derived label files are CC BY 4.0; fonts OFL; renders contain OpenStreetMap data (ODbL). See `LICENSE`.
 
-The design is my own, made from drawing rules applied to data. It was inspired by the general look of hand-drawn maps; no artwork, lettering, cartouche or emblem from any map was traced or reused.
+Topics: Tolkien-inspired map, fantasy cartography, hand-drawn map style, fantasy map, world map, generative cartography, OpenStreetMap, elevation, biomes, MapLibre.
+
+The design is my own, made from drawing rules applied to data. It was inspired by the general look of hand-drawn maps, Tolkien's among them, and is not connected with or endorsed by the Tolkien Estate; no artwork, lettering, cartouche or emblem from any map was traced or reused.
 
 ## Citation
 
-Hotham, T. (2026) The Inked World: a zoomable map of the whole world in the style of a hand-inked fantasy map, generated from open elevation and OpenStreetMap data. Zenodo. {{https://doi.org/10.5281/zenodo.23860253}}
+Hotham, T. (2026) The Inked World: a zoomable map of the whole world in the style of a hand-inked fantasy map, generated from open elevation and OpenStreetMap data. Zenodo. https://doi.org/10.5281/zenodo.23860253
 
 Dr Tristan Hotham, Independent researcher. ORCID 0000-0003-4931-9349.
 

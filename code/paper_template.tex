@@ -26,7 +26,7 @@
 \begin{center}
 {\Large\bfseries The Inked World\par}
 \vspace{0.4em}
-{\large A zoomable map of the whole world in the style of a hand-inked fantasy map,\\generated from open elevation and OpenStreetMap data\par}
+{\large A Tolkien-inspired map of the modern Earth: a zoomable world map\\in the style of a hand-inked fantasy map, generated from open data\par}
 \vspace{1.2em}
 {\large Tristan Hotham\par}
 \vspace{0.3em}
@@ -42,13 +42,13 @@ DOI: @@DOILINK@@\par}
 \begin{center}\textbf{Abstract}\end{center}
 @@ABSTRACT@@
 
-\textbf{Keywords:} cartography; generative maps; fantasy maps; OpenStreetMap; digital elevation models; MapLibre; label placement; level of detail; open data
+\textbf{Keywords:} Tolkien-inspired map; fantasy cartography; hand-drawn map style; cartography; generative maps; fantasy maps; OpenStreetMap; digital elevation models; MapLibre; label placement; level of detail; open data
 \end{quote}
 
 \section{Introduction}
 The maps at the front of fantasy novels, and many older printed maps, share a look that most readers recognise at once: mountains drawn as rows of small inked peaks, forests as clusters of tiny trees, coasts traced with several thin parallel lines, and names lettered by hand in red across the land and sea. That look depends on a map maker's judgement about what to draw where, and it is made for one place at one scale. Interactive web maps go the other way: they can show anywhere at any scale, but in a uniform, modern style.
 
-This paper describes a map that tries to have both. The Inked World is a zoomable map of the whole world, available at \url{@@PAGE@@}, that draws itself in a hand-inked style at every zoom, from the whole globe down to a single hill, using only open data: OpenStreetMap vector tiles served by OpenFreeMap, and the AWS Terrain Tiles elevation model. Nothing is traced from an existing drawing. Every mountain glyph is placed by a rule applied to elevation, every tree by a rule applied to mapped woodland, and every name either comes from OpenStreetMap or is lettered along a curve that I drew for it. The map was inspired by the general look of hand-drawn maps, but no artwork, lettering, cartouche or emblem from any map was copied.
+This paper describes a map that tries to have both. The Inked World is a zoomable map of the whole world, available at \url{@@PAGE@@}, that draws itself in a hand-inked style at every zoom, from the whole globe down to a single hill, using only open data: OpenStreetMap vector tiles served by OpenFreeMap, and the AWS Terrain Tiles elevation model. Nothing is traced from an existing drawing. Every mountain glyph is placed by a rule applied to elevation, every tree by a rule applied to mapped woodland, and every name either comes from OpenStreetMap or is lettered along a curve that I drew for it. The map was inspired by the general look of hand-drawn maps, Tolkien's among them, but no artwork, lettering, cartouche or emblem from any map was copied, and it is not connected with or endorsed by the Tolkien Estate.
 
 Three design goals shaped it. First, it should look drawn, not rendered: black ink for coasts and relief, red for names, blue for water, on parchment. Second, it should change smoothly with zoom: zooming in should add detail to the same drawing rather than switch from one style to another. Third, it should work for the whole world, live, with no tiles to pre-render or host. The rest of the paper sets out the data (Section~2), the rules (Section~3), what the map looks like and how it was checked (Sections~4 and~5), and its limits (Section~6).
 
@@ -57,7 +57,7 @@ Three design goals shaped it. First, it should look drawn, not rendered: black i
 
 \textbf{Elevation.} The AWS Terrain Tiles \citep{terrain} are a global elevation model in web map tiles, built by Mapzen from SRTM, GMTED2010, ETOPO1 and national models. The map reads the Terrarium encoding, in which each pixel's red, green and blue values give the elevation in metres as $256R + G + B/256 - 32768$.
 
-\textbf{Biomes.} RESOLVE Ecoregions 2017 \citep{resolve} divides the land into 846 ecoregions in 14 biomes, plus rock and ice, under CC BY 4.0. I read a copy simplified at 0.005 degrees and rasterise it to a 2048 pixel web Mercator mask of seven classes: desert; grassland, savanna and steppe (tropical, temperate and montane grasslands); tropical moist forest; boreal forest; ice; flooded grassland; tundra. Temperate and Mediterranean forests get no biome glyphs. @@MONTN@@ ecoregions whose names refer to mountains (for example \emph{Mediterranean High Atlas juniper steppe} or \emph{Tibesti-Jebel Uweinat montane xeric woodlands}) are flagged, except plateaus.
+\textbf{Biomes.} RESOLVE Ecoregions 2017 \citep{resolve} divides the land into 846 ecoregions in 14 biomes, plus rock and ice, under CC BY 4.0. I read a copy simplified at 0.005 degrees and rasterise it to a 2048 pixel web Mercator mask of seven classes: desert (sandy and true deserts, by name; shrub steppes and xeric scrub join the grassland class); grassland, savanna and steppe (tropical, temperate and montane grasslands); tropical moist forest; boreal forest; ice; flooded grassland; tundra. Temperate and Mediterranean forests get no biome glyphs. @@MONTN@@ ecoregions whose names refer to mountains (for example \emph{Mediterranean High Atlas juniper steppe} or \emph{Tibesti-Jebel Uweinat montane xeric woodlands}) are flagged, except plateaus.
 
 \textbf{Outlines for lettering.} Country names are lettered along curves fitted to Natural Earth's 1:50m country outlines \citep{naturalearth}; the four nations of the United Kingdom along curves fitted to the Office for National Statistics' local authority district boundaries \citep{ons}. Search uses Natural Earth's populated places and states and provinces.
 
@@ -88,6 +88,9 @@ The important property is nesting. The highest point of a cell is also the highe
 
 \subsection{Woods, marsh and moor}
 From zoom @@TREEZ@@ the worker also reads the OpenStreetMap land cover in the vector tile for the same area and paints the woods, wetlands and heaths into small $256\times256$ masks. Tree and tuft glyphs are scattered on a nested jittered grid (cells of @@CT@@ and @@CU@@ pixels), in which a point chosen for a cell is inherited by whichever child cell contains it; points are kept where the mask is set. Woods tagged as forest get mostly conifers, other woods mostly broadleaf trees. Tufts start at zoom @@TUFTZ@@.
+
+\subsection{Ink cap}
+A rule that places a peak wherever the ground is rugged enough fills a great range or a high plateau with a solid carpet of glyphs. Hand-drawn maps leave paper between the peaks, so the worker caps the ink. Each tile is divided into $6\times6$ patches. Glyphs are taken coarsest rank first and, within a rank, mountains before hills and the most prominent first; each is sized as the style will draw it in the middle of the tile's zoom, and a mountain is kept only while the summed footprints of the mountains in its patch stay under @@CAPM@@ of the patch area, or @@CAPSAT@@ where the candidate mountains would ink the patch more than @@SATINK@@ times over. Hills are kept while all glyphs stay under @@CAPT@@. Taking coarse ranks first keeps the nesting: the peaks of one zoom are still the first chosen at the next. In the Lake District the cap removes fewer than one peak in ten; on a forced carpet (relief multiplied by twelve, with thinning and the ruggedness test off) it cuts @@CARPET0@@ mountains to @@CARPET1@@. On the Tibetan Plateau ecoregions the ruggedness bar is multiplied by @@PLAT@@, so that the plateau floor stays bare or in hills and only its ranges are peaked.
 
 \subsection{Biome glyphs}
 Between the ranges, glyphs on a nested jittered grid (cells of @@CB@@ pixels) take the class of the biome mask at their position: crescent dunes with sand stipple, tufts of grass, clusters of round crowns with the odd palm, small pointed conifers, pale blue hatching or crevasse lines on ice, and marsh and tundra tufts. Each class keeps a different share of the grid points, from about a sixth on the tundra to nearly all in the rainforest. OpenStreetMap glaciers count as ice and OpenStreetMap sand as desert, and biome glyphs keep clear of mountains and water. Rainforest and taiga glyphs fade out by zoom 7, where OpenStreetMap's own woods take over.

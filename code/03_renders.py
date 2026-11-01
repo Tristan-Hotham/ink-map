@@ -111,6 +111,19 @@ def figs():
     json.dump(st, open(os.path.join(ROOT, 'data', 'render_stats.json'), 'w'), indent=1)
 
 
+def carpet():
+    """Ink cap test: the Lake District at zoom 9 with relief x12, thinning and ruggedness off, with and without the cap."""
+    base = dict(lat=54.47, lon=-3.05, z=9, w=1200, h=800, maponly=1, clean=1, stats=1)
+    off = {'demScale': 12, 'SAT_NB': 99, 'G0': 0.0001}
+    shots = [dict(base, out=os.path.join(TMP, 'carpet_nocap.png'), wk=dict(off, CAP_M=9, CAP_SAT=9)),
+             dict(base, out=os.path.join(ROOT, 'release', 'figs', 'carpet.png'), wk=off)]
+    render(shots, os.path.join(TMP, 'ink_carpet_console.txt'))
+    a = json.load(open(os.path.join(TMP, 'carpet_nocap.stats.json')))
+    b = json.load(open(os.path.join(ROOT, 'release', 'figs', 'carpet.stats.json')))
+    os.remove(os.path.join(ROOT, 'release', 'figs', 'carpet.stats.json'))
+    json.dump({'uncapped': a['mountains'], 'capped': b['mountains']}, open(os.path.join(ROOT, 'data', 'carpet_test.json'), 'w'))
+
+
 def interact():
     cfg = server(); p = os.path.join(TMP, 'ink_interact.json'); json.dump(cfg, open(p, 'w'))
     subprocess.run(['node', os.path.join(ROOT, 'code', 'qa_interact.js'), p, QA], check=True, env=dict(os.environ, NODE_PATH=NODE_PATH))
@@ -123,6 +136,7 @@ if __name__ == '__main__':
     if what in ('page', 'all'): page()
     if what in ('interact', 'all'): interact()
     if what in ('figs', 'all'): figs()
+    if what in ('carpet', 'all'): carpet()
     if what == 'adhoc':   # python3 code/03_renders.py adhoc '[{"out": "...", "lat": .., "lon": .., "z": ..}]'
         shots = json.loads(sys.argv[2])
         for s in shots: s.setdefault('w', 1280); s.setdefault('h', 860); s.setdefault('maponly', 1); s.setdefault('stats', 1)

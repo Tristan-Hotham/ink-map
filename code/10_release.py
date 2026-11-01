@@ -1,5 +1,5 @@
 """Blog post and meta (release/blog), Zenodo files and metadata (release/zenodo), Reddit post (reddit/post.md).
-10.5281/zenodo.23860253, https://doi.org/10.5281/zenodo.23860253 and https://blog.tristanhotham.com/2026/10/31/ink-map/ stay as placeholders for the publisher. Every number comes from data/results.json."""
+The DOI (10.5281/zenodo.23860253) and the blog address are filled in. Every number comes from data/results.json."""
 import json, os, re, shutil, sys, zipfile
 sys.path.insert(0, os.path.dirname(__file__))
 from common import ROOT, DATA
@@ -20,7 +20,7 @@ def buttons(items):
 
 
 post = (
-    '<!-- wp:paragraph -->\n<p><em>The maps at the front of fantasy novels draw one place at one scale, by hand. I wanted one that draws the whole world, at every zoom, '
+    '<!-- wp:paragraph -->\n<p><em>The maps at the front of fantasy novels, Tolkien\'s above all, draw one place at one scale, by hand. I wanted a Tolkien-inspired map of the modern Earth that draws the whole world, at every zoom, '
     'from open data: little ink peaks on the real high ground, forests of tiny trees, rippled coasts and red lettering, from the Pacific down to a single Lakeland fell.</em></p>\n<!-- /wp:paragraph -->\n\n'
     + buttons([('Explore the interactive version', PAGE), ('Read the paper', 'https://doi.org/10.5281/zenodo.23860253')])
     + para('Everyone knows the look. Rows of small inked mountains marching across the land, clusters of trees for the forests, the coast traced again and again with thin lines '
@@ -100,16 +100,16 @@ for u in used:
 for fn in os.listdir(os.path.join(REL, 'blog')):
     if fn.startswith('b_') and fn not in used:
         os.remove(os.path.join(REL, 'blog', fn))
-assert set(re.findall(r'\{\{(?!IMG)[^}]*\}\}', post)) <= {'https://doi.org/10.5281/zenodo.23860253'}
+assert not re.findall(r'\{\{(?!IMG)[^}]*\}\}', post)
 vis = re.sub(r'<!--.*?-->', '', post, flags=re.S)
 for bad in ('—', '–', '--', 'DSIT', 'DCMS', 'civil serv'):
     assert bad not in vis, bad
 open(os.path.join(REL, 'blog', 'post.html'), 'w', encoding='utf-8').write(post)
-meta = {'title': 'The Inked World: a hand-drawn style map of everywhere, from open data',
+meta = {'title': 'The Inked World: a Tolkien-inspired map of the modern Earth',
         'slug': 'ink-map',
-        'excerpt': 'A zoomable map of the whole world in the style of a hand-inked fantasy map: little peaks on the real high ground, forests of tiny trees, rippled coasts and red lettering, drawn by rules from open data, from the globe down to a single fell.',
-        'seo_description': 'A zoomable fantasy-style ink map of the whole world, drawn by rules from open elevation and OpenStreetMap data, from continents to single hills.',
-        'tags': ['maps', 'cartography', 'fantasy maps', 'OpenStreetMap', 'elevation', 'biomes', 'data visualisation', 'open data'],
+        'excerpt': 'A Tolkien-inspired map of the modern Earth, zoomable from continents to single hills, in the style of a hand-inked fantasy map: little peaks on the real high ground, forests of tiny trees, rippled coasts and red lettering, drawn by rules from open data, from the globe down to a single fell.',
+        'seo_description': 'A Tolkien-inspired map of the modern Earth: a zoomable hand-inked fantasy-style world map drawn from open elevation and OpenStreetMap data.',
+        'tags': ['Tolkien', 'fantasy map', 'Middle-earth style', 'world map', 'maps', 'cartography', 'OpenStreetMap', 'elevation', 'biomes', 'data visualisation', 'open data'],
         'header_alt': "Title card reading 'The Inked World' in black and red on parchment, beside an ink-style map of Cumbria and the Yorkshire Dales with rows of small inked peaks, blue-rippled coasts and red names such as North Pennines and Yorkshire Dales."}
 assert len(meta['seo_description']) < 160, len(meta['seo_description'])
 json.dump(meta, open(os.path.join(REL, 'blog', 'meta.json'), 'w'), indent=2, ensure_ascii=False)
@@ -135,13 +135,14 @@ with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
     for fn in sorted(os.listdir(os.path.join(ROOT, 'fonts', 'ttf'))):
         z.write(os.path.join(ROOT, 'fonts', 'ttf', fn), f'ink-map/fonts/ttf/{fn}')
 ab = json.load(open(os.path.join(REL, 'paper', 'abstract.json')))['abstract'].replace('~', ' ')
-zmeta = {'title': 'The Inked World: A Zoomable Map of the Whole World in the Style of a Hand-Inked Fantasy Map, Generated from Open Elevation and OpenStreetMap Data',
+zmeta = {'title': 'The Inked World: A Tolkien-Inspired Map of the Modern Earth, a Zoomable World Map in the Style of a Hand-Inked Fantasy Map, Generated from Open Data',
          'upload_type': 'publication', 'publication_type': 'workingpaper',
-         'description': f'<p>{ab}</p><p>Interactive version: <a href="{PAGE}">{PAGE}</a>. Data and code: <a href="{REPO}">{REPO}</a>. Blog post: {{https://blog.tristanhotham.com/2026/10/31/ink-map/}}.</p>'
+         'description': f'<p>{ab}</p><p>Interactive version: <a href="{PAGE}">{PAGE}</a>. Data and code: <a href="{REPO}">{REPO}</a>. Blog post: https://blog.tristanhotham.com/2026/10/31/ink-map/.</p>'
                         '<p>Data: map data © OpenStreetMap contributors (ODbL 1.0), via OpenFreeMap and OpenMapTiles; elevation from the AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1); '
-                        'RESOLVE Ecoregions 2017 (CC BY 4.0); Natural Earth (public domain); ONS Local Authority District boundaries (OGL v3.0). Fonts under the SIL Open Font License. The archive holds no tile data.</p>',
+                        'RESOLVE Ecoregions 2017 (CC BY 4.0); Natural Earth (public domain); ONS Local Authority District boundaries (OGL v3.0). Fonts under the SIL Open Font License. The archive holds no tile data.</p><p>Inspired by the general style of Tolkien\'s hand-drawn maps; not connected with or endorsed by the Tolkien Estate.</p>',
+         'subjects': [{'term': 'Tolkien'}, {'term': 'fantasy cartography'}, {'term': 'hand-drawn map style'}, {'term': 'world map'}],
          'creators': [{'name': 'Hotham, Tristan', 'affiliation': 'Independent researcher', 'orcid': '0000-0003-4931-9349'}],
-         'keywords': ['cartography', 'generative maps', 'fantasy maps', 'OpenStreetMap', 'digital elevation model', 'biomes', 'ecoregions', 'MapLibre', 'label placement', 'open data'],
+         'keywords': ['Tolkien', 'fantasy cartography', 'hand-drawn map style', 'cartography', 'generative maps', 'fantasy maps', 'OpenStreetMap', 'digital elevation model', 'biomes', 'ecoregions', 'MapLibre', 'label placement', 'open data'],
          'license': 'cc-by-4.0', 'language': 'eng',
          'related_identifiers': [{'identifier': REPO, 'relation': 'isSupplementedBy', 'resource_type': 'software'},
                                  {'identifier': PAGE, 'relation': 'isSupplementedBy', 'resource_type': 'other'},
@@ -158,7 +159,7 @@ print('blog words', words, 'figures', len(used), '; zenodo', sorted(os.listdir(Z
 # ---- Reddit post
 post_md = f"""## Title
 
-[OC] I drew the whole world as a hand-inked fantasy map using only open data: {f(PW['mountains'])} ink mountains, each placed by a rule on real elevation, zoomable from continents to single hills
+I made a Tolkien-inspired map of the whole modern Earth from open data, zoomable from continents down to single hills [OC]
 
 ## Body
 
@@ -175,8 +176,8 @@ Tools: MapLibre GL JS with a custom web worker that turns elevation and land cov
 Images: the_inked_world.png (world, with a Britain and Ireland inset) and britain_and_ireland_in_ink.png ({f(P['mountains'])} mountains and {f(P['trees'])} trees).
 
 Interactive version: {PAGE}
-Paper: {{https://doi.org/10.5281/zenodo.23860253}}
-Blog post: {{https://blog.tristanhotham.com/2026/10/31/ink-map/}}
+Paper: https://doi.org/10.5281/zenodo.23860253
+Blog post: https://blog.tristanhotham.com/2026/10/31/ink-map/
 """
 for bad in ('—', '–', '--', 'DSIT', 'DCMS'):
     assert bad not in post_md, bad

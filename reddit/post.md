@@ -1,6 +1,6 @@
 ## Title
 
-[OC] I drew the whole world as a hand-inked fantasy map using only open data: 2,330 ink mountains, each placed by a rule on real elevation, zoomable from continents to single hills
+I made a Tolkien-inspired map of the whole modern Earth from open data, zoomable from continents down to single hills [OC]
 
 ## Body
 
@@ -14,8 +14,8 @@ Data: map data © OpenStreetMap contributors (ODbL), served as vector tiles by O
 
 Tools: MapLibre GL JS with a custom web worker that turns elevation and land cover into glyph positions; glyphs drawn on canvas; fonts MedievalSharp and IM Fell (SIL OFL); Playwright for the render.
 
-Images: the_inked_world.png (world, with a Britain and Ireland inset) and britain_and_ireland_in_ink.png (5,518 mountains and 2,920 trees).
+Images: the_inked_world.png (world, with a Britain and Ireland inset) and britain_and_ireland_in_ink.png (5,274 mountains and 2,920 trees).
 
 Interactive version: https://maps.tristanhotham.com/ink-map/
-Paper: {https://doi.org/10.5281/zenodo.23860253}
-Blog post: {https://blog.tristanhotham.com/2026/10/31/ink-map/}
+Paper: https://doi.org/10.5281/zenodo.23860253
+Blog post: https://blog.tristanhotham.com/2026/10/31/ink-map/

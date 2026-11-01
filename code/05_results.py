@@ -59,6 +59,7 @@ R = {
         'threshold_lakes_z11_m': round(t_lakes), 'cell_lakes_z11_m': round(km_lakes * 1000),
         'trees_from_zoom': 7, 'tufts_from_zoom': 9,
         'rugged_bar_by_dem_zoom': GT, 'montane_factor': MONT, 'open_biome_factor': OPEN, 'hill_rugged_fraction': GH,
+        'cap_m': par('CAP_M'), 'cap_t': par('CAP_T'), 'cap_sat': par('CAP_SAT'), 'sat_ink': par('SAT_INK'), 'plateau_factor': par('PLAT'),
         'sat_neighbours': SAT_NB, 'sat_higher': SAT_HI, 'sat_q': SAT_Q, 'rank_max': RMAX,
     },
     'labels': {'countries': len(names_c), 'uk_nations': len(names_n), 'hand_placed_land': len(reg_land),
@@ -79,6 +80,9 @@ pw = os.path.join(DATA, 'poster_world_stats.json')
 if os.path.exists(pw):
     P = json.load(open(pw))
     R['poster_world'] = {'mountains': P.get('mountains'), 'hills': P.get('hills'), 'glyphs': P.get('relief'), 'zoom': round(P['zoom'], 2)}
+ct = os.path.join(DATA, 'carpet_test.json')
+if os.path.exists(ct):
+    R['carpet_test'] = json.load(open(ct))
 mf = os.path.join(DATA, 'method_figure.json')
 if os.path.exists(mf):
     R['method_figure'] = json.load(open(mf))
@@ -101,6 +105,8 @@ for needle in [f"about {m['cell_px_mountains']} screen pixels", f"about {fmt(m['
                f"{R['labels']['hand_placed_total']} names", f"({R['labels']['world_total']} names beyond", f"{R['labels']['world_total']} oceans",
                f"so are {R['labels']['country_curves_by_hand']} countries", f"cut to {round(MONT * 100)}%", f"{['', 'one', 'two', 'three', 'four'][m['sat_higher']]} or more higher mountains"]:
     assert needle in page, ('page', needle)
+assert m['cap_m'] == 0.75 and 'three quarters of the patch' in page and m['cap_sat'] < 0.5 and 'under half' in page
+assert m['plateau_factor'] == 2.5 and 'two and a half times' in page
 readme = os.path.join(ROOT, 'README.md')
 if os.path.exists(readme) and 'poster' in R and not os.environ.get('INK_RESULTS_ONLY'):
     t = open(readme).read()
@@ -110,7 +116,7 @@ if os.path.exists(readme) and 'poster' in R and not os.environ.get('INK_RESULTS_
 post = os.path.join(ROOT, 'reddit', 'post.md')
 if os.path.exists(post) and 'poster' in R and not os.environ.get('INK_RESULTS_ONLY'):
     t = open(post).read()
-    for needle in [fmt(R['poster_world']['mountains']), fmt(R['poster']['mountains']), fmt(R['poster']['trees'])]:
+    for needle in [fmt(R['poster']['mountains']), fmt(R['poster']['trees'])]:
         assert needle in t, ('post', needle)
 # house rules on visible text
 for path in ['index.html', 'README.md', 'reddit/post.md', 'reddit/poster.html', 'reddit/poster_world.html', 'release/blog/post.html', 'qa_live/index.html']:
