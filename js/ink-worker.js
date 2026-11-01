@@ -632,7 +632,7 @@ function lineParts(buf, g) {
 }
 function pointOf(buf, g) { const R = new Reader(buf); R.p = g[0]; R.varint(); const dx = R.varint(), dy = R.varint(); return [(dx >>> 1) ^ -(dx & 1), (dy >>> 1) ^ -(dy & 1)]; }
 // radius of the drawn town (km) and of its walled old core, by kind of place
-const TOWN_R = { capital: 4.2, city: 2.6, town: 1.25, village: 0.5, hamlet: 0.25 };
+const TOWN_R = { capital: 4.2, city: 2.6, town: 1.25, village: 0.55, hamlet: 0.35 };
 // share of house sites kept at distance dr (in place radii) from the centre: packed rows in the old core, falling fast
 // through the inner streets, then scattered houses with gardens at the edge
 const townKeep = dr => dr < 0.15 ? 1 : dr < 0.35 ? 1 - 1.5 * (dr - 0.15) : Math.max(0.04, 0.7 * Math.exp(-3.2 * (dr - 0.35)));
