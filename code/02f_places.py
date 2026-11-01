@@ -1,6 +1,7 @@
-"""Villages and hamlets in Britain and Ireland from Wikidata, to fill places the OpenStreetMap tiles leave out.
+"""Villages and hamlets in Britain and Ireland, and named beaches worldwide, from Wikidata, to fill places the OpenStreetMap tiles leave out.
 Input:  /home/claude/newdata/raw12/settlements_ukie.tsv (QLever, query in code/sparql/settlements_ukie.rq)
-Output: data/places/{x}_{y}.json  rows [lon*1e5, lat*1e5, kind (1 village/town, 2 hamlet/suburb), first zoom*10, name]
+Input:  /home/claude/newdata/raw12/beaches.tsv (QLever, query in code/sparql/beaches.rq)
+Output: data/places/{x}_{y}.json  rows [lon*1e5, lat*1e5, kind (1 village/town, 2 hamlet/suburb, 3 beach), first zoom*10, name, English Wikipedia title]
         data/places/index.json
 The map's worker drops any of these whose name the OpenStreetMap tile already carries, so each place is lettered once."""
 import csv, json, math, os, re, collections
@@ -26,7 +27,21 @@ with open(SRC, encoding='utf-8') as f:
         if not (-11 < lon < 2.2 and 49.8 < lat < 61): continue
         sl = int(re.sub(r'\D', '', p[4]) or 0)
         z = (10.5 if sl >= 4 else 11) if k == 1 else (11.5 if sl >= 3 else 12)
-        rows.append([round(lon * 1e5), round(lat * 1e5), k, int(z * 10), name])
+        rows.append([round(lon * 1e5), round(lat * 1e5), k, int(z * 10), name, ''])
+# named beaches, worldwide
+with open('/home/claude/newdata/raw12/beaches.tsv', encoding='utf-8') as f:
+    next(f)
+    for line in f:
+        p = line.rstrip('\n').split('\t')
+        if len(p) < 4: continue
+        m = re.match(r'POINT\(([-\d.]+) ([-\d.]+)\)', p[2]); nm = re.match(r'"(.*)"@en', p[1])
+        if not (m and nm): continue
+        name = nm.group(1).replace('\\"', '"')
+        if re.search(r'\d', name) or len(name) > 34: continue
+        sl = int(re.sub(r'\D', '', p[3]) or 0)
+        w = re.match(r'"(.*)"@en', p[4]).group(1) if len(p) > 4 and p[4].startswith('"') else ''
+        z = 10 if sl >= 10 else 11 if sl >= 3 else 12
+        rows.append([round(float(m.group(1)) * 1e5), round(float(m.group(2)) * 1e5), 3, z * 10, name, w])
 # drop duplicates: the same name within 1.5 km
 rows.sort(key=lambda r: (r[3], r[2]))
 seen = collections.defaultdict(list); keep = []

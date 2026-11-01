@@ -604,7 +604,7 @@ async function placePoints(z, x, y) {
     if (r[3] / 10 > z + 1) continue;
     const nx = mercX(r[0] / 1e5), ny = mercY(r[1] / 1e5);
     if (Math.floor(nx * n) !== x || Math.floor(ny * n) !== y) continue;
-    out.push({ nx, ny, z: r[3] / 10, k: r[2], n: r[4] });
+    out.push({ nx, ny, z: r[3] / 10, k: r[2], n: r[4], w: r[5] || '' });
   }
   if (!out.length) return out;
   // a place the OpenStreetMap tile (or, beyond its last zoom, the tile it is cut from) already names is left to it
@@ -612,7 +612,7 @@ async function placePoints(z, x, y) {
   const buf = CFG.ofm ? await fetchOfm(oz, x >> d, y >> d) : null;
   const names = new Set();
   if (buf) { const L = decodeLayers(buf, new Set(['place'])).place; if (L) for (const span of L.feats) { const F = featureOf(buf, L, span); for (const key of ['name', 'name_en', 'name:en', 'name:latin']) if (F.props[key]) names.add(String(F.props[key]).toLowerCase()); } }
-  return out.filter(p => !names.has(p.n.toLowerCase())).slice(0, 200);
+  return out.filter(p => p.k === 3 || !names.has(p.n.toLowerCase())).slice(0, 200);
 }
 
 // ---------------- drawn towns (zoom 12 and closer): townhouses along the real streets of built-up land ----------------
@@ -632,7 +632,7 @@ function lineParts(buf, g) {
 }
 function pointOf(buf, g) { const R = new Reader(buf); R.p = g[0]; R.varint(); const dx = R.varint(), dy = R.varint(); return [(dx >>> 1) ^ -(dx & 1), (dy >>> 1) ^ -(dy & 1)]; }
 // radius of the drawn town (km) and of its walled old core, by kind of place
-const TOWN_R = { capital: 4.2, city: 2.6, town: 1.25, village: 0.45 };
+const TOWN_R = { capital: 4.2, city: 2.6, town: 1.25, village: 0.5, hamlet: 0.25 };
 // share of house sites kept at distance dr (in place radii) from the centre: packed rows in the old core, falling fast
 // through the inner streets, then scattered houses with gardens at the edge
 const townKeep = dr => dr < 0.15 ? 1 : dr < 0.35 ? 1 - 1.5 * (dr - 0.15) : Math.max(0.04, 0.7 * Math.exp(-3.2 * (dr - 0.35)));
@@ -670,6 +670,16 @@ async function townPoints(z, x, y, avoid) {
     const kind = cl === 'city' && (F.props.capital === 2 || F.props.capital === '2') ? 'capital' : cl;
     places.push({ nx, ny, kind, R: TOWN_R[kind] || 1, rank: F.props.rank || 9 });
   }
+  // villages and hamlets come from this tile itself: the parent tile leaves most of them out, which left villages bare
+  const PL0 = decodeLayers(buf, new Set(['place'])).place;
+  if (PL0) for (const span of PL0.feats) {
+    const F = featureOf(buf, PL0, span); if (F.type !== 1) continue;
+    const cl = F.props.class; if (cl !== 'village' && cl !== 'hamlet') continue;
+    const [px, py] = pointOf(buf, F.geom);
+    const nx = (x + px / PL0.extent) / n, ny = (y + py / PL0.extent) / n;
+    if (places.some(P => Math.abs(P.nx - nx) * n * 512 < 8 && Math.abs(P.ny - ny) * n * 512 < 8)) continue;
+    places.push({ nx, ny, kind: cl, R: TOWN_R[cl], rank: F.props.rank || 12 });
+  }
   if (!places.length) return [];
   const kmPerN = 40075 * Math.cos(latOfY((y + 0.5) / n) * DEG);   // km per unit of normalised x at this latitude
   // built-up land: residential, commercial and retail land use and the buildings themselves
@@ -685,17 +695,17 @@ async function townPoints(z, x, y, avoid) {
   const key = (px, py) => Math.floor(px / OC) + ',' + Math.floor(py / OC);
   const free = (px, py, r) => { for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) if (occ.has((Math.floor(px / OC) + di) + ',' + (Math.floor(py / OC) + dj))) return false; return true; };
   const take = (px, py, r) => { for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) occ.add((Math.floor(px / OC) + di) + ',' + (Math.floor(py / OC) + dj)); };
-  // heritage drawings keep a clear square round them; the houses pack the rest of the old core
-  for (const p of avoid) take((p.nx * n - x) * 512, (p.ny * n - y) * 512, 2);
+  // heritage drawings keep a little clear room round them; the houses pack the rest of the old core
+  for (const p of avoid) take((p.nx * n - x) * 512, (p.ny * n - y) * 512, 1);
   const out = [];
   // the centre of each place in this tile: a market square and its church, and for capitals and cities a wall with towers round the old core
   for (const P of places) {
     const px = (P.nx * n - x) * 512, py = (P.ny * n - y) * 512;
-    if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind !== 'village') {
+    if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind !== 'village' && P.kind !== 'hamlet') {
       // set just below the name, which sits on the place point
       out.push({ nx: P.nx - 8 / 512 / n, ny: P.ny + 20 / 512 / n, t: 'market', a: 0, o: 0 }); take(px - 8, py + 20, 2);
       out.push({ nx: P.nx + 14 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 14, py + 16, 2);
-    } else if (px >= 0 && px < 512 && py >= 0 && py < 512) { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2); }
+    } else if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind === 'village') { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2); }
     const W0 = await realWalls(), rk0 = P.R * 0.4 / kmPerN;
     const hasWall = W0.some(b => b[0] < P.nx + rk0 && b[2] > P.nx - rk0 && b[1] < P.ny + rk0 && b[3] > P.ny - rk0 && (b[2] - b[0]) < rk0 * 6);
     if (!hasWall && (P.kind === 'capital' || (P.kind === 'city' && P.rank <= 3))) {
@@ -760,8 +770,9 @@ async function townPoints(z, x, y, avoid) {
     const gnx = (x + tx) / n, gny = (y + ty) / n, [P, dr] = near(gnx, gny);
     if (!P || dr > 1.3) continue;
     const ins = at(built, tx, ty), dn = dens(tx, ty);
-    if (!ins && dn < 0.2 && dr > 0.4) continue;            // the old core counts as built even where the tile maps nothing
-    const keep = dr < 0.18 ? 0.95 : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
+    if (!ins && dn < 0.2 && dr > ((P.kind === 'village' || P.kind === 'hamlet') ? 0.65 : 0.4)) continue;   // the old core counts as built even where the tile maps nothing
+    const small = P.kind === 'village' || P.kind === 'hamlet';
+    const keep = dr < 0.18 ? 0.95 : small && dr < 0.6 ? 0.8 - 0.6 * dr : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
     cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 8), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
   }
@@ -861,7 +872,7 @@ async function buildTile(z, x, y) {
     const hills = await hillPoints(z, x, y);
     if (hills.length) T.bytes(3, encodeLayer('hills', hills, ['z', 'e', 'n'], z, x, y));
     const xp = await placePoints(z, x, y);
-    if (xp.length) T.bytes(3, encodeLayer('xplaces', xp, ['z', 'k', 'n'], z, x, y));
+    if (xp.length) T.bytes(3, encodeLayer('xplaces', xp, ['z', 'k', 'n', 'w'], z, x, y));
   }
   if (z >= 12) {
     const town = await townPoints(z, x, y, her);

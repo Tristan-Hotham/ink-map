@@ -94,8 +94,13 @@ footer p{margin:0 0 10px}
 .key canvas{width:auto;height:30px;max-width:46px;object-fit:contain;flex:none;background:#F3E5BF;border-radius:3px;padding:2px}
 .key i{color:var(--muted);font-style:italic}
 .zbadge{position:absolute;right:52px;top:14px;z-index:5;font:400 11px/1 var(--mono);color:#6E604E;background:rgba(251,245,228,.85);padding:5px 7px;border-radius:3px;border:1px solid #D3C29A}
-.maplibregl-popup-content{background:#FBF5E4;color:#2B2119;font:400 13px/1.45 var(--mono);border:1px solid #9C8656;border-radius:4px;padding:10px 12px;box-shadow:0 3px 12px rgba(60,40,10,.25);max-width:270px}
+.maplibregl-popup-content{background:#FBF5E4;color:#2B2119;font:400 13px/1.45 var(--mono);border:1px solid #9C8656;border-radius:4px;padding:10px 12px;box-shadow:0 3px 12px rgba(60,40,10,.25);max-width:300px}
 .maplibregl-popup-content b.t{display:block;font:400 19px/1.15 var(--hand);color:#A3261B;margin-bottom:3px;letter-spacing:.02em}
+.maplibregl-popup-content .wk{margin-top:8px;padding-top:7px;border-top:1px dashed #C9B583;font:400 13px/1.45 var(--serif,Georgia,serif)}
+.maplibregl-popup-content .wk p{margin:0 0 5px}
+.maplibregl-popup-content .wk img{float:right;width:72px;height:72px;object-fit:cover;margin:2px 0 4px 8px;border:1px solid #C9B583}
+.maplibregl-popup-content .wk a{font:500 12px/1.3 var(--mono);color:#A3261B}
+.maplibregl-popup-content .wk-l{color:#7A6A52;font-style:italic}
 .maplibregl-popup-tip{border-top-color:#9C8656!important;border-bottom-color:#9C8656!important}
 .maplibregl-ctrl-attrib{font:400 11px/1.3 var(--mono)!important;background:rgba(251,245,228,.85)!important}
 .maplibregl-ctrl-group{background:#FBF5E4!important;border:1px solid #9C8656}
@@ -356,9 +361,55 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
   }
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+  // ---------------- Wikipedia tidbits for the popups (English Wikipedia, looked up when a name is clicked)
+  const WKC = new Map();
+  const WAPI = 'https://en.wikipedia.org/w/api.php?format=json&formatversion=2&origin=*&';
+  const wnorm = t => String(t || '').toLowerCase().replace(/\s*\(.*?\)\s*/g, ' ').replace(/,.*$/, '').replace(/[^\p{L}\p{N} ]/gu, '').replace(/\s+/g, ' ').trim();
+  async function wsummary(title) {
+    try {
+      const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title.replace(/ /g, '_')));
+      if (!r.ok) return null; const j = await r.json();
+      if (j.type === 'disambiguation' || !j.extract) return null;
+      return j;
+    } catch (e) { return null; }
+  }
+  const km = (a, b, c, d) => { const R = 6371, t = Math.PI / 180, x = (d - b) * t * Math.cos((a + c) / 2 * t), y = (c - a) * t; return R * Math.hypot(x, y); };
+  function trimText(t) {
+    const s = t.split(/(?<=[.!?])\s+(?=[A-Z])/); let o = '';
+    for (const x of s) { if ((o + ' ' + x).length > 260 && o) break; o = o ? o + ' ' + x : x; }
+    return o.length > 300 ? o.slice(0, 297).replace(/\s+\S*$/, '') + '…' : o;
+  }
+  async function wiki(q) {
+    const key = JSON.stringify([q.title, q.qid, q.name, q.broad ? 0 : Math.round(q.lat * 20), q.broad ? 0 : Math.round(q.lng * 20)]);
+    if (WKC.has(key)) return WKC.get(key);
+    const job = (async () => {
+      let title = q.title;
+      if (!title && q.qid) {
+        try { const j = await (await fetch(`https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(q.qid)}&props=sitelinks&sitefilter=enwiki&format=json&origin=*`)).json();
+          const sl = j.entities && j.entities[q.qid] && j.entities[q.qid].sitelinks && j.entities[q.qid].sitelinks.enwiki; if (sl) title = sl.title; } catch (e) {}
+      }
+      if (!title && q.name && !q.broad) {
+        // the article on this name nearest the click (places, hills, sights)
+        try { const j = await (await fetch(WAPI + `action=query&list=geosearch&gscoord=${q.lat.toFixed(5)}|${q.lng.toFixed(5)}&gsradius=10000&gslimit=100`)).json();
+          const want = wnorm(q.name), hits = (j.query && j.query.geosearch) || [];
+          const m = hits.find(g => wnorm(g.title) === want) || hits.find(g => wnorm(g.title).startsWith(want + ' ')) ;
+          if (m) title = m.title; } catch (e) {}
+      }
+      if (!title && q.name) {
+        // otherwise the article of that name, if it is about somewhere near (or needs no place at all)
+        const s = await wsummary(q.name);
+        if (s && (q.broad || !s.coordinates || km(q.lat, q.lng, s.coordinates.lat, s.coordinates.lon) < 60)) title = s.title;
+      }
+      if (!title) return null;
+      const s = await wsummary(title); if (!s) return null;
+      return { text: trimText(s.extract), img: s.thumbnail && s.thumbnail.source, url: (s.content_urls && s.content_urls.desktop && s.content_urls.desktop.page) || ('https://en.wikipedia.org/wiki/' + encodeURIComponent(title)) };
+    })();
+    WKC.set(key, job); return job;
+  }
+
   // ---------------- popups
   function setupPopups(map) {
-    const LAY = ['famous-peak-names', 'famous-peaks', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'lake-names-ne', 'wall-towers', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
+    const LAY = ['famous-peak-names', 'famous-peaks', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'lake-names-ne', 'wall-towers', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
     const HT = { barrow: 'Barrow', battle: 'Battlefield', bridge: 'Bridge', cairn: 'Cairn', castle: 'Castle', cathedral: 'Cathedral, abbey or minster', cave: 'Cave', church: 'Church or chapel', cityhall: 'Town or city hall', glacier_mark: 'Glacier', gorge: 'Gorge or canyon', hillfort: 'Hillfort', lighthouse: 'Lighthouse', mansion: 'Great house', monastery: 'Monastery', monument: 'Monument', mosque: 'Mosque', natpark: 'National park or protected area', pagoda: 'Pagoda', palace: 'Palace', park: 'Park or garden', parliament: 'Parliament or seat of government', pass: 'Mountain pass', pyramid: 'Pyramid', ruins: 'Ruins or archaeological site', skyscraper: 'Tall building', spring: 'Spring', standing_stone: 'Standing stone', stone_circle: 'Stone circle', synagogue: 'Synagogue', temple: 'Temple', tower: 'Tower', waterfall: 'Waterfall', windmill: 'Windmill' };
     const wd = q => q ? `<br><a href="https://www.wikidata.org/wiki/${esc(q)}" target="_blank" rel="noopener">Wikidata ${esc(q)}</a>` : '';
     const wp = w => w ? `<br><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(String(w).replace(/ /g, '_'))}" target="_blank" rel="noopener">Wikipedia</a>` : '';
@@ -395,11 +446,29 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       else if (id === 'rivers' || id === 'river-names') h = `<b class="t">${esc(nm || 'Unnamed ' + p.class)}</b>${cap(p.class || 'river')}.`;
       else if (id.startsWith('lake')) h = `<b class="t">${esc(nm)}</b>Lake.`;
       else if (id === 'parks') h = `<b class="t">${esc(nm)}</b>National park.`;
+      else if (id === 'xbeaches') h = `<b class="t">${esc(p.n)}</b>Beach (from Wikidata).`;
+      else if (id === 'xplaces') h = `<b class="t">${esc(p.n)}</b>${p.k === 1 ? 'Village' : 'Hamlet'} (from Wikidata).`;
       else h = `<b class="t">${esc(nm)}</b>${KIND[p.class] || cap(p.class || '')}${p.capital == 2 ? ', capital' : ''}.`;
-      new maplibregl.Popup({ closeButton: true, maxWidth: '280px' }).setLngLat(e.lngLat).setHTML(h).addTo(map);
+      // a little from Wikipedia for every named place, sight and feature
+      const DECOR = ['relief', 'trees', 'tufts', 'biome', 'town', 'serpents', 'ships', 'balloons'];
+      let look = null;
+      if (!DECOR.includes(id)) {
+        const title = p.w || null, qid = p.q || null;
+        let name = p.n || nm || p.name_en || p.name || '';
+        if (id === 'countries' || id.startsWith('regions')) name = cap(p.name || '');
+        const broad = ['countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names-ne', 'lake-names-ne', 'states', 'river-names', 'rivers', 'animals', 'flyers'].includes(id);
+        if (title || qid || name) look = { title, qid, name, broad, lat: e.lngLat.lat, lng: e.lngLat.lng };
+      }
+      if (look) h += '<div class="wk"><span class="wk-l">Looking it up on Wikipedia…</span></div>';
+      const pop = new maplibregl.Popup({ closeButton: true, maxWidth: '300px' }).setLngLat(e.lngLat).setHTML(h).addTo(map);
+      if (look) wiki(look).then(r => {
+        const el = pop.getElement() && pop.getElement().querySelector('.wk'); if (!el) return;
+        if (!r) { el.remove(); return; }
+        el.innerHTML = (r.img ? `<img src="${esc(r.img)}" alt="" loading="lazy">` : '') + `<p>${esc(r.text)}</p><a href="${esc(r.url)}" target="_blank" rel="noopener">Read more on Wikipedia →</a>`;
+      });
     });
     map.on('mousemove', e => {
-      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['cities', 'towns', 'villages', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
+      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'lake-names', 'parks', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
       map.getCanvas().style.cursor = fs.length ? 'pointer' : '';
     });
   }

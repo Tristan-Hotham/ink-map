@@ -518,7 +518,12 @@
         'text-justify': 'auto', 'symbol-sort-key': HZ, 'icon-overlap': 'never' }),
       paint: { 'text-color': INK.ink, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
     // villages and hamlets of Britain and Ireland that OpenStreetMap's tiles leave out (Wikidata; js/ink-worker.js drops any the tile already names)
-    L({ id: 'xplaces', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10,
+    // named beaches (Wikidata), lettered along the shore in small blue italic
+    L({ id: 'xbeaches', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10, filter: ['==', ['get', 'k'], 3],
+      layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'text-size': iz(10, 10.5, 14, 13), 'text-max-width': 8, 'text-letter-spacing': 0.04,
+        'text-variable-anchor': ['center', 'top', 'bottom'], 'symbol-sort-key': HZ }),
+      paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z') } }, 'names');
+    L({ id: 'xplaces', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10, filter: ['!=', ['get', 'k'], 3],
       layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Roman'], 'text-size': iz(10, ['case', ['==', ['get', 'k'], 1], 10.5, 10], 13, ['case', ['==', ['get', 'k'], 1], 14, 12.2], 15, ['case', ['==', ['get', 'k'], 1], 14.5, 13]),
         'icon-image': ['case', ['==', ['get', 'k'], 1], 's-village', 's-hamlet'], 'icon-size': iz(10, ['case', ['==', ['get', 'k'], 1], 0.6, 0.8], 13, ['case', ['==', ['get', 'k'], 1], 0.72, 0.9], 15, ['case', ['==', ['get', 'k'], 1], 0.75, 1]),
         'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.75, 'text-justify': 'auto', 'text-max-width': 9, 'text-letter-spacing': 0.04,
@@ -586,7 +591,7 @@
 
     // placement priority is top-down: reorder so names come in a sensible order (most important on top)
     const order = ['countries', 'regions-sea', 'regions-world', 'seas', 'landmarks', 'famous-peaks', 'cities', 'regions-land', 'states', 'towns', 'landmark-names', 'landmarks-near',
-      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
+      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'xbeaches', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     const final = rest.concat(named.reverse());

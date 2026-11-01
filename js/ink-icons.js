@@ -82,7 +82,7 @@
 
 
   // ---------------- bird's-eye houses (one oblique viewpoint for every house: depth runs up and to the right)
-  const WALL = '#F3E7C9', WALLSH = '#D9C59A', TILE = '#B4472E', TILESH = '#8C2E1E', TILE2 = '#9A5A32', TILE2SH = '#73401F';
+  const WALL = '#F3E7C9', WALLSH = '#D9C59A', TILE = '#B4472E', TILESH = '#8C2E1E', TILE2 = '#66809C', TILE2SH = '#475E78';   // red tiles and blue-grey slate, as on the old coloured town plans
   const DV = [0.38, -0.7];   // one unit of depth on paper
   function bhBox(p, x0, gy, w, hw, d, rh, opt) {
     opt = opt || {};
@@ -120,7 +120,7 @@
     // seen from high up, so roofs dominate and walls are short, as on Braun and Hogenberg's plans
     const gy = 26;
     if (v === 0) bhBox(p, 6, gy, 13, 4.5, 13, 3);
-    else if (v === 1) bhBox(p, 9, gy, 8, 6, 15, 4.5, { gable: true });
+    else if (v === 1) bhBox(p, 9, gy, 8, 6, 15, 4.5, { gable: true, brown: true });
     else if (v === 2) bhBox(p, 2, gy, 22, 4.5, 12, 3, { party: 3, doorAt: 0.2, chimney: true });
     else if (v === 3) bhBox(p, 8, gy, 10, 6, 14, 4.5, { gable: true, chimney: true });
     else if (v === 4) bhBox(p, 5, gy, 15, 5, 14, 3, { brown: true, chimney: true });

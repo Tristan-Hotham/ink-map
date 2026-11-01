@@ -16,7 +16,7 @@ Outputs
   data/landmarks.geojson, data/heritage/{x}_{y}.json (zoom-6 tiles) and index.json, data/peaks_famous.geojson, data/walls.geojson, data/decor.geojson,
   data/features_summary.json
 """
-import collections, csv, gzip, importlib.util, json, math, os, re, sys
+import glob, collections, csv, gzip, importlib.util, json, math, os, re, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from common import ROOT, DATA, GEO, dump as _dump
 
@@ -75,7 +75,13 @@ if os.path.exists(lmg):
     from shapely.geometry import LineString, MultiLineString
     from shapely.ops import linemerge
     groups = collections.defaultdict(list)
-    for e in json.load(open(lmg))['elements']:
+    # plus every town wall mapped in OpenStreetMap (historic=citywalls or barrier=city_wall), fetched by region (raw12/cw*.json)
+    els, seen = [], set()
+    for src in [lmg] + sorted(glob.glob(os.path.join(RAW, 'raw12', 'cw[0-9]*.json'))):
+        for e in json.load(open(src))['elements']:
+            if e['type'] == 'way' and e['id'] in seen: continue
+            seen.add(e['id']); els.append(e)
+    for e in els:
         if e['type'] != 'way' or len(e.get('geometry') or []) < 2: continue
         t = e.get('tags', {}); nm = t.get('name:en') or t.get('name')
         cw = t.get('historic') == 'citywalls' or t.get('barrier') == 'city_wall'
