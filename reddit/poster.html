@@ -42,9 +42,10 @@ html,body{margin:0;height:100%;background:#F3E5BF}
 </div>
 <div class="key" id="key"><h3>KEY</h3></div>
 <div class="foot"><span><b>maps.tristanhotham.com/ink-map</b> &nbsp;·&nbsp; Dr Tristan Hotham, Independent researcher, 2026<br>
-Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles · Elevation: AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1) · Lettering lines: Natural Earth, ONS (OGL v3)</span></div>
+Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles · Heritage: Wikidata (CC0) · Elevation: AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1) · Lettering lines: Natural Earth, ONS (OGL v3)</span></div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="../js/curated.js"></script>
+<script src="../js/ink-icons.js"></script>
 <script src="../js/ink-map.js"></script>
 <script>
 (async function () {
@@ -70,8 +71,13 @@ Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles · E
   row(x => { img(x, S.mountainSprite(1), 0.95, 6, 14); img(x, S.mountainSprite(4), 0.8, 50, 22); }, 'Mountains: high ground well above its surroundings');
   row(x => { img(x, S.hillSprite(2), 1.0, 4, 30); img(x, S.hillSprite(5), 0.9, 52, 36); }, 'Hills: lower, rolling ground');
   row(x => { for (const [v, c, dx, dy] of [[0, 0, 14, 14], [1, 0, 44, 20], [2, 1, 74, 12], [3, 0, 30, 34], [1, 1, 60, 36]]) img(x, S.treeSprite(v, !!c), 1.25, dx, dy); }, 'Woods and forests (OpenStreetMap)');
-  row(x => { img(x, S.settleSprite('city'), 1.6, 36, 18); }, 'City');
-  row(x => { img(x, S.settleSprite('town'), 1.6, 36, 18); }, 'Town');
+  const ic = (x, id, h, cx, cy) => { const c = InkIcons.draw(id, S.mountainSprite); if (!c) return; const k = h / c.height; x.drawImage(c, cx - c.width * k / 2, cy - c.height * k / 2, c.width * k, c.height * k); };
+  row(x => { ic(x, 's-capital', 52, 30, 40); ic(x, 's-city', 40, 84, 44); }, 'Capital and city');
+  row(x => { ic(x, 's-town', 36, 30, 44); ic(x, 's-village', 30, 84, 46); }, 'Town and village');
+  row(x => { ic(x, 'h-castle', 40, 22, 42); ic(x, 'h-cathedral', 46, 58, 40); ic(x, 'h-church', 36, 96, 44); }, 'Castle, cathedral, church');
+  row(x => { ic(x, 'h-stone_circle', 26, 26, 48); ic(x, 'h-hillfort', 30, 88, 46); }, 'Stone circle and hillfort');
+  row(x => { ic(x, 'l-bigben', 56, 30, 40); ic(x, 'l-stonehenge', 30, 84, 46); }, 'Famous monuments');
+  row(x => { ic(x, 'bigpeak', 54, 58, 40); }, 'Highest summits, with heights');
   row(x => { x.strokeStyle = InkMap.INK.blue; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(8, 60); x.bezierCurveTo(40, 20, 70, 70, 108, 24); x.stroke(); }, 'River');
   row(x => { x.lineCap = 'round'; [[InkMap.INK.ink, 3, 1], [InkMap.INK.ink, 1.2, 9], [InkMap.INK.blue, 1.2, 16], [InkMap.INK.blue, 1.2, 23], [InkMap.INK.blueSoft, 1.2, 30]].forEach(([c, w, o]) => { x.strokeStyle = c; x.lineWidth = w; x.beginPath(); x.moveTo(8, 18 + o); x.bezierCurveTo(40, 6 + o, 70, 30 + o, 108, 14 + o); x.stroke(); }); }, 'Coast, with ripples out to sea');
   row(x => { x.setLineDash([12, 5, 2, 5]); x.strokeStyle = InkMap.INK.ink; x.lineWidth = 2; x.beginPath(); x.moveTo(8, 40); x.lineTo(108, 40); x.stroke(); }, 'National border');

@@ -48,9 +48,10 @@ html,body{margin:0;height:100%;background:#F3E5BF;overflow:hidden}
 <div class="box inset" id="inset"><div id="uk"></div><div class="cap">BRITAIN &amp; IRELAND<small>the same map, zoomed in</small></div></div>
 <div class="box key" id="key"><h3>KEY</h3></div>
 <div class="box foot" id="foot"><b>maps.tristanhotham.com/ink-map</b> &nbsp;·&nbsp; Dr Tristan Hotham, Independent researcher, 2026<br>
-Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles<br>Elevation: AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1) · Biomes: RESOLVE Ecoregions 2017 (CC BY 4.0) · Lettering lines: Natural Earth, ONS (OGL v3)</div>
+Data: © OpenStreetMap contributors (ODbL) via OpenFreeMap and OpenMapTiles · Heritage and summits: Wikidata (CC0) · Ship lanes: CLIWOC<br>Elevation: AWS Terrain Tiles (Mapzen; SRTM, GMTED2010, ETOPO1) · Biomes: RESOLVE Ecoregions 2017 (CC BY 4.0) · Lettering lines: Natural Earth, ONS (OGL v3)</div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="../js/curated.js"></script>
+<script src="../js/ink-icons.js"></script>
 <script src="../js/ink-map.js"></script>
 <script>
 window.__posterReady = false;
@@ -81,13 +82,14 @@ window.__posterReady = false;
   const img = (x, sp, sc, dx, dy) => x.drawImage(sp, dx, dy, sp.width * sc, sp.height * sc);
   row(x => { img(x, S.mountainSprite(1), 0.9, 4, 12); img(x, S.mountainSprite(4), 0.75, 46, 20); }, 'Mountains: high ground well above its surroundings');
   row(x => { img(x, S.hillSprite(2), 0.95, 4, 26); img(x, S.hillSprite(5), 0.85, 50, 32); }, 'Hills: lower, rolling ground');
-  row(x => { for (const [v, c, dx, dy] of [[0, 0, 12, 12], [1, 0, 40, 18], [2, 1, 68, 10], [3, 0, 28, 32], [1, 1, 56, 34]]) img(x, S.treeSprite(v, !!c), 1.15, dx, dy); }, 'Woods and forests, close in');
-  row(x => { img(x, S.duneSprite(0), 1.4, 18, 16); }, 'Desert dunes');
-  row(x => { img(x, S.grassSprite(0), 1.6, 18, 26); img(x, S.grassSprite(1), 1.6, 58, 30); }, 'Grassland and steppe');
-  row(x => { img(x, S.rainSprite(0), 1.2, 6, 14); img(x, S.rainSprite(3), 1.2, 56, 18); }, 'Tropical rainforest');
-  row(x => { for (const [v, dx] of [[0, 18], [1, 44], [2, 70]]) img(x, S.taigaSprite(v), 1.35, dx, 14); }, 'Boreal forest (taiga)');
+  row(x => { img(x, S.duneSprite(0), 1.2, 4, 18); img(x, S.grassSprite(0), 1.5, 62, 28); }, 'Desert dunes; grassland and steppe');
+  row(x => { img(x, S.rainSprite(0), 1.1, 4, 16); for (const [v, dx] of [[0, 62], [1, 82]]) img(x, S.taigaSprite(v), 1.3, dx, 16); }, 'Rainforest; boreal forest (taiga)');
   row(x => { img(x, S.iceSprite(0), 1.3, 8, 20); img(x, S.iceSprite(1), 1.3, 52, 34); }, 'Ice sheets and glaciers');
-  row(x => { img(x, S.settleSprite('city'), 1.5, 34, 16); }, 'City');
+  const ic = (x, id, h, cx, cy) => { const c = InkIcons.draw(id, S.mountainSprite); if (!c) return; const k = h / c.height; x.drawImage(c, cx - c.width * k / 2, cy - c.height * k / 2, c.width * k, c.height * k); };
+  row(x => { ic(x, 's-capital', 46, 28, 36); ic(x, 's-city', 38, 78, 40); }, 'Capital and city');
+  row(x => { ic(x, 'l-tajmahal', 50, 30, 36); ic(x, 'bigpeak', 46, 80, 38); }, 'Famous monuments; great summits');
+  row(x => { ic(x, 'a_elephant', 36, 28, 40); ic(x, 'a_humpback_s', 34, 80, 40); }, 'Animals in their native ranges, and whales');
+  row(x => { ic(x, 'ship', 50, 30, 36); ic(x, 'a_serpent', 30, 80, 40); }, 'Sailing ships on old lanes; sea serpent (decorative)');
   row(x => { x.lineCap = 'round'; [[InkMap.INK.ink, 3, 1], [InkMap.INK.ink, 1.2, 9], [InkMap.INK.blue, 1.2, 16], [InkMap.INK.blue, 1.2, 23], [InkMap.INK.blueSoft, 1.2, 30]].forEach(([c, w, o]) => { x.strokeStyle = c; x.lineWidth = w; x.beginPath(); x.moveTo(8, 14 + o); x.bezierCurveTo(40, 4 + o, 66, 26 + o, 102, 10 + o); x.stroke(); }); }, 'Coast, with ripples out to sea');
   row(x => { x.setLineDash([12, 5, 2, 5]); x.strokeStyle = InkMap.INK.ink; x.lineWidth = 2; x.beginPath(); x.moveTo(8, 36); x.lineTo(102, 36); x.stroke(); }, 'National border');
   place(key, 55, -24, 0, 0);
