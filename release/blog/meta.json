@@ -1,0 +1,17 @@
+{
+  "title": "The Inked World: a hand-drawn style map of everywhere, from open data",
+  "slug": "ink-map",
+  "excerpt": "A zoomable map of the whole world in the style of a hand-inked fantasy map: little peaks on the real high ground, forests of tiny trees, rippled coasts and red lettering, drawn by rules from open data, from the globe down to a single fell.",
+  "seo_description": "A zoomable fantasy-style ink map of the whole world, drawn by rules from open elevation and OpenStreetMap data, from continents to single hills.",
+  "tags": [
+    "maps",
+    "cartography",
+    "fantasy maps",
+    "OpenStreetMap",
+    "elevation",
+    "biomes",
+    "data visualisation",
+    "open data"
+  ],
+  "header_alt": "Title card reading 'The Inked World' in black and red on parchment, beside an ink-style map of Cumbria and the Yorkshire Dales with rows of small inked peaks, blue-rippled coasts and red names such as North Pennines and Yorkshire Dales."
+}

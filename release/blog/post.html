@@ -1,0 +1,141 @@
+<!-- wp:paragraph -->
+<p><em>The maps at the front of fantasy novels draw one place at one scale, by hand. I wanted one that draws the whole world, at every zoom, from open data: little ink peaks on the real high ground, forests of tiny trees, rippled coasts and red lettering, from the Pacific down to a single Lakeland fell.</em></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://maps.tristanhotham.com/ink-map/">Explore the interactive version</a></div>
+<!-- /wp:button -->
+<!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://doi.org/10.5281/zenodo.23860253">Read the paper</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons -->
+
+<!-- wp:paragraph -->
+<p>Everyone knows the look. Rows of small inked mountains marching across the land, clusters of trees for the forests, the coast traced again and again with thin lines as if the sea were lapping at it, and the names of kingdoms and seas lettered in red, spaced wide and bent along the land. It is the look of the map in the front of a fantasy novel, and of a lot of older printed maps too. It is lovely, and it is always made by hand, for one place, at one scale.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Web maps are the opposite: they show anywhere, at any zoom, in one smooth modern style. So I tried to make a map that does both. Everything on it is drawn by a rule from open data, live in your browser. Nothing is traced from any artist's map.</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_world.png|A world map on yellow parchment. Coasts are black ink lines with thin blue ripples out to sea; the Rockies, Andes, Alps, Himalaya and the ranges of central Asia are rows of small inked peaks; country, ocean and sea names are lettered in red|The whole world, drawn by the rules. Every peak stands on real high ground.}}
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Mountains from elevation</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The mountains come from a free elevation model, the AWS Terrain Tiles. The map lays a grid over the land, with cells about 14 screen pixels across, and finds the highest point in each cell. If that point rises far enough above the lowest ground around it, it gets a little inked peak; if it rises less, a rounded hill; if hardly at all, nothing. The trick is that "far enough" depends on the scale. Zoomed right out, where a cell is about 237 km across, a range has to rise about 477 m above its surroundings to earn a peak. In the Lake District at zoom 11, where a cell is about 311 m across, a crag needs about 130 m.</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_method.png|Two panels of shaded elevation over the central Lake District with a square grid. Left: a red dot on the highest point of each cell that rises above its surroundings. Right: the same points after spacing, shown as black triangles for mountains and dashes for hills|The rule on real elevation in the Lake District: each cell's highest point, then the peaks that are kept.}}
+
+<!-- wp:paragraph -->
+<p>Each cell splits into four as you zoom in, and the highest point of a cell is always the highest point of one of its four children. So a peak drawn at one zoom is still there at the next. Zooming in never swaps the mountains out; it adds smaller ones between them, fading them in. The pen width, the size of the lettering, the number of ripples along the coast and the blue wash on the sea all change smoothly with the zoom, so it stays one drawing.</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_zoom.png|Nine panels of the ink map centred on the Lake District from zoom 3 to zoom 11: north-west Europe, the British Isles, northern England, Cumbria, then the fells with named peaks, villages, lakes and woods|One continuous zoom, from zoom 3 to zoom 11. The same hand at every scale.}}
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">The glyphs</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The little drawings are painted by the page itself when it loads, with a slight wobble in every stroke: eight mountains with hatched shadow sides, eight rounded hills, broadleaf and conifer trees, tufts of marsh grass in blue and of moorland in black, and small symbols for cities, towns and villages. Trees only grow inside woods mapped in OpenStreetMap, and tufts inside its wetlands and heaths, so close in you can see the real forests (from zoom 7) and moors (from zoom 9).</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_glyphs.png|A sheet of hand-drawn style glyphs on parchment: eight inked mountains with hatched shading, eight rounded hills, broadleaf and conifer trees, blue marsh tufts, black moorland tufts, crescent dunes, grass tufts, rainforest crowns and a palm, small taiga conifers, blue ice hatching, and settlement symbols|The glyph set. Each one is drawn with a slight wobble so no line is perfectly straight.}}
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Lettering the world</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>On a hand-drawn map the names matter as much as the mountains. Countries are lettered in red capitals along a gentle curve fitted to their shape, and for 17 awkward ones, such as Russia, Chile, Norway and Indonesia, I drew the curve myself. I also placed 167 names by hand: 62 hills, moors and seas around Britain and Ireland, and 105 oceans, seas, ranges and deserts around the world, from the Pacific and the Sahara to the Tian Shan. Ranges are lettered along their flanks, where a map maker would leave room, not on top of the peaks. Names are placed first and never overlap, and the mountains step aside wherever a name sits.</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_asia.png|The ink map of central and South Asia: dense rows of inked peaks over the Himalaya, the Tibetan Plateau, the Tian Shan and the mountains of Iran and Afghanistan, with HIMALAYA, TIBETAN PLATEAU, TAKLAMAKAN DESERT and country names lettered in red|Central and South Asia. Great ranges stay readable as ridges and summits.}}
+
+<!-- wp:pullquote -->
+<figure class="wp-block-pullquote"><blockquote><p>Zooming in never swaps the mountains out. It adds smaller ones between them.</p></blockquote></figure>
+<!-- /wp:pullquote -->
+
+<!-- wp:paragraph -->
+<p>Great ranges were the hardest part. In the Himalaya every patch of ground is steep, so every cell earns a peak and the map turns into a solid block of ink. So where the ground is saturated with strong relief, a mountain that has three or more higher mountains around it is left out. What remains are the ridges and summits. In hill country like the Lake District this almost never kicks in, so the fells stay as rich as they were. And no glyph is ever drawn on water: each tile reads the sea and lakes from OpenStreetMap, so a seamount, or a speck of an island too small to see, never puts a lone mountain in the middle of the ocean.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Only where the mountains are</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>My first world map had a problem: it put peaks across the Sahara, Arabia and the Australian interior. Those places are high, and on coarse elevation tiles they rise a long way above the nearest lowland, but they are not mountains. So every candidate peak now also has to be rugged: the ground close around it must be steep, by a bar that rises as the elevation gets more detailed. In 181 ecoregions whose very names say mountains, like the High Atlas or the Tibesti, the bar is lower; in open deserts, steppe and forest it is higher. The Ahaggar and Tibesti keep their peaks; the sand seas, the Great Plains and the floor of the Tibetan Plateau do not.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Between the ranges the map is drawn by biome, from the RESOLVE Ecoregions map of the world's 846 ecoregions: crescent dunes in the deserts, sparse tufts on the steppe and savanna, crowded round crowns and the odd palm in the rainforest, small pointed conifers across the taiga, and pale blue hatching on the ice of Greenland and Antarctica.</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_sahara.png|The ink map of the Sahara: small crescent dune glyphs fill the desert, clusters of inked peaks stand on the Atlas, the Ahaggar and the Tibesti, grass tufts dot the Sahel and round rainforest crowns line the Gulf of Guinea|The Sahara: dunes, with peaks only where there are real mountains.}}
+
+{{IMG|b_amazon.png|The ink map of the Amazon basin covered in small rounded rainforest crowns and palms, with the Andes drawn as dense rows of peaks to the west|The Amazon in rainforest crowns, the Andes in peaks.}}
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Down to a single fell</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Close in, the map fills up with what OpenStreetMap knows: villages with little ink houses, rivers and lakes named in blue, fells with their heights, faint dotted roads and tracks. In the view of the central Lake District below there are 1,950 mountains, 2,562 hills, 1,892 trees and 8,007 tufts of moorland and marsh, each one placed by a rule.</p>
+<!-- /wp:paragraph -->
+
+{{IMG|b_lakes.png|Close-up of the ink map over the central Lake District: inked peaks over the fells with names and heights such as Helvellyn 950 m, blue rivers and lakes including Grasmere, red village names such as Ambleside, small trees in the valleys and moorland tufts|The central fells at zoom 11.}}
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How I did this</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The page uses MapLibre, with vector tiles of OpenStreetMap from OpenFreeMap, which is free and needs no key, and the AWS Terrain Tiles for elevation. A small background worker turns elevation and land cover into glyph positions for each tile as you pan and zoom, so the whole world works with nothing pre-rendered. The lettering uses the free MedievalSharp and IM Fell fonts. There is a layers panel, including a plain modern map to check where you are, search for places and peaks, and a full-screen button. The paper sets out every rule and its limits: peaks sit on the high points of grid cells rather than on named summits, their size shows local relief rather than height, and woods are only as complete as OpenStreetMap.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://maps.tristanhotham.com/ink-map/">Explore the interactive version</a></div>
+<!-- /wp:button -->
+<!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://doi.org/10.5281/zenodo.23860253">Read the paper</a></div>
+<!-- /wp:button -->
+<!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://github.com/Tristan-Hotham/ink-map">Data and code</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Notes and sources</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> (Open Database Licence), as vector tiles from <a href="https://openfreemap.org/">OpenFreeMap</a> in the <a href="https://openmaptiles.org/">OpenMapTiles</a> schema.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Elevation: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>, built by Mapzen from SRTM, GMTED2010, ETOPO1 and other sources.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Biomes: RESOLVE <a href="https://ecoregions.appspot.com/">Ecoregions 2017</a> (CC BY 4.0), Dinerstein et al. (2017) <a href="https://doi.org/10.1093/biosci/bix014">BioScience 67, 534 to 545</a>.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="https://www.naturalearthdata.com/">Natural Earth</a> country outlines, places and states (public domain), and ONS Local Authority District boundaries (Open Government Licence v3.0), used for the lettering and search.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Fonts: MedievalSharp and the IM Fell types (SIL Open Font License). Map library: <a href="https://maplibre.org/">MapLibre GL JS</a>.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>The design is my own; it was inspired by the general look of hand-drawn maps, and no artwork, lettering or emblem from any map was traced or reused.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>I wrote the text, with drafting and editing assistance from Claude (Anthropic), which also helped prepare the analysis code. I reviewed and checked all text and results.</li>
+<!-- /wp:list-item -->
+</ul>
+<!-- /wp:list -->
