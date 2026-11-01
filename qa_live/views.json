@@ -1,0 +1,205 @@
+[
+ {
+  "id": "world_z1.5",
+  "lng": 10,
+  "lat": 20,
+  "zoom": 1.5,
+  "check": "no glyphs at sea; ocean and country names curved, none overlapping"
+ },
+ {
+  "id": "world_z2.5",
+  "lng": 60,
+  "lat": 30,
+  "zoom": 2.5,
+  "check": "Himalaya, Sahara, Arabian Sea, Indian Ocean lettered; ranges read as rows of peaks"
+ },
+ {
+  "id": "alps_z6",
+  "lng": 10.5,
+  "lat": 46.4,
+  "zoom": 6,
+  "check": "Alps lettered on a curve; dense peaks but paper visible between them"
+ },
+ {
+  "id": "alps_z9",
+  "lng": 7.75,
+  "lat": 45.98,
+  "zoom": 9,
+  "check": "ridges and summits, not a black mass; peak names with heights"
+ },
+ {
+  "id": "himalaya_z5",
+  "lng": 85.5,
+  "lat": 29.5,
+  "zoom": 5,
+  "check": "Himalaya and Tibetan Plateau lettered; plateau not solid with glyphs"
+ },
+ {
+  "id": "everest_z8",
+  "lng": 86.9,
+  "lat": 27.95,
+  "zoom": 8,
+  "check": "ridges and summits, not a solid mass"
+ },
+ {
+  "id": "everest_z10",
+  "lng": 86.925,
+  "lat": 27.99,
+  "zoom": 10,
+  "check": "Mount Everest named with height; glyphs give way to names"
+ },
+ {
+  "id": "rockies_z6",
+  "lng": -112.5,
+  "lat": 46.0,
+  "zoom": 6,
+  "check": "Rocky Mountains lettered; plains to the east sparse, with hills"
+ },
+ {
+  "id": "rockies_z9",
+  "lng": -115.6,
+  "lat": 51.2,
+  "zoom": 9,
+  "check": "Banff: peaks, forests, lakes, towns"
+ },
+ {
+  "id": "andes_z5",
+  "lng": -69.0,
+  "lat": -24.0,
+  "zoom": 5,
+  "check": "Andes, Atacama and Chile lettered; no glyphs in the Pacific"
+ },
+ {
+  "id": "andes_z8",
+  "lng": -70.0,
+  "lat": -32.8,
+  "zoom": 8,
+  "check": "Aconcagua area: ridges, not a mass"
+ },
+ {
+  "id": "sahara_z4",
+  "lng": 8.0,
+  "lat": 24.0,
+  "zoom": 4,
+  "check": "Sahara lettered; Ahaggar and Tibesti as peaks, flat desert left bare"
+ },
+ {
+  "id": "japan_z6",
+  "lng": 138.5,
+  "lat": 36.2,
+  "zoom": 6,
+  "check": "Japan lettered along Honshu; Sea of Japan curved; glyphs only on land"
+ },
+ {
+  "id": "nz_z6",
+  "lng": 171.0,
+  "lat": -43.5,
+  "zoom": 6,
+  "check": "Southern Alps lettered; New Zealand curved across both islands"
+ },
+ {
+  "id": "norway_z7",
+  "lng": 6.8,
+  "lat": 61.3,
+  "zoom": 7,
+  "check": "fjords: no glyphs on the water; forests and peaks between them"
+ },
+ {
+  "id": "sahara_z7_ahaggar",
+  "lng": 5.6,
+  "lat": 23.3,
+  "zoom": 7,
+  "check": "Ahaggar: peaks on the massif, dunes and sand around it, no peaks on the plain"
+ },
+ {
+  "id": "tibesti_z6",
+  "lng": 18.4,
+  "lat": 21.0,
+  "zoom": 6,
+  "check": "Tibesti peaks; dunes around; flat desert bare of peaks"
+ },
+ {
+  "id": "sahara_z7_erg",
+  "lng": 7.5,
+  "lat": 30.5,
+  "zoom": 7,
+  "check": "Grand Erg Oriental: dunes only, no mountains"
+ },
+ {
+  "id": "empty_quarter_z5",
+  "lng": 50.0,
+  "lat": 20.0,
+  "zoom": 5,
+  "check": "Rub' al Khali: dunes, no peaks; Hajar and Yemen mountains at the edges"
+ },
+ {
+  "id": "amazon_z5",
+  "lng": -62.0,
+  "lat": -4.0,
+  "zoom": 5,
+  "check": "dense rounded rainforest crowns and palms, blue rivers, no mountains"
+ },
+ {
+  "id": "siberia_z4",
+  "lng": 100.0,
+  "lat": 62.0,
+  "zoom": 4,
+  "check": "taiga conifers; peaks only on the Putorana and real ranges, tundra tufts to the north"
+ },
+ {
+  "id": "greenland_z3",
+  "lng": -42.0,
+  "lat": 72.0,
+  "zoom": 3,
+  "check": "blue ice hatching on the ice cap; mountains only on the rugged coasts"
+ },
+ {
+  "id": "great_plains_z5",
+  "lng": -100.0,
+  "lat": 41.0,
+  "zoom": 5,
+  "check": "sparse grass tufts, no peaks; Rockies to the west"
+ },
+ {
+  "id": "tibet_z6",
+  "lng": 88.0,
+  "lat": 32.5,
+  "zoom": 6,
+  "check": "peaks on the ranges, the plateau floor left as hills or bare"
+ },
+ {
+  "id": "kalahari_z5",
+  "lng": 22.0,
+  "lat": -23.5,
+  "zoom": 5,
+  "check": "dunes and grass, no peaks"
+ },
+ {
+  "id": "australia_z4",
+  "lng": 133.0,
+  "lat": -25.0,
+  "zoom": 4,
+  "check": "desert dunes in the interior, peaks only on the MacDonnell Ranges and the Great Dividing Range"
+ },
+ {
+  "id": "brazil_z5",
+  "lng": -47.0,
+  "lat": -15.5,
+  "zoom": 5,
+  "check": "planalto: grass and hills, no rows of peaks"
+ },
+ {
+  "id": "gb_z5.3",
+  "lng": -3.3,
+  "lat": 54.6,
+  "zoom": 5.3,
+  "check": "regression: Great Britain as before"
+ },
+ {
+  "id": "lakes_z11",
+  "lng": -3.04,
+  "lat": 54.45,
+  "zoom": 11,
+  "check": "regression: Lake District as before"
+ }
+]

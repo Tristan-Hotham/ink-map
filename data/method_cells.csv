@@ -1,0 +1,3693 @@
+cell_i,cell_j,highest_m,relief_m,kind
+1,1,138,62,
+2,1,188,99,hill
+3,1,196,107,spaced out
+4,1,196,110,hill
+5,1,185,105,hill
+6,1,200,127,hill
+7,1,196,125,spaced out
+8,1,103,32,
+9,1,106,39,
+10,1,152,84,hill
+11,1,151,83,spaced out
+12,1,80,12,
+13,1,92,24,
+14,1,90,22,
+15,1,160,89,hill
+16,1,308,236,mountain
+17,1,353,219,mountain
+18,1,544,372,mountain
+19,1,719,489,spaced out
+20,1,720,422,mountain
+21,1,650,352,mountain
+22,1,542,245,spaced out
+23,1,551,121,hill
+24,1,633,253,spaced out
+25,1,615,254,spaced out
+26,1,430,86,hill
+27,1,464,131,hill
+28,1,493,160,hill
+29,1,516,183,mountain
+30,1,618,278,spaced out
+31,1,689,288,mountain
+32,1,672,315,spaced out
+33,1,600,300,spaced out
+34,1,517,267,spaced out
+35,1,470,250,spaced out
+36,1,364,144,spaced out
+37,1,231,11,
+38,1,248,29,
+39,1,315,93,hill
+40,1,356,127,spaced out
+41,1,357,60,
+42,1,352,54,
+43,1,352,83,spaced out
+44,1,333,87,spaced out
+45,1,294,62,
+46,1,257,36,
+47,1,241,42,
+48,1,228,37,
+49,1,213,24,
+50,1,231,41,
+51,1,239,49,
+52,1,235,52,
+1,2,159,83,hill
+2,2,176,89,spaced out
+3,2,185,96,spaced out
+4,2,184,97,spaced out
+5,2,122,42,
+6,2,99,25,
+7,2,153,82,spaced out
+8,2,266,196,spaced out
+9,2,312,244,spaced out
+10,2,327,259,mountain
+11,2,285,217,spaced out
+12,2,72,4,
+13,2,83,15,
+14,2,83,15,
+15,2,143,74,hill
+16,2,380,307,mountain
+17,2,422,290,mountain
+18,2,525,304,spaced out
+19,2,810,515,spaced out
+20,2,823,367,mountain
+21,2,683,225,spaced out
+22,2,547,113,hill
+23,2,502,90,hill
+24,2,534,153,hill
+25,2,513,153,spaced out
+26,2,481,136,hill
+27,2,602,257,spaced out
+28,2,602,257,mountain
+29,2,587,238,mountain
+30,2,634,240,mountain
+31,2,655,265,spaced out
+32,2,624,274,spaced out
+33,2,539,239,mountain
+34,2,524,274,mountain
+35,2,460,252,mountain
+36,2,389,181,spaced out
+37,2,237,29,
+38,2,232,24,
+39,2,315,94,spaced out
+40,2,328,99,hill
+41,2,344,93,hill
+42,2,340,59,
+43,2,328,63,
+44,2,306,60,
+45,2,279,48,
+46,2,275,51,
+47,2,270,69,spaced out
+48,2,241,49,
+49,2,217,25,
+50,2,232,40,
+51,2,247,55,
+52,2,245,51,
+1,3,118,43,
+2,3,118,31,
+3,3,127,38,
+4,3,130,43,
+5,3,161,81,hill
+6,3,189,113,hill
+7,3,225,150,hill
+8,3,315,240,spaced out
+9,3,340,266,mountain
+10,3,325,257,spaced out
+11,3,286,218,spaced out
+12,3,116,49,
+13,3,84,16,
+14,3,91,23,
+15,3,169,101,hill
+16,3,513,441,spaced out
+17,3,530,398,mountain
+18,3,651,360,mountain
+19,3,904,551,spaced out
+20,3,902,409,spaced out
+21,3,686,215,mountain
+22,3,566,132,hill
+23,3,546,134,hill
+24,3,479,99,hill
+25,3,421,50,
+26,3,537,166,spaced out
+27,3,627,256,mountain
+28,3,641,236,spaced out
+29,3,664,209,spaced out
+30,3,664,209,mountain
+31,3,666,275,spaced out
+32,3,668,324,spaced out
+33,3,466,165,mountain
+34,3,498,253,spaced out
+35,3,510,313,mountain
+36,3,388,191,spaced out
+37,3,231,34,
+38,3,253,47,
+39,3,290,69,spaced out
+40,3,327,99,hill
+41,3,326,82,hill
+42,3,320,49,
+43,3,308,43,
+44,3,293,31,
+45,3,280,36,
+46,3,287,59,
+47,3,278,74,spaced out
+48,3,242,47,
+49,3,225,31,
+50,3,230,36,
+51,3,255,62,
+52,3,269,68,spaced out
+1,4,126,50,
+2,4,142,63,
+3,4,163,74,hill
+4,4,179,85,hill
+5,4,277,183,spaced out
+6,4,356,262,spaced out
+7,4,357,260,spaced out
+8,4,272,173,mountain
+9,4,269,97,hill
+10,4,260,192,mountain
+11,4,282,214,mountain
+12,4,242,174,spaced out
+13,4,84,16,
+14,4,91,24,
+15,4,194,126,hill
+16,4,554,478,mountain
+17,4,662,530,spaced out
+18,4,659,367,spaced out
+19,4,905,507,mountain
+20,4,905,393,mountain
+21,4,776,305,mountain
+22,4,655,221,mountain
+23,4,610,198,spaced out
+24,4,502,164,mountain
+25,4,463,125,spaced out
+26,4,553,215,mountain
+27,4,616,259,spaced out
+28,4,649,216,mountain
+29,4,741,215,spaced out
+30,4,778,317,mountain
+31,4,663,273,spaced out
+32,4,670,326,mountain
+33,4,568,255,mountain
+34,4,508,286,mountain
+35,4,503,322,spaced out
+36,4,311,129,hill
+37,4,227,46,
+38,4,272,88,hill
+39,4,269,60,
+40,4,285,57,
+41,4,301,57,
+42,4,300,37,
+43,4,304,42,
+44,4,298,40,
+45,4,279,23,
+46,4,287,51,
+47,4,277,71,spaced out
+48,4,251,49,
+49,4,250,48,
+50,4,248,46,
+51,4,257,55,
+52,4,274,53,
+1,5,114,49,
+2,5,159,92,spaced out
+3,5,211,132,hill
+4,5,273,156,hill
+5,5,306,190,mountain
+6,5,365,231,mountain
+7,5,364,194,spaced out
+8,5,317,147,spaced out
+9,5,318,143,hill
+10,5,271,132,hill
+11,5,279,211,spaced out
+12,5,241,173,spaced out
+13,5,75,7,
+14,5,87,19,
+15,5,173,105,spaced out
+16,5,491,423,spaced out
+17,5,681,592,mountain
+18,5,729,447,mountain
+19,5,880,508,spaced out
+20,5,891,519,spaced out
+21,5,825,454,spaced out
+22,5,651,178,mountain
+23,5,600,178,spaced out
+24,5,549,269,mountain
+25,5,464,184,spaced out
+26,5,522,242,mountain
+27,5,589,302,mountain
+28,5,663,233,mountain
+29,5,834,338,spaced out
+30,5,840,478,mountain
+31,5,699,337,spaced out
+32,5,619,355,mountain
+33,5,549,337,spaced out
+34,5,495,320,spaced out
+35,5,415,241,spaced out
+36,5,231,58,
+37,5,215,41,
+38,5,256,73,spaced out
+39,5,272,63,
+40,5,304,68,hill
+41,5,297,53,
+42,5,291,28,
+43,5,304,45,
+44,5,299,48,
+45,5,272,31,
+46,5,274,45,
+47,5,273,52,
+48,5,271,71,spaced out
+49,5,275,76,spaced out
+50,5,290,90,spaced out
+51,5,284,85,spaced out
+52,5,280,111,hill
+1,6,97,34,
+2,6,177,113,hill
+3,6,275,210,mountain
+4,6,304,219,spaced out
+5,6,305,136,hill
+6,6,295,111,hill
+7,6,328,97,hill
+8,6,442,248,spaced out
+9,6,448,253,spaced out
+10,6,434,239,mountain
+11,6,426,358,spaced out
+12,6,427,359,mountain
+13,6,159,91,hill
+14,6,73,5,
+15,6,151,83,hill
+16,6,351,282,spaced out
+17,6,471,401,mountain
+18,6,690,552,spaced out
+19,6,692,473,spaced out
+20,6,821,602,spaced out
+21,6,829,597,mountain
+22,6,729,335,mountain
+23,6,701,278,spaced out
+24,6,700,452,spaced out
+25,6,520,273,spaced out
+26,6,534,287,mountain
+27,6,733,464,spaced out
+28,6,790,360,mountain
+29,6,835,487,spaced out
+30,6,839,606,spaced out
+31,6,701,515,mountain
+32,6,604,436,spaced out
+33,6,529,366,mountain
+34,6,417,254,mountain
+35,6,336,173,spaced out
+36,6,212,47,
+37,6,222,52,
+38,6,251,69,hill
+39,6,275,67,hill
+40,6,301,61,
+41,6,300,42,
+42,6,285,21,
+43,6,285,26,
+44,6,268,18,
+45,6,267,38,
+46,6,275,66,hill
+47,6,271,69,spaced out
+48,6,271,83,spaced out
+49,6,276,102,hill
+50,6,292,121,hill
+51,6,288,129,spaced out
+52,6,278,128,spaced out
+1,7,80,18,
+2,7,126,62,
+3,7,274,208,spaced out
+4,7,323,250,spaced out
+5,7,403,281,spaced out
+6,7,413,182,spaced out
+7,7,401,169,spaced out
+8,7,455,202,mountain
+9,7,497,256,mountain
+10,7,489,263,spaced out
+11,7,481,387,spaced out
+12,7,458,390,mountain
+13,7,318,250,spaced out
+14,7,88,20,
+15,7,79,11,
+16,7,317,249,spaced out
+17,7,465,396,spaced out
+18,7,498,428,mountain
+19,7,495,418,spaced out
+20,7,628,524,spaced out
+21,7,682,500,mountain
+22,7,691,486,spaced out
+23,7,705,440,spaced out
+24,7,705,481,mountain
+25,7,525,302,mountain
+26,7,561,337,mountain
+27,7,763,537,spaced out
+28,7,780,561,mountain
+29,7,728,547,spaced out
+30,7,600,444,mountain
+31,7,475,324,spaced out
+32,7,430,280,mountain
+33,7,364,214,spaced out
+34,7,246,91,hill
+35,7,203,42,
+36,7,198,34,
+37,7,222,53,
+38,7,253,70,hill
+39,7,283,69,hill
+40,7,283,41,
+41,7,297,35,
+42,7,301,38,
+43,7,298,40,
+44,7,293,59,
+45,7,285,56,
+46,7,258,49,
+47,7,253,50,
+48,7,228,40,
+49,7,217,46,
+50,7,213,47,
+51,7,218,60,
+52,7,217,68,hill
+1,8,180,117,spaced out
+2,8,87,23,
+3,8,154,89,hill
+4,8,327,254,mountain
+5,8,425,330,mountain
+6,8,444,313,mountain
+7,8,414,254,spaced out
+8,8,406,192,mountain
+9,8,416,162,mountain
+10,8,522,238,spaced out
+11,8,528,342,mountain
+12,8,502,433,spaced out
+13,8,324,256,mountain
+14,8,88,20,
+15,8,70,2,
+16,8,112,44,
+17,8,214,144,hill
+18,8,291,221,spaced out
+19,8,291,219,mountain
+20,8,377,299,mountain
+21,8,426,338,mountain
+22,8,524,409,mountain
+23,8,569,391,spaced out
+24,8,585,414,mountain
+25,8,505,333,spaced out
+26,8,550,378,spaced out
+27,8,634,459,mountain
+28,8,613,459,spaced out
+29,8,546,402,mountain
+30,8,420,277,mountain
+31,8,323,180,mountain
+32,8,219,76,hill
+33,8,188,40,
+34,8,192,37,
+35,8,210,48,
+36,8,223,58,
+37,8,239,70,hill
+38,8,274,87,hill
+39,8,285,70,hill
+40,8,283,41,
+41,8,348,85,hill
+42,8,394,130,hill
+43,8,371,117,spaced out
+44,8,290,56,
+45,8,285,56,
+46,8,253,44,
+47,8,246,43,
+48,8,235,47,
+49,8,229,58,
+50,8,206,40,
+51,8,214,55,
+52,8,214,65,spaced out
+1,9,191,127,hill
+2,9,95,31,
+3,9,112,46,
+4,9,282,209,mountain
+5,9,361,270,mountain
+6,9,360,230,spaced out
+7,9,349,190,spaced out
+8,9,462,248,spaced out
+9,9,431,177,spaced out
+10,9,484,200,mountain
+11,9,514,278,mountain
+12,9,513,428,spaced out
+13,9,408,340,spaced out
+14,9,130,62,
+15,9,75,7,
+16,9,72,3,
+17,9,75,6,
+18,9,99,28,
+19,9,165,93,hill
+20,9,217,143,hill
+21,9,267,187,mountain
+22,9,316,223,mountain
+23,9,344,200,spaced out
+24,9,382,250,mountain
+25,9,367,236,spaced out
+26,9,409,278,spaced out
+27,9,424,291,mountain
+28,9,396,260,mountain
+29,9,254,118,hill
+30,9,208,73,hill
+31,9,174,36,
+32,9,186,43,
+33,9,206,58,
+34,9,222,68,hill
+35,9,235,74,hill
+36,9,253,87,hill
+37,9,276,100,hill
+38,9,297,95,hill
+39,9,297,73,spaced out
+40,9,313,57,
+41,9,501,232,spaced out
+42,9,521,261,mountain
+43,9,434,181,mountain
+44,9,289,55,
+45,9,317,88,hill
+46,9,294,81,hill
+47,9,283,78,spaced out
+48,9,254,66,hill
+49,9,247,76,hill
+50,9,276,111,spaced out
+51,9,277,123,hill
+52,9,274,122,spaced out
+1,10,213,144,hill
+2,10,117,48,
+3,10,93,25,
+4,10,137,62,
+5,10,277,186,mountain
+6,10,327,197,mountain
+7,10,350,191,mountain
+8,10,496,282,mountain
+9,10,507,255,spaced out
+10,10,508,216,mountain
+11,10,482,243,mountain
+12,10,441,345,mountain
+13,10,395,326,spaced out
+14,10,142,73,hill
+15,10,77,8,
+16,10,73,4,
+17,10,73,4,
+18,10,79,8,
+19,10,87,15,
+20,10,110,35,
+21,10,180,101,hill
+22,10,348,258,spaced out
+23,10,353,239,mountain
+24,10,298,178,mountain
+25,10,233,114,hill
+26,10,223,92,spaced out
+27,10,227,94,hill
+28,10,208,74,hill
+29,10,168,33,
+30,10,175,39,
+31,10,201,63,
+32,10,233,90,hill
+33,10,264,116,hill
+34,10,281,117,hill
+35,10,280,87,hill
+36,10,309,115,hill
+37,10,316,103,hill
+38,10,331,105,hill
+39,10,331,88,hill
+40,10,344,68,hill
+41,10,471,197,spaced out
+42,10,499,242,spaced out
+43,10,417,164,mountain
+44,10,327,86,spaced out
+45,10,411,171,mountain
+46,10,396,158,hill
+47,10,353,130,spaced out
+48,10,267,62,
+49,10,282,80,spaced out
+50,10,285,88,hill
+51,10,277,133,hill
+52,10,241,96,spaced out
+1,11,259,186,mountain
+2,11,120,47,
+3,11,115,42,
+4,11,140,65,hill
+5,11,367,276,spaced out
+6,11,468,338,mountain
+7,11,367,196,spaced out
+8,11,431,216,spaced out
+9,11,498,246,spaced out
+10,11,501,204,spaced out
+11,11,459,220,mountain
+12,11,356,223,mountain
+13,11,334,258,spaced out
+14,11,252,181,mountain
+15,11,124,53,
+16,11,75,4,
+17,11,81,11,
+18,11,83,12,
+19,11,86,14,
+20,11,96,22,
+21,11,173,96,spaced out
+22,11,349,264,spaced out
+23,11,350,260,spaced out
+24,11,264,157,spaced out
+25,11,193,75,hill
+26,11,184,53,
+27,11,177,44,
+28,11,174,39,
+29,11,178,44,
+30,11,244,108,hill
+31,11,287,149,hill
+32,11,335,192,mountain
+33,11,362,195,spaced out
+34,11,368,180,mountain
+35,11,360,153,hill
+36,11,351,129,hill
+37,11,369,130,hill
+38,11,377,120,hill
+39,11,363,83,spaced out
+40,11,357,70,hill
+41,11,344,73,hill
+42,11,348,91,hill
+43,11,333,80,spaced out
+44,11,349,96,hill
+45,11,458,205,spaced out
+46,11,492,236,mountain
+47,11,393,168,mountain
+48,11,278,86,hill
+49,11,287,124,hill
+50,11,281,137,spaced out
+51,11,273,128,hill
+52,11,235,91,spaced out
+1,12,232,159,spaced out
+2,12,119,46,
+3,12,118,46,
+4,12,165,89,hill
+5,12,368,272,spaced out
+6,12,506,364,spaced out
+7,12,503,256,spaced out
+8,12,446,200,mountain
+9,12,603,351,mountain
+10,12,524,227,spaced out
+11,12,429,188,mountain
+12,12,463,305,mountain
+13,12,342,263,mountain
+14,12,308,235,spaced out
+15,12,153,82,hill
+16,12,84,12,
+17,12,88,16,
+18,12,92,20,
+19,12,89,16,
+20,12,91,16,
+21,12,107,31,
+22,12,143,58,
+23,12,180,91,hill
+24,12,213,105,hill
+25,12,213,94,spaced out
+26,12,200,69,spaced out
+27,12,207,73,hill
+28,12,158,23,
+29,12,236,101,spaced out
+30,12,399,263,spaced out
+31,12,415,267,mountain
+32,12,458,277,mountain
+33,12,452,245,spaced out
+34,12,410,167,mountain
+35,12,377,104,hill
+36,12,388,112,hill
+37,12,403,117,hill
+38,12,403,88,spaced out
+39,12,391,75,hill
+40,12,379,97,spaced out
+41,12,343,73,spaced out
+42,12,312,55,
+43,12,281,27,
+44,12,319,65,spaced out
+45,12,442,188,spaced out
+46,12,480,251,spaced out
+47,12,381,184,spaced out
+48,12,277,117,spaced out
+49,12,259,114,hill
+50,12,243,99,spaced out
+51,12,247,103,spaced out
+52,12,170,26,
+1,13,225,149,hill
+2,13,143,67,hill
+3,13,110,34,
+4,13,287,211,spaced out
+5,13,417,315,mountain
+6,13,515,368,mountain
+7,13,605,315,spaced out
+8,13,584,276,spaced out
+9,13,651,343,spaced out
+10,13,652,382,mountain
+11,13,497,296,mountain
+12,13,492,315,spaced out
+13,13,352,241,mountain
+14,13,309,233,spaced out
+15,13,168,93,hill
+16,13,154,80,spaced out
+17,13,119,45,
+18,13,99,25,
+19,13,86,12,
+20,13,85,11,
+21,13,109,34,
+22,13,150,69,spaced out
+23,13,212,122,spaced out
+24,13,218,111,hill
+25,13,212,94,spaced out
+26,13,243,95,spaced out
+27,13,246,111,spaced out
+28,13,159,24,
+29,13,258,123,hill
+30,13,461,323,mountain
+31,13,593,404,spaced out
+32,13,668,411,spaced out
+33,13,567,266,mountain
+34,13,435,105,hill
+35,13,407,77,hill
+36,13,412,82,hill
+37,13,435,82,hill
+38,13,434,84,spaced out
+39,13,428,99,spaced out
+40,13,404,125,spaced out
+41,13,382,111,spaced out
+42,13,290,33,
+43,13,292,36,
+44,13,373,116,hill
+45,13,386,125,hill
+46,13,403,185,mountain
+47,13,368,190,spaced out
+48,13,252,92,hill
+49,13,220,76,hill
+50,13,192,47,
+51,13,156,12,
+52,13,182,38,
+1,14,219,135,hill
+2,14,135,55,
+3,14,143,62,
+4,14,436,355,mountain
+5,14,561,458,mountain
+6,14,571,392,spaced out
+7,14,659,369,spaced out
+8,14,661,316,mountain
+9,14,725,470,spaced out
+10,14,751,528,mountain
+11,14,560,359,mountain
+12,14,488,311,spaced out
+13,14,338,222,mountain
+14,14,277,191,spaced out
+15,14,303,226,mountain
+16,14,156,81,hill
+17,14,216,140,hill
+18,14,142,67,spaced out
+19,14,102,28,
+20,14,96,22,
+21,14,130,55,
+22,14,161,86,hill
+23,14,229,139,spaced out
+24,14,235,111,hill
+25,14,199,51,
+26,14,252,104,hill
+27,14,295,154,spaced out
+28,14,270,129,spaced out
+29,14,238,96,spaced out
+30,14,598,455,mountain
+31,14,709,478,spaced out
+32,14,711,331,mountain
+33,14,575,197,mountain
+34,14,543,177,spaced out
+35,14,543,177,mountain
+36,14,528,162,mountain
+37,14,526,152,spaced out
+38,14,476,118,hill
+39,14,452,139,hill
+40,14,432,154,spaced out
+41,14,388,120,hill
+42,14,415,152,spaced out
+43,14,436,174,spaced out
+44,14,426,201,mountain
+45,14,426,228,spaced out
+46,14,364,166,spaced out
+47,14,329,162,mountain
+48,14,236,91,hill
+49,14,189,44,
+50,14,165,21,
+51,14,164,19,
+52,14,217,73,hill
+1,15,199,112,hill
+2,15,117,33,
+3,15,161,78,hill
+4,15,544,460,mountain
+5,15,676,560,mountain
+6,15,675,371,mountain
+7,15,711,385,spaced out
+8,15,732,346,mountain
+9,15,721,466,spaced out
+10,15,722,499,spaced out
+11,15,450,249,spaced out
+12,15,416,240,mountain
+13,15,421,247,mountain
+14,15,420,318,mountain
+15,15,388,308,spaced out
+16,15,108,28,
+17,15,199,125,spaced out
+18,15,135,61,
+19,15,97,22,
+20,15,81,7,
+21,15,92,18,
+22,15,249,175,spaced out
+23,15,320,229,mountain
+24,15,357,209,mountain
+25,15,257,109,hill
+26,15,225,77,hill
+27,15,331,188,mountain
+28,15,326,184,spaced out
+29,15,325,182,mountain
+30,15,598,454,spaced out
+31,15,668,444,spaced out
+32,15,663,226,spaced out
+33,15,583,190,mountain
+34,15,641,248,spaced out
+35,15,626,232,spaced out
+36,15,554,160,spaced out
+37,15,548,184,spaced out
+38,15,505,147,hill
+39,15,443,130,hill
+40,15,409,131,spaced out
+41,15,351,114,hill
+42,15,421,184,mountain
+43,15,464,227,mountain
+44,15,453,275,spaced out
+45,15,395,235,spaced out
+46,15,315,171,spaced out
+47,15,328,184,spaced out
+48,15,251,106,hill
+49,15,176,32,
+50,15,154,9,
+51,15,192,47,
+52,15,355,210,mountain
+1,16,140,50,
+2,16,183,92,spaced out
+3,16,184,93,hill
+4,16,517,424,spaced out
+5,16,642,490,spaced out
+6,16,566,269,spaced out
+7,16,642,276,spaced out
+8,16,716,330,spaced out
+9,16,656,402,mountain
+10,16,419,196,mountain
+11,16,500,289,spaced out
+12,16,527,316,mountain
+13,16,496,286,spaced out
+14,16,409,307,spaced out
+15,16,362,279,spaced out
+16,16,117,33,
+17,16,154,80,spaced out
+18,16,158,84,spaced out
+19,16,87,12,
+20,16,77,3,
+21,16,132,58,
+22,16,360,286,mountain
+23,16,363,272,spaced out
+24,16,371,222,mountain
+25,16,329,179,mountain
+26,16,217,67,hill
+27,16,325,181,mountain
+28,16,313,170,spaced out
+29,16,319,175,spaced out
+30,16,555,412,mountain
+31,16,651,464,mountain
+32,16,720,257,spaced out
+33,16,739,276,mountain
+34,16,722,259,mountain
+35,16,643,178,mountain
+36,16,560,173,mountain
+37,16,564,199,mountain
+38,16,504,146,spaced out
+39,16,420,107,spaced out
+40,16,424,213,mountain
+41,16,368,193,spaced out
+42,16,340,177,mountain
+43,16,448,302,spaced out
+44,16,447,303,spaced out
+45,16,318,174,mountain
+46,16,219,75,hill
+47,16,223,79,hill
+48,16,190,45,
+49,16,165,20,
+50,16,183,39,
+51,16,435,290,mountain
+52,16,505,360,mountain
+1,17,127,28,
+2,17,178,79,spaced out
+3,17,179,80,spaced out
+4,17,446,347,spaced out
+5,17,690,568,spaced out
+6,17,767,470,spaced out
+7,17,783,417,mountain
+8,17,792,406,spaced out
+9,17,786,531,spaced out
+10,17,695,441,spaced out
+11,17,636,382,mountain
+12,17,611,373,spaced out
+13,17,589,394,mountain
+14,17,463,357,mountain
+15,17,401,311,mountain
+16,17,169,79,hill
+17,17,304,229,mountain
+18,17,247,173,spaced out
+19,17,81,6,
+20,17,75,0,
+21,17,212,137,hill
+22,17,373,299,mountain
+23,17,388,295,mountain
+24,17,450,279,spaced out
+25,17,453,299,mountain
+26,17,259,106,hill
+27,17,290,142,spaced out
+28,17,311,165,mountain
+29,17,261,115,spaced out
+30,17,542,396,mountain
+31,17,710,523,mountain
+32,17,802,306,spaced out
+33,17,845,295,mountain
+34,17,770,255,spaced out
+35,17,622,125,hill
+36,17,621,234,mountain
+37,17,587,223,spaced out
+38,17,486,128,spaced out
+39,17,538,321,mountain
+40,17,519,353,mountain
+41,17,382,237,mountain
+42,17,309,165,mountain
+43,17,391,246,spaced out
+44,17,391,247,mountain
+45,17,273,128,hill
+46,17,175,31,
+47,17,208,64,
+48,17,241,96,hill
+49,17,158,14,
+50,17,377,232,spaced out
+51,17,492,348,mountain
+52,17,533,384,mountain
+1,18,232,133,hill
+2,18,131,32,
+3,18,153,54,
+4,18,496,397,mountain
+5,18,774,675,mountain
+6,18,836,634,mountain
+7,18,818,427,spaced out
+8,18,802,484,spaced out
+9,18,814,495,mountain
+10,18,741,467,mountain
+11,18,624,418,spaced out
+12,18,525,323,spaced out
+13,18,409,255,mountain
+14,18,361,233,spaced out
+15,18,317,208,spaced out
+16,18,209,99,hill
+17,18,399,324,spaced out
+18,18,286,211,spaced out
+19,18,80,6,
+20,18,75,0,
+21,18,210,135,spaced out
+22,18,421,347,mountain
+23,18,505,352,spaced out
+24,18,520,288,spaced out
+25,18,508,346,mountain
+26,18,345,182,mountain
+27,18,302,140,spaced out
+28,18,282,129,hill
+29,18,282,129,spaced out
+30,18,510,357,mountain
+31,18,698,511,spaced out
+32,18,785,289,spaced out
+33,18,825,276,spaced out
+34,18,749,234,spaced out
+35,18,736,229,spaced out
+36,18,741,354,mountain
+37,18,714,345,mountain
+38,18,553,326,spaced out
+39,18,542,396,mountain
+40,18,489,345,spaced out
+41,18,308,164,mountain
+42,18,201,57,
+43,18,175,31,
+44,18,153,8,
+45,18,159,15,
+46,18,189,44,
+47,18,360,216,spaced out
+48,18,362,217,mountain
+49,18,186,42,
+50,18,463,318,spaced out
+51,18,538,393,mountain
+52,18,558,365,mountain
+1,19,483,384,mountain
+2,19,343,244,spaced out
+3,19,110,11,
+4,19,370,271,mountain
+5,19,577,478,mountain
+6,19,677,549,mountain
+7,19,716,497,spaced out
+8,19,749,498,mountain
+9,19,614,363,spaced out
+10,19,537,317,mountain
+11,19,540,333,mountain
+12,19,523,321,spaced out
+13,19,405,252,spaced out
+14,19,277,140,hill
+15,19,233,110,spaced out
+16,19,283,159,hill
+17,19,407,332,mountain
+18,19,287,213,spaced out
+19,19,93,19,
+20,19,77,2,
+21,19,220,146,hill
+22,19,416,342,spaced out
+23,19,536,337,spaced out
+24,19,571,308,mountain
+25,19,548,379,spaced out
+26,19,457,288,mountain
+27,19,412,247,mountain
+28,19,220,58,
+29,19,266,103,hill
+30,19,539,376,mountain
+31,19,702,490,mountain
+32,19,778,310,mountain
+33,19,816,266,spaced out
+34,19,743,222,spaced out
+35,19,756,315,spaced out
+36,19,740,343,spaced out
+37,19,712,444,spaced out
+38,19,579,394,mountain
+39,19,540,396,spaced out
+40,19,364,219,mountain
+41,19,206,62,
+42,19,160,15,
+43,19,331,187,spaced out
+44,19,356,212,mountain
+45,19,299,155,spaced out
+46,19,346,201,spaced out
+47,19,322,177,spaced out
+48,19,324,179,spaced out
+49,19,317,173,mountain
+50,19,479,334,mountain
+51,19,579,407,spaced out
+52,19,586,170,mountain
+1,20,481,382,spaced out
+2,20,486,387,spaced out
+3,20,157,58,
+4,20,179,80,hill
+5,20,390,291,mountain
+6,20,523,396,spaced out
+7,20,632,452,spaced out
+8,20,643,421,spaced out
+9,20,506,284,spaced out
+10,20,530,311,mountain
+11,20,453,246,mountain
+12,20,303,101,spaced out
+13,20,334,180,mountain
+14,20,247,108,hill
+15,20,246,108,spaced out
+16,20,456,317,spaced out
+17,20,464,389,spaced out
+18,20,280,205,spaced out
+19,20,107,33,
+20,20,182,107,hill
+21,20,329,255,spaced out
+22,20,472,398,mountain
+23,20,517,317,mountain
+24,20,558,227,spaced out
+25,20,558,297,mountain
+26,20,471,292,mountain
+27,20,435,271,mountain
+28,20,303,140,hill
+29,20,269,106,spaced out
+30,20,513,349,spaced out
+31,20,629,405,spaced out
+32,20,782,314,spaced out
+33,20,832,275,mountain
+34,20,780,230,spaced out
+35,20,784,344,mountain
+36,20,707,310,mountain
+37,20,534,266,spaced out
+38,20,473,288,spaced out
+39,20,421,277,mountain
+40,20,265,120,hill
+41,20,154,10,
+42,20,350,206,mountain
+43,20,464,320,mountain
+44,20,434,290,spaced out
+45,20,462,317,spaced out
+46,20,362,216,mountain
+47,20,285,119,hill
+48,20,370,219,spaced out
+49,20,390,240,spaced out
+50,20,492,342,mountain
+51,20,658,479,spaced out
+52,20,662,209,spaced out
+1,21,470,370,spaced out
+2,21,498,399,mountain
+3,21,215,117,hill
+4,21,229,130,spaced out
+5,21,313,215,mountain
+6,21,455,356,spaced out
+7,21,527,377,mountain
+8,21,395,204,mountain
+9,21,508,312,spaced out
+10,21,524,305,spaced out
+11,21,354,146,spaced out
+12,21,388,180,mountain
+13,21,390,237,spaced out
+14,21,397,255,spaced out
+15,21,329,186,mountain
+16,21,565,422,mountain
+17,21,534,453,spaced out
+18,21,280,206,mountain
+19,21,87,12,
+20,21,259,184,spaced out
+21,21,337,262,mountain
+22,21,458,377,spaced out
+23,21,543,311,mountain
+24,21,591,187,mountain
+25,21,560,219,spaced out
+26,21,471,292,spaced out
+27,21,427,252,spaced out
+28,21,249,82,spaced out
+29,21,270,104,hill
+30,21,511,344,spaced out
+31,21,640,416,mountain
+32,21,768,300,spaced out
+33,21,785,228,mountain
+34,21,741,292,mountain
+35,21,689,351,spaced out
+36,21,628,362,spaced out
+37,21,652,422,mountain
+38,21,642,457,spaced out
+39,21,444,300,mountain
+40,21,329,185,spaced out
+41,21,192,48,
+42,21,460,316,mountain
+43,21,532,388,spaced out
+44,21,543,398,mountain
+45,21,480,302,mountain
+46,21,303,128,spaced out
+47,21,372,197,mountain
+48,21,364,189,spaced out
+49,21,393,208,mountain
+50,21,534,350,spaced out
+51,21,667,483,mountain
+52,21,666,227,spaced out
+1,22,407,242,spaced out
+2,22,422,323,mountain
+3,22,199,100,spaced out
+4,22,188,89,spaced out
+5,22,296,197,spaced out
+6,22,290,191,mountain
+7,22,409,303,mountain
+8,22,389,243,mountain
+9,22,421,226,mountain
+10,22,497,277,mountain
+11,22,568,348,spaced out
+12,22,564,344,spaced out
+13,22,505,332,mountain
+14,22,413,261,mountain
+15,22,425,273,spaced out
+16,22,565,419,spaced out
+17,22,485,404,spaced out
+18,22,173,97,hill
+19,22,173,98,hill
+20,22,276,200,mountain
+21,22,378,302,mountain
+22,22,431,232,mountain
+23,22,540,298,spaced out
+24,22,584,233,spaced out
+25,22,552,240,spaced out
+26,22,470,290,mountain
+27,22,334,155,hill
+28,22,208,31,
+29,22,328,150,spaced out
+30,22,573,395,mountain
+31,22,665,418,mountain
+32,22,808,322,spaced out
+33,22,865,345,mountain
+34,22,819,420,spaced out
+35,22,670,332,mountain
+36,22,574,308,mountain
+37,22,573,361,spaced out
+38,22,582,405,spaced out
+39,22,427,283,spaced out
+40,22,375,230,mountain
+41,22,184,40,
+42,22,501,357,spaced out
+43,22,611,462,spaced out
+44,22,605,412,spaced out
+45,22,471,293,mountain
+46,22,435,257,spaced out
+47,22,490,312,spaced out
+48,22,328,136,hill
+49,22,422,230,mountain
+50,22,537,315,mountain
+51,22,640,410,mountain
+52,22,638,198,spaced out
+1,23,412,247,mountain
+2,23,386,288,mountain
+3,23,350,251,mountain
+4,23,216,117,hill
+5,23,141,42,
+6,23,208,109,hill
+7,23,323,222,mountain
+8,23,503,402,mountain
+9,23,514,368,spaced out
+10,23,725,473,spaced out
+11,23,726,474,mountain
+12,23,579,295,mountain
+13,23,644,471,spaced out
+14,23,498,335,mountain
+15,23,550,388,spaced out
+16,23,617,471,mountain
+17,23,489,408,mountain
+18,23,215,134,hill
+19,23,340,260,spaced out
+20,23,379,299,spaced out
+21,23,390,309,mountain
+22,23,405,169,spaced out
+23,23,485,243,spaced out
+24,23,504,231,mountain
+25,23,501,188,mountain
+26,23,465,285,spaced out
+27,23,330,150,spaced out
+28,23,209,29,
+29,23,338,159,hill
+30,23,549,369,spaced out
+31,23,740,449,mountain
+32,23,841,314,mountain
+33,23,858,358,spaced out
+34,23,788,389,spaced out
+35,23,649,311,spaced out
+36,23,637,370,spaced out
+37,23,641,429,mountain
+38,23,506,330,spaced out
+39,23,271,126,hill
+40,23,248,104,spaced out
+41,23,161,17,
+42,23,503,359,mountain
+43,23,634,487,mountain
+44,23,610,434,spaced out
+45,23,440,257,mountain
+46,23,460,277,spaced out
+47,23,490,308,mountain
+48,23,322,128,spaced out
+49,23,461,266,mountain
+50,23,578,356,mountain
+51,23,669,359,spaced out
+52,23,663,252,spaced out
+1,24,496,331,mountain
+2,24,464,354,spaced out
+3,24,518,419,mountain
+4,24,421,322,mountain
+5,24,315,216,mountain
+6,24,143,44,
+7,24,315,214,spaced out
+8,24,497,396,spaced out
+9,24,540,438,mountain
+10,24,722,597,spaced out
+11,24,722,468,spaced out
+12,24,686,348,spaced out
+13,24,709,529,mountain
+14,24,495,320,spaced out
+15,24,569,394,spaced out
+16,24,634,488,mountain
+17,24,550,469,spaced out
+18,24,303,222,mountain
+19,24,351,270,mountain
+20,24,395,313,mountain
+21,24,394,277,spaced out
+22,24,333,91,hill
+23,24,449,207,mountain
+24,24,507,239,mountain
+25,24,499,187,spaced out
+26,24,461,281,spaced out
+27,24,408,229,mountain
+28,24,222,43,
+29,24,333,154,hill
+30,24,603,424,spaced out
+31,24,707,488,spaced out
+32,24,840,299,spaced out
+33,24,813,313,spaced out
+34,24,754,354,spaced out
+35,24,686,306,spaced out
+36,24,699,439,mountain
+37,24,699,495,spaced out
+38,24,532,356,mountain
+39,24,405,260,mountain
+40,24,286,141,hill
+41,24,171,26,
+42,24,349,204,mountain
+43,24,584,437,spaced out
+44,24,587,431,spaced out
+45,24,476,283,mountain
+46,24,458,265,spaced out
+47,24,390,197,mountain
+48,24,317,116,hill
+49,24,432,232,spaced out
+50,24,654,432,mountain
+51,24,671,281,mountain
+52,24,661,250,spaced out
+1,25,609,345,mountain
+2,25,576,335,spaced out
+3,25,617,510,spaced out
+4,25,613,512,mountain
+5,25,575,474,spaced out
+6,25,405,305,mountain
+7,25,180,79,hill
+8,25,271,170,mountain
+9,25,495,394,spaced out
+10,25,594,492,spaced out
+11,25,596,474,mountain
+12,25,685,544,spaced out
+13,25,683,514,spaced out
+14,25,601,386,mountain
+15,25,571,356,spaced out
+16,25,632,448,spaced out
+17,25,552,465,mountain
+18,25,278,194,spaced out
+19,25,219,135,hill
+20,25,375,291,spaced out
+21,25,370,281,spaced out
+22,25,327,83,spaced out
+23,25,439,194,mountain
+24,25,480,213,mountain
+25,25,480,132,spaced out
+26,25,471,291,mountain
+27,25,412,232,mountain
+28,25,404,225,mountain
+29,25,302,122,spaced out
+30,25,615,436,mountain
+31,25,837,658,mountain
+32,25,891,485,spaced out
+33,25,867,367,spaced out
+34,25,834,376,mountain
+35,25,748,510,mountain
+36,25,709,494,mountain
+37,25,675,472,spaced out
+38,25,490,290,mountain
+39,25,346,199,spaced out
+40,25,367,221,mountain
+41,25,328,183,spaced out
+42,25,301,156,spaced out
+43,25,397,250,mountain
+44,25,479,327,spaced out
+45,25,527,316,mountain
+46,25,445,234,spaced out
+47,25,448,233,spaced out
+48,25,543,327,spaced out
+49,25,402,187,mountain
+50,25,701,475,mountain
+51,25,700,310,spaced out
+52,25,644,234,spaced out
+1,26,597,370,spaced out
+2,26,579,351,mountain
+3,26,679,452,spaced out
+4,26,726,555,mountain
+5,26,729,628,spaced out
+6,26,728,627,spaced out
+7,26,444,343,mountain
+8,26,204,103,hill
+9,26,237,136,hill
+10,26,350,249,mountain
+11,26,388,268,mountain
+12,26,543,405,mountain
+13,26,703,545,spaced out
+14,26,729,542,mountain
+15,26,590,319,spaced out
+16,26,550,366,spaced out
+17,26,414,326,spaced out
+18,26,218,133,hill
+19,26,99,15,
+20,26,262,178,mountain
+21,26,406,317,spaced out
+22,26,436,177,spaced out
+23,26,427,168,spaced out
+24,26,508,240,spaced out
+25,26,509,122,hill
+26,26,452,201,mountain
+27,26,436,257,mountain
+28,26,436,257,spaced out
+29,26,304,125,hill
+30,26,556,377,mountain
+31,26,784,605,spaced out
+32,26,903,559,spaced out
+33,26,926,380,mountain
+34,26,820,454,mountain
+35,26,796,576,mountain
+36,26,705,490,spaced out
+37,26,427,223,mountain
+38,26,451,251,mountain
+39,26,574,396,spaced out
+40,26,579,421,spaced out
+41,26,421,270,spaced out
+42,26,329,178,mountain
+43,26,388,237,mountain
+44,26,537,385,spaced out
+45,26,545,341,mountain
+46,26,445,221,mountain
+47,26,470,246,spaced out
+48,26,549,325,mountain
+49,26,422,186,mountain
+50,26,705,469,mountain
+51,26,703,313,spaced out
+52,26,676,265,mountain
+1,27,354,233,mountain
+2,27,434,308,mountain
+3,27,662,526,spaced out
+4,27,718,569,mountain
+5,27,784,612,mountain
+6,27,753,652,spaced out
+7,27,591,489,spaced out
+8,27,425,324,spaced out
+9,27,171,70,hill
+10,27,397,296,spaced out
+11,27,486,373,spaced out
+12,27,470,332,spaced out
+13,27,588,430,spaced out
+14,27,669,483,spaced out
+15,27,587,355,mountain
+16,27,550,426,mountain
+17,27,449,361,mountain
+18,27,264,179,mountain
+19,27,168,83,hill
+20,27,255,170,mountain
+21,27,428,339,mountain
+22,27,447,344,mountain
+23,27,470,231,mountain
+24,27,507,212,spaced out
+25,27,518,130,spaced out
+26,27,541,195,mountain
+27,27,473,288,spaced out
+28,27,436,257,spaced out
+29,27,278,99,spaced out
+30,27,384,204,mountain
+31,27,675,495,mountain
+32,27,774,516,mountain
+33,27,881,407,spaced out
+34,27,826,497,spaced out
+35,27,657,436,spaced out
+36,27,427,212,mountain
+37,27,551,345,spaced out
+38,27,612,405,mountain
+39,27,604,397,mountain
+40,27,596,395,mountain
+41,27,424,273,mountain
+42,27,279,128,spaced out
+43,27,288,137,hill
+44,27,518,366,spaced out
+45,27,521,324,spaced out
+46,27,522,279,spaced out
+47,27,601,358,mountain
+48,27,564,321,spaced out
+49,27,501,247,mountain
+50,27,742,489,mountain
+51,27,732,342,spaced out
+52,27,733,430,spaced out
+1,28,244,123,spaced out
+2,28,244,117,hill
+3,28,363,226,mountain
+4,28,576,427,mountain
+5,28,691,522,spaced out
+6,28,694,505,mountain
+7,28,708,606,mountain
+8,28,558,456,spaced out
+9,28,293,191,mountain
+10,28,392,290,spaced out
+11,28,615,502,mountain
+12,28,612,474,spaced out
+13,28,564,406,mountain
+14,28,552,366,spaced out
+15,28,544,313,spaced out
+16,28,478,363,mountain
+17,28,318,230,mountain
+18,28,241,153,spaced out
+19,28,191,103,hill
+20,28,225,137,spaced out
+21,28,384,291,mountain
+22,28,447,343,spaced out
+23,28,504,382,spaced out
+24,28,583,333,mountain
+25,28,566,164,spaced out
+26,28,542,196,mountain
+27,28,479,226,mountain
+28,28,381,201,mountain
+29,28,322,142,hill
+30,28,309,129,hill
+31,28,524,344,mountain
+32,28,767,509,mountain
+33,28,882,407,mountain
+34,28,836,507,spaced out
+35,28,623,402,mountain
+36,28,522,305,mountain
+37,28,819,602,mountain
+38,28,811,594,spaced out
+39,28,651,403,mountain
+40,28,475,274,mountain
+41,28,387,233,spaced out
+42,28,316,163,mountain
+43,28,222,68,spaced out
+44,28,462,309,mountain
+45,28,548,377,mountain
+46,28,559,356,mountain
+47,28,672,421,spaced out
+48,28,674,390,mountain
+49,28,624,341,spaced out
+50,28,787,504,mountain
+51,28,762,329,spaced out
+52,28,743,462,mountain
+1,29,390,269,spaced out
+2,29,346,219,mountain
+3,29,300,164,spaced out
+4,29,301,152,hill
+5,29,328,159,hill
+6,29,475,286,mountain
+7,29,602,404,spaced out
+8,29,547,441,spaced out
+9,29,568,463,mountain
+10,29,539,434,spaced out
+11,29,528,415,mountain
+12,29,553,329,spaced out
+13,29,574,350,mountain
+14,29,547,336,spaced out
+15,29,478,357,spaced out
+16,29,435,320,mountain
+17,29,312,207,mountain
+18,29,212,115,hill
+19,29,464,370,spaced out
+20,29,476,383,mountain
+21,29,309,216,mountain
+22,29,395,292,mountain
+23,29,522,400,mountain
+24,29,650,455,spaced out
+25,29,654,226,mountain
+26,29,639,293,mountain
+27,29,558,305,mountain
+28,29,487,307,mountain
+29,29,396,216,spaced out
+30,29,249,69,hill
+31,29,557,378,mountain
+32,29,704,479,mountain
+33,29,820,345,mountain
+34,29,824,496,mountain
+35,29,615,335,mountain
+36,29,706,426,mountain
+37,29,817,536,spaced out
+38,29,805,529,spaced out
+39,29,647,399,spaced out
+40,29,457,256,mountain
+41,29,389,228,spaced out
+42,29,418,263,spaced out
+43,29,219,63,
+44,29,370,214,mountain
+45,29,465,293,spaced out
+46,29,499,295,spaced out
+47,29,606,314,spaced out
+48,29,716,370,spaced out
+49,29,779,433,mountain
+50,29,778,432,spaced out
+51,29,746,377,spaced out
+52,29,676,395,mountain
+1,30,462,332,mountain
+2,30,480,350,spaced out
+3,30,495,355,mountain
+4,30,562,409,mountain
+5,30,674,506,mountain
+6,30,616,426,spaced out
+7,30,508,302,mountain
+8,30,431,255,mountain
+9,30,562,423,spaced out
+10,30,543,404,spaced out
+11,30,567,427,spaced out
+12,30,630,407,mountain
+13,30,687,335,mountain
+14,30,660,495,spaced out
+15,30,491,369,mountain
+16,30,409,294,spaced out
+17,30,317,208,spaced out
+18,30,384,276,mountain
+19,30,513,404,spaced out
+20,30,523,418,mountain
+21,30,461,356,spaced out
+22,30,342,236,mountain
+23,30,507,386,spaced out
+24,30,681,486,spaced out
+25,30,714,327,spaced out
+26,30,676,317,spaced out
+27,30,617,352,spaced out
+28,30,545,353,spaced out
+29,30,399,220,mountain
+30,30,333,153,hill
+31,30,504,325,mountain
+32,30,640,415,mountain
+33,30,793,401,spaced out
+34,30,807,470,spaced out
+35,30,669,340,spaced out
+36,30,710,380,mountain
+37,30,686,388,spaced out
+38,30,502,226,mountain
+39,30,438,209,spaced out
+40,30,515,336,mountain
+41,30,508,347,spaced out
+42,30,451,293,mountain
+43,30,332,174,spaced out
+44,30,516,359,mountain
+45,30,391,219,spaced out
+46,30,616,413,spaced out
+47,30,603,331,spaced out
+48,30,726,316,mountain
+49,30,773,420,spaced out
+50,30,763,452,spaced out
+51,30,707,411,mountain
+52,30,595,350,mountain
+1,31,586,358,spaced out
+2,31,589,295,spaced out
+3,31,685,394,mountain
+4,31,609,339,mountain
+5,31,856,627,spaced out
+6,31,866,638,mountain
+7,31,762,533,mountain
+8,31,563,334,spaced out
+9,31,445,194,mountain
+10,31,513,250,mountain
+11,31,586,306,mountain
+12,31,699,378,spaced out
+13,31,705,316,mountain
+14,31,615,450,spaced out
+15,31,496,375,mountain
+16,31,239,125,hill
+17,31,553,439,spaced out
+18,31,555,440,mountain
+19,31,586,464,spaced out
+20,31,575,417,spaced out
+21,31,462,324,mountain
+22,31,498,360,mountain
+23,31,496,358,spaced out
+24,31,672,477,spaced out
+25,31,717,330,mountain
+26,31,689,283,spaced out
+27,31,641,376,mountain
+28,31,547,355,mountain
+29,31,469,279,spaced out
+30,31,497,307,mountain
+31,31,486,296,mountain
+32,31,615,394,spaced out
+33,31,701,400,spaced out
+34,31,688,286,spaced out
+35,31,842,440,spaced out
+36,31,858,456,mountain
+37,31,811,514,mountain
+38,31,616,341,mountain
+39,31,612,396,spaced out
+40,31,540,361,mountain
+41,31,504,343,spaced out
+42,31,357,200,mountain
+43,31,378,220,mountain
+44,31,602,444,mountain
+45,31,584,383,spaced out
+46,31,650,444,spaced out
+47,31,672,400,mountain
+48,31,633,208,mountain
+49,31,785,432,mountain
+50,31,595,284,spaced out
+51,31,434,138,spaced out
+52,31,375,131,spaced out
+1,32,593,303,mountain
+2,32,700,350,mountain
+3,32,820,391,spaced out
+4,32,823,425,mountain
+5,32,817,627,spaced out
+6,32,817,653,spaced out
+7,32,752,588,spaced out
+8,32,648,484,mountain
+9,32,583,343,mountain
+10,32,569,306,mountain
+11,32,516,235,mountain
+12,32,688,368,spaced out
+13,32,695,305,spaced out
+14,32,628,463,mountain
+15,32,568,444,spaced out
+16,32,376,253,mountain
+17,32,627,504,spaced out
+18,32,643,509,mountain
+19,32,602,393,mountain
+20,32,590,432,spaced out
+21,32,352,194,mountain
+22,32,535,376,mountain
+23,32,496,334,spaced out
+24,32,641,370,spaced out
+25,32,681,294,mountain
+26,32,617,210,mountain
+27,32,523,258,mountain
+28,32,479,253,mountain
+29,32,533,308,mountain
+30,32,533,353,spaced out
+31,32,403,223,mountain
+32,32,638,458,mountain
+33,32,716,528,mountain
+34,32,711,417,spaced out
+35,32,824,510,spaced out
+36,32,852,453,spaced out
+37,32,796,459,spaced out
+38,32,784,446,mountain
+39,32,634,418,mountain
+40,32,466,287,mountain
+41,32,425,263,spaced out
+42,32,416,256,spaced out
+43,32,480,319,spaced out
+44,32,582,421,spaced out
+45,32,662,413,mountain
+46,32,564,315,spaced out
+47,32,680,408,mountain
+48,32,720,294,spaced out
+49,32,823,470,mountain
+50,32,702,392,spaced out
+51,32,579,283,mountain
+52,32,538,294,mountain
+1,33,774,404,spaced out
+2,33,771,382,spaced out
+3,33,813,343,spaced out
+4,33,820,423,spaced out
+5,33,785,596,spaced out
+6,33,513,378,spaced out
+7,33,442,308,mountain
+8,33,591,457,mountain
+9,33,773,626,spaced out
+10,33,771,459,spaced out
+11,33,742,430,mountain
+12,33,736,414,spaced out
+13,33,772,367,mountain
+14,33,625,444,mountain
+15,33,521,375,spaced out
+16,33,409,263,mountain
+17,33,724,578,spaced out
+18,33,757,494,spaced out
+19,33,686,478,mountain
+20,33,546,379,mountain
+21,33,370,202,mountain
+22,33,544,376,mountain
+23,33,618,428,mountain
+24,33,626,232,mountain
+25,33,624,278,spaced out
+26,33,513,242,spaced out
+27,33,516,286,mountain
+28,33,495,265,mountain
+29,33,498,305,spaced out
+30,33,505,387,spaced out
+31,33,286,169,mountain
+32,33,547,430,spaced out
+33,33,549,433,mountain
+34,33,544,341,mountain
+35,33,742,453,mountain
+36,33,738,406,spaced out
+37,33,734,403,spaced out
+38,33,781,442,mountain
+39,33,747,531,spaced out
+40,33,601,421,spaced out
+41,33,543,372,spaced out
+42,33,434,264,mountain
+43,33,513,343,mountain
+44,33,678,497,mountain
+45,33,740,429,spaced out
+46,33,728,417,spaced out
+47,33,744,433,spaced out
+48,33,777,354,mountain
+49,33,816,356,spaced out
+50,33,739,338,spaced out
+51,33,640,336,spaced out
+52,33,454,210,mountain
+1,34,779,495,mountain
+2,34,775,400,spaced out
+3,34,707,298,mountain
+4,34,779,382,spaced out
+5,34,792,604,mountain
+6,34,542,413,mountain
+7,34,220,94,hill
+8,34,589,463,spaced out
+9,34,784,658,mountain
+10,34,783,624,spaced out
+11,34,720,561,spaced out
+12,34,868,690,mountain
+13,34,786,561,spaced out
+14,34,587,385,mountain
+15,34,598,425,mountain
+16,34,452,280,mountain
+17,34,751,578,spaced out
+18,34,764,502,mountain
+19,34,654,446,spaced out
+20,34,518,329,spaced out
+21,34,381,192,mountain
+22,34,587,398,mountain
+23,34,727,384,spaced out
+24,34,728,292,mountain
+25,34,655,309,mountain
+26,34,540,269,mountain
+27,34,511,290,spaced out
+28,34,490,333,spaced out
+29,34,397,245,mountain
+30,34,370,258,mountain
+31,34,281,187,spaced out
+32,34,352,258,mountain
+33,34,332,238,mountain
+34,34,596,456,mountain
+35,34,728,439,mountain
+36,34,654,358,spaced out
+37,34,624,329,mountain
+38,34,771,475,spaced out
+39,34,757,497,spaced out
+40,34,618,358,mountain
+41,34,598,410,mountain
+42,34,590,402,mountain
+43,34,497,309,spaced out
+44,34,746,553,mountain
+45,34,757,435,mountain
+46,34,740,418,spaced out
+47,34,768,445,mountain
+48,34,768,430,spaced out
+49,34,753,373,spaced out
+50,34,746,367,mountain
+51,34,659,354,mountain
+52,34,746,500,spaced out
+1,35,588,315,spaced out
+2,35,593,266,mountain
+3,35,608,281,mountain
+4,35,699,332,spaced out
+5,35,756,568,mountain
+6,35,603,474,mountain
+7,35,495,413,spaced out
+8,35,405,323,spaced out
+9,35,569,487,mountain
+10,35,538,454,spaced out
+11,35,556,445,mountain
+12,35,692,532,spaced out
+13,35,692,491,spaced out
+14,35,586,305,spaced out
+15,35,612,376,mountain
+16,35,615,379,mountain
+17,35,704,468,spaced out
+18,35,705,444,spaced out
+19,35,546,338,mountain
+20,35,371,171,mountain
+21,35,469,268,mountain
+22,35,610,409,mountain
+23,35,756,362,mountain
+24,35,755,284,spaced out
+25,35,706,360,spaced out
+26,35,606,335,mountain
+27,35,540,320,mountain
+28,35,405,267,mountain
+29,35,321,218,spaced out
+30,35,359,256,spaced out
+31,35,364,285,mountain
+32,35,200,121,hill
+33,35,402,323,mountain
+34,35,589,506,spaced out
+35,35,602,414,mountain
+36,35,569,290,mountain
+37,35,575,296,mountain
+38,35,729,450,mountain
+39,35,667,346,spaced out
+40,35,552,231,mountain
+41,35,681,384,spaced out
+42,35,695,444,spaced out
+43,35,513,263,mountain
+44,35,712,461,mountain
+45,35,711,435,spaced out
+46,35,629,353,mountain
+47,35,714,438,spaced out
+48,35,731,440,spaced out
+49,35,597,298,mountain
+50,35,703,404,mountain
+51,35,691,393,spaced out
+52,35,769,419,mountain
+1,36,537,264,mountain
+2,36,516,283,mountain
+3,36,595,362,spaced out
+4,36,594,361,spaced out
+5,36,584,333,mountain
+6,36,586,456,mountain
+7,36,581,510,spaced out
+8,36,199,128,hill
+9,36,198,127,hill
+10,36,322,243,mountain
+11,36,418,307,spaced out
+12,36,429,269,mountain
+13,36,558,357,mountain
+14,36,767,487,spaced out
+15,36,741,420,spaced out
+16,36,744,423,spaced out
+17,36,732,427,spaced out
+18,36,602,340,mountain
+19,36,535,311,spaced out
+20,36,535,314,spaced out
+21,36,482,261,mountain
+22,36,656,435,mountain
+23,36,750,345,spaced out
+24,36,750,251,spaced out
+25,36,717,387,mountain
+26,36,605,331,spaced out
+27,36,523,302,spaced out
+28,36,389,251,spaced out
+29,36,279,186,mountain
+30,36,291,203,spaced out
+31,36,347,273,spaced out
+32,36,135,61,
+33,36,371,298,spaced out
+34,36,455,381,mountain
+35,36,594,426,mountain
+36,36,594,339,spaced out
+37,36,494,240,mountain
+38,36,647,393,mountain
+39,36,557,250,spaced out
+40,36,592,284,mountain
+41,36,758,430,spaced out
+42,36,761,440,mountain
+43,36,563,242,spaced out
+44,36,621,301,mountain
+45,36,605,343,spaced out
+46,36,500,237,mountain
+47,36,613,351,mountain
+48,36,671,385,mountain
+49,36,515,226,spaced out
+50,36,553,264,spaced out
+51,36,677,387,spaced out
+52,36,758,388,spaced out
+1,37,680,407,mountain
+2,37,539,337,mountain
+3,37,455,278,spaced out
+4,37,492,315,mountain
+5,37,450,275,mountain
+6,37,596,528,mountain
+7,37,556,490,spaced out
+8,37,181,115,spaced out
+9,37,347,280,spaced out
+10,37,610,531,spaced out
+11,37,739,628,spaced out
+12,37,776,616,mountain
+13,37,711,510,mountain
+14,37,894,613,spaced out
+15,37,894,449,mountain
+16,37,761,367,mountain
+17,37,739,433,spaced out
+18,37,552,283,mountain
+19,37,566,384,mountain
+20,37,555,373,spaced out
+21,37,541,359,mountain
+22,37,670,465,mountain
+23,37,712,319,mountain
+24,37,690,272,spaced out
+25,37,624,294,mountain
+26,37,555,274,mountain
+27,37,475,227,spaced out
+28,37,437,299,spaced out
+29,37,301,208,mountain
+30,37,216,127,hill
+31,37,126,59,
+32,37,107,40,
+33,37,172,105,hill
+34,37,408,340,mountain
+35,37,586,429,mountain
+36,37,557,352,spaced out
+37,37,360,154,hill
+38,37,545,339,mountain
+39,37,454,188,spaced out
+40,37,610,333,spaced out
+41,37,754,425,spaced out
+42,37,737,409,spaced out
+43,37,570,253,mountain
+44,37,556,303,spaced out
+45,37,550,307,mountain
+46,37,380,137,hill
+47,37,509,266,spaced out
+48,37,704,456,spaced out
+49,37,665,414,spaced out
+50,37,422,171,mountain
+51,37,600,349,mountain
+52,37,704,421,mountain
+1,38,672,356,spaced out
+2,38,536,334,spaced out
+3,38,538,434,spaced out
+4,38,401,329,mountain
+5,38,394,332,spaced out
+6,38,572,510,spaced out
+7,38,435,374,spaced out
+8,38,129,67,hill
+9,38,428,361,mountain
+10,38,628,549,mountain
+11,38,739,582,spaced out
+12,38,846,493,spaced out
+13,38,906,522,mountain
+14,38,908,525,mountain
+15,38,852,385,spaced out
+16,38,854,460,mountain
+17,38,823,476,spaced out
+18,38,628,372,mountain
+19,38,601,441,mountain
+20,38,474,339,spaced out
+21,38,538,403,spaced out
+22,38,662,528,spaced out
+23,38,711,560,spaced out
+24,38,692,524,spaced out
+25,38,537,408,spaced out
+26,38,544,435,spaced out
+27,38,521,412,mountain
+28,38,481,371,mountain
+29,38,377,284,spaced out
+30,38,331,242,mountain
+31,38,262,199,mountain
+32,38,138,75,hill
+33,38,145,82,hill
+34,38,388,325,spaced out
+35,38,521,434,mountain
+36,38,503,409,spaced out
+37,38,319,191,mountain
+38,38,467,339,mountain
+39,38,400,234,spaced out
+40,38,600,361,spaced out
+41,38,657,404,mountain
+42,38,514,261,mountain
+43,38,544,291,mountain
+44,38,503,270,spaced out
+45,38,466,233,mountain
+46,38,337,107,spaced out
+47,38,446,216,mountain
+48,38,719,489,mountain
+49,38,670,438,spaced out
+50,38,375,154,hill
+51,38,404,183,mountain
+52,38,633,413,spaced out
+1,39,570,315,spaced out
+2,39,558,412,mountain
+3,39,558,496,spaced out
+4,39,270,208,mountain
+5,39,309,247,spaced out
+6,39,326,264,mountain
+7,39,143,82,hill
+8,39,221,160,hill
+9,39,444,378,spaced out
+10,39,640,558,spaced out
+11,39,795,491,mountain
+12,39,925,443,spaced out
+13,39,951,554,mountain
+14,39,906,509,spaced out
+15,39,775,377,spaced out
+16,39,852,448,spaced out
+17,39,837,383,spaced out
+18,39,837,580,spaced out
+19,39,496,336,mountain
+20,39,375,250,mountain
+21,39,352,236,mountain
+22,39,650,534,mountain
+23,39,673,568,mountain
+24,39,668,576,spaced out
+25,39,428,339,spaced out
+26,39,467,383,mountain
+27,39,402,319,spaced out
+28,39,428,344,mountain
+29,39,396,313,mountain
+30,39,378,283,spaced out
+31,39,345,282,spaced out
+32,39,95,32,
+33,39,147,88,hill
+34,39,270,212,mountain
+35,39,436,379,mountain
+36,39,422,365,spaced out
+37,39,247,190,mountain
+38,39,377,318,mountain
+39,39,368,296,spaced out
+40,39,541,350,spaced out
+41,39,562,353,mountain
+42,39,379,170,mountain
+43,39,441,232,mountain
+44,39,412,233,spaced out
+45,39,375,202,mountain
+46,39,343,169,spaced out
+47,39,465,291,mountain
+48,39,695,490,spaced out
+49,39,697,464,mountain
+50,39,475,254,mountain
+51,39,322,109,hill
+52,39,434,221,mountain
+1,40,429,348,mountain
+2,40,516,454,spaced out
+3,40,508,447,spaced out
+4,40,252,190,spaced out
+5,40,96,35,
+6,40,106,45,
+7,40,201,140,hill
+8,40,331,269,spaced out
+9,40,531,462,mountain
+10,40,667,520,mountain
+11,40,931,627,spaced out
+12,40,931,556,mountain
+13,40,817,448,spaced out
+14,40,754,384,spaced out
+15,40,574,205,mountain
+16,40,780,375,mountain
+17,40,855,434,spaced out
+18,40,862,606,mountain
+19,40,690,530,mountain
+20,40,533,408,spaced out
+21,40,412,301,spaced out
+22,40,297,194,mountain
+23,40,457,360,spaced out
+24,40,461,369,mountain
+25,40,313,225,mountain
+26,40,149,65,hill
+27,40,127,46,
+28,40,242,160,hill
+29,40,378,297,mountain
+30,40,378,296,mountain
+31,40,347,284,spaced out
+32,40,202,140,spaced out
+33,40,103,44,
+34,40,125,68,hill
+35,40,142,85,hill
+36,40,169,115,hill
+37,40,149,96,spaced out
+38,40,283,230,mountain
+39,40,301,243,mountain
+40,40,448,339,mountain
+41,40,441,260,spaced out
+42,40,318,136,hill
+43,40,402,199,mountain
+44,40,399,247,spaced out
+45,40,322,184,mountain
+46,40,344,207,mountain
+47,40,487,349,mountain
+48,40,673,474,spaced out
+49,40,666,433,spaced out
+50,40,417,196,spaced out
+51,40,351,142,hill
+52,40,323,114,hill
+1,41,389,326,spaced out
+2,41,309,247,mountain
+3,41,244,183,mountain
+4,41,123,61,
+5,41,263,201,mountain
+6,41,434,372,mountain
+7,41,422,360,spaced out
+8,41,336,274,mountain
+9,41,503,418,spaced out
+10,41,625,376,mountain
+11,41,888,509,spaced out
+12,41,898,534,spaced out
+13,41,692,328,spaced out
+14,41,459,95,hill
+15,41,567,204,mountain
+16,41,653,270,mountain
+17,41,695,308,spaced out
+18,41,772,381,mountain
+19,41,707,519,spaced out
+20,41,563,438,mountain
+21,41,496,385,mountain
+22,41,303,199,mountain
+23,41,127,30,
+24,41,143,51,
+25,41,242,153,spaced out
+26,41,319,235,spaced out
+27,41,353,272,mountain
+28,41,156,76,hill
+29,41,289,210,spaced out
+30,41,314,249,mountain
+31,41,276,213,mountain
+32,41,237,175,mountain
+33,41,235,176,spaced out
+34,41,283,226,spaced out
+35,41,240,183,spaced out
+36,41,199,152,hill
+37,41,170,123,hill
+38,41,181,133,hill
+39,41,292,245,spaced out
+40,41,354,294,mountain
+41,41,320,202,spaced out
+42,41,402,233,spaced out
+43,41,473,270,spaced out
+44,41,444,295,spaced out
+45,41,380,246,spaced out
+46,41,227,93,hill
+47,41,483,349,spaced out
+48,41,570,371,mountain
+49,41,555,292,spaced out
+50,41,472,250,spaced out
+51,41,403,195,spaced out
+52,41,301,94,hill
+1,42,167,105,spaced out
+2,42,89,27,
+3,42,84,23,
+4,42,312,250,mountain
+5,42,569,508,spaced out
+6,42,581,519,spaced out
+7,42,477,414,mountain
+8,42,326,193,spaced out
+9,42,414,195,mountain
+10,42,498,244,mountain
+11,42,721,343,spaced out
+12,42,808,443,mountain
+13,42,691,348,spaced out
+14,42,401,75,hill
+15,42,539,213,mountain
+16,42,520,194,spaced out
+17,42,713,386,mountain
+18,42,826,440,spaced out
+19,42,769,507,spaced out
+20,42,462,296,mountain
+21,42,349,238,mountain
+22,42,302,199,mountain
+23,42,355,257,mountain
+24,42,277,185,spaced out
+25,42,300,207,mountain
+26,42,420,329,spaced out
+27,42,426,345,spaced out
+28,42,272,191,mountain
+29,42,118,39,
+30,42,109,53,
+31,42,162,106,spaced out
+32,42,198,141,hill
+33,42,245,188,spaced out
+34,42,314,251,mountain
+35,42,288,223,spaced out
+36,42,220,172,mountain
+37,42,138,93,hill
+38,42,102,56,
+39,42,203,158,spaced out
+40,42,229,177,mountain
+41,42,303,196,mountain
+42,42,436,267,spaced out
+43,42,474,271,mountain
+44,42,432,302,spaced out
+45,42,380,250,spaced out
+46,42,222,92,hill
+47,42,388,259,mountain
+48,42,522,323,spaced out
+49,42,523,318,mountain
+50,42,475,316,mountain
+51,42,406,247,mountain
+52,42,292,133,spaced out
+1,43,110,51,
+2,43,99,38,
+3,43,311,249,mountain
+4,43,560,499,mountain
+5,43,600,538,mountain
+6,43,598,529,spaced out
+7,43,443,193,spaced out
+8,43,282,32,
+9,43,446,193,spaced out
+10,43,480,227,spaced out
+11,43,619,288,spaced out
+12,43,720,388,mountain
+13,43,561,288,spaced out
+14,43,412,190,spaced out
+15,43,438,216,spaced out
+16,43,448,226,mountain
+17,43,704,380,spaced out
+18,43,829,481,mountain
+19,43,788,526,mountain
+20,43,693,527,mountain
+21,43,586,460,spaced out
+22,43,640,532,spaced out
+23,43,545,437,spaced out
+24,43,474,366,spaced out
+25,43,341,233,mountain
+26,43,418,289,spaced out
+27,43,446,365,mountain
+28,43,412,331,mountain
+29,43,312,233,spaced out
+30,43,201,145,spaced out
+31,43,111,54,
+32,43,103,46,
+33,43,140,92,hill
+34,43,252,204,spaced out
+35,43,273,225,spaced out
+36,43,216,168,spaced out
+37,43,196,154,spaced out
+38,43,114,72,spaced out
+39,43,110,68,hill
+40,43,287,236,spaced out
+41,43,444,337,spaced out
+42,43,455,286,mountain
+43,43,449,277,mountain
+44,43,375,247,mountain
+45,43,304,176,mountain
+46,43,290,162,mountain
+47,43,445,316,mountain
+48,43,497,265,spaced out
+49,43,493,288,spaced out
+50,43,370,216,spaced out
+51,43,312,158,hill
+52,43,235,80,hill
+1,44,109,51,
+2,44,267,208,mountain
+3,44,476,415,mountain
+4,44,541,479,spaced out
+5,44,557,481,spaced out
+6,44,508,289,spaced out
+7,44,383,164,mountain
+8,44,294,58,
+9,44,477,241,spaced out
+10,44,500,252,mountain
+11,44,496,187,spaced out
+12,44,497,187,mountain
+13,44,461,277,mountain
+14,44,405,227,spaced out
+15,44,373,196,spaced out
+16,44,423,246,mountain
+17,44,617,293,mountain
+18,44,767,439,spaced out
+19,44,769,439,spaced out
+20,44,693,413,spaced out
+21,44,665,385,spaced out
+22,44,666,386,mountain
+23,44,583,392,mountain
+24,44,515,357,mountain
+25,44,425,313,spaced out
+26,44,349,243,mountain
+27,44,402,299,spaced out
+28,44,410,315,spaced out
+29,44,326,231,mountain
+30,44,209,153,hill
+31,44,170,113,spaced out
+32,44,88,32,
+33,44,133,87,hill
+34,44,132,86,spaced out
+35,44,189,144,hill
+36,44,202,159,hill
+37,44,201,161,spaced out
+38,44,117,77,hill
+39,44,148,108,spaced out
+40,44,321,281,mountain
+41,44,443,335,spaced out
+42,44,444,257,spaced out
+43,44,364,235,mountain
+44,44,308,180,mountain
+45,44,226,97,hill
+46,44,375,247,spaced out
+47,44,463,334,spaced out
+48,44,499,264,mountain
+49,44,498,293,spaced out
+50,44,394,241,mountain
+51,44,274,121,spaced out
+52,44,244,92,hill
+1,45,233,175,mountain
+2,45,488,429,spaced out
+3,45,522,461,mountain
+4,45,472,403,spaced out
+5,45,358,191,mountain
+6,45,360,193,mountain
+7,45,323,137,hill
+8,45,303,117,spaced out
+9,45,455,268,spaced out
+10,45,478,288,spaced out
+11,45,463,240,spaced out
+12,45,385,231,mountain
+13,45,367,218,mountain
+14,45,348,200,mountain
+15,45,441,293,spaced out
+16,45,477,303,mountain
+17,45,453,149,hill
+18,45,716,412,spaced out
+19,45,725,419,mountain
+20,45,674,363,spaced out
+21,45,675,364,mountain
+22,45,566,255,mountain
+23,45,556,365,spaced out
+24,45,434,276,mountain
+25,45,423,312,spaced out
+26,45,169,64,
+27,45,183,79,hill
+28,45,164,62,
+29,45,148,46,
+30,45,175,117,hill
+31,45,158,101,spaced out
+32,45,130,73,spaced out
+33,45,139,94,hill
+34,45,107,62,
+35,45,96,51,
+36,45,85,43,
+37,45,77,37,
+38,45,55,15,
+39,45,150,110,hill
+40,45,282,242,spaced out
+41,45,331,291,mountain
+42,45,312,241,mountain
+43,45,336,212,mountain
+44,45,276,152,hill
+45,45,226,102,hill
+46,45,418,290,spaced out
+47,45,472,342,mountain
+48,45,441,183,mountain
+49,45,379,167,mountain
+50,45,351,198,spaced out
+51,45,293,140,hill
+52,45,243,90,hill
+1,46,383,325,mountain
+2,46,483,424,spaced out
+3,46,501,427,spaced out
+4,46,404,290,mountain
+5,46,278,165,mountain
+6,46,300,150,spaced out
+7,46,312,161,spaced out
+8,46,271,121,hill
+9,46,310,159,hill
+10,46,401,216,mountain
+11,46,401,270,spaced out
+12,46,355,246,mountain
+13,46,330,221,mountain
+14,46,330,221,spaced out
+15,46,508,367,spaced out
+16,46,524,350,spaced out
+17,46,430,205,mountain
+18,46,614,389,spaced out
+19,46,636,411,mountain
+20,46,553,322,spaced out
+21,46,583,335,mountain
+22,46,527,264,spaced out
+23,46,478,287,spaced out
+24,46,449,291,mountain
+25,46,339,227,mountain
+26,46,246,141,spaced out
+27,46,312,208,mountain
+28,46,278,176,spaced out
+29,46,188,86,hill
+30,46,186,118,hill
+31,46,157,91,spaced out
+32,46,235,178,spaced out
+33,46,263,217,mountain
+34,46,193,147,hill
+35,46,117,72,spaced out
+36,46,101,61,
+37,46,75,35,
+38,46,48,8,
+39,46,98,58,
+40,46,195,155,spaced out
+41,46,207,167,mountain
+42,46,297,240,spaced out
+43,46,327,215,spaced out
+44,46,227,107,hill
+45,46,268,147,hill
+46,46,404,275,spaced out
+47,46,429,268,mountain
+48,46,413,176,spaced out
+49,46,331,121,hill
+50,46,275,128,hill
+51,46,272,126,spaced out
+52,46,220,74,spaced out
+1,47,383,296,spaced out
+2,47,383,296,spaced out
+3,47,352,265,mountain
+4,47,221,133,hill
+5,47,257,145,hill
+6,47,266,167,mountain
+7,47,262,163,spaced out
+8,47,206,107,spaced out
+9,47,264,145,hill
+10,47,318,188,spaced out
+11,47,358,264,mountain
+12,47,318,224,spaced out
+13,47,205,111,hill
+14,47,415,318,mountain
+15,47,524,383,spaced out
+16,47,529,355,mountain
+17,47,417,212,spaced out
+18,47,359,153,spaced out
+19,47,367,158,hill
+20,47,354,124,hill
+21,47,522,274,spaced out
+22,47,632,369,mountain
+23,47,546,355,mountain
+24,47,441,282,spaced out
+25,47,443,329,spaced out
+26,47,479,368,spaced out
+27,47,401,290,spaced out
+28,47,307,203,mountain
+29,47,176,72,spaced out
+30,47,209,132,spaced out
+31,47,210,134,spaced out
+32,47,248,171,spaced out
+33,47,304,228,spaced out
+34,47,241,174,spaced out
+35,47,118,69,hill
+36,47,96,57,
+37,47,72,32,
+38,47,55,15,
+39,47,42,3,
+40,47,64,25,
+41,47,134,94,hill
+42,47,235,192,spaced out
+43,47,236,174,mountain
+44,47,182,111,hill
+45,47,265,163,spaced out
+46,47,306,177,mountain
+47,47,346,145,hill
+48,47,343,142,spaced out
+49,47,306,98,hill
+50,47,255,116,hill
+51,47,216,79,spaced out
+52,47,250,113,spaced out
+1,48,299,226,spaced out
+2,48,308,235,mountain
+3,48,207,124,hill
+4,48,247,159,hill
+5,48,276,224,mountain
+6,48,274,222,spaced out
+7,48,226,175,mountain
+8,48,219,166,mountain
+9,48,254,190,spaced out
+10,48,259,190,mountain
+11,48,277,202,mountain
+12,48,268,190,spaced out
+13,48,239,155,hill
+14,48,406,308,spaced out
+15,48,501,359,mountain
+16,48,482,284,spaced out
+17,48,335,136,hill
+18,48,292,94,hill
+19,48,444,235,mountain
+20,48,538,308,mountain
+21,48,690,442,spaced out
+22,48,715,453,spaced out
+23,48,556,269,mountain
+24,48,721,491,spaced out
+25,48,732,528,spaced out
+26,48,490,323,mountain
+27,48,414,275,mountain
+28,48,274,153,spaced out
+29,48,243,134,spaced out
+30,48,245,135,spaced out
+31,48,225,116,hill
+32,48,279,143,hill
+33,48,304,222,mountain
+34,48,242,175,spaced out
+35,48,136,88,hill
+36,48,128,88,spaced out
+37,48,71,31,
+38,48,70,31,
+39,48,71,31,
+40,48,50,10,
+41,48,121,81,hill
+42,48,132,92,hill
+43,48,149,105,hill
+44,48,170,113,spaced out
+45,48,259,170,spaced out
+46,48,265,99,hill
+47,48,258,87,hill
+48,48,291,121,hill
+49,48,281,111,spaced out
+50,48,247,108,hill
+51,48,219,91,hill
+52,48,273,145,spaced out
+1,49,177,137,spaced out
+2,49,187,155,hill
+3,49,209,177,mountain
+4,49,240,209,spaced out
+5,49,272,240,spaced out
+6,49,273,232,spaced out
+7,49,121,75,hill
+8,49,115,66,hill
+9,49,143,79,hill
+10,49,176,107,spaced out
+11,49,203,128,hill
+12,49,252,174,mountain
+13,49,328,243,mountain
+14,49,411,314,mountain
+15,49,408,212,spaced out
+16,49,364,170,mountain
+17,49,252,59,
+18,49,405,212,mountain
+19,49,596,387,mountain
+20,49,732,498,spaced out
+21,49,732,411,mountain
+22,49,765,402,spaced out
+23,49,709,346,spaced out
+24,49,729,365,spaced out
+25,49,742,435,mountain
+26,49,536,369,spaced out
+27,49,381,255,mountain
+28,49,233,145,spaced out
+29,49,296,208,mountain
+30,49,246,157,hill
+31,49,248,153,spaced out
+32,49,269,132,spaced out
+33,49,271,171,spaced out
+34,49,207,115,hill
+35,49,146,90,hill
+36,49,132,88,hill
+37,49,74,31,
+38,49,72,32,
+39,49,72,32,
+40,49,42,3,
+41,49,64,24,
+42,49,76,36,
+43,49,98,57,
+44,49,174,127,hill
+45,49,207,123,hill
+46,49,214,48,
+47,49,214,61,
+48,49,226,76,hill
+49,49,237,86,spaced out
+50,49,246,107,spaced out
+51,49,240,112,spaced out
+52,49,247,124,spaced out
+1,50,95,73,spaced out
+2,50,180,158,spaced out
+3,50,179,157,spaced out
+4,50,200,176,mountain
+5,50,194,163,spaced out
+6,50,87,46,
+7,50,105,58,
+8,50,140,91,hill
+9,50,236,171,mountain
+10,50,265,196,mountain
+11,50,278,203,mountain
+12,50,407,329,spaced out
+13,50,535,451,spaced out
+14,50,540,439,spaced out
+15,50,485,294,spaced out
+16,50,318,128,hill
+17,50,277,86,hill
+18,50,486,292,mountain
+19,50,635,426,mountain
+20,50,757,443,mountain
+21,50,727,325,spaced out
+22,50,781,379,mountain
+23,50,707,377,spaced out
+24,50,665,335,mountain
+25,50,688,381,mountain
+26,50,605,438,mountain
+27,50,342,257,mountain
+28,50,306,227,spaced out
+29,50,272,193,spaced out
+30,50,208,129,spaced out
+31,50,249,155,hill
+32,50,228,103,spaced out
+33,50,223,128,hill
+34,50,144,53,
+35,50,135,79,hill
+36,50,110,66,hill
+37,50,118,75,spaced out
+38,50,118,78,hill
+39,50,120,80,hill
+40,50,79,39,
+41,50,46,6,
+42,50,65,25,
+43,50,81,41,
+44,50,170,130,spaced out
+45,50,189,105,hill
+46,50,215,61,
+47,50,236,92,spaced out
+48,50,209,72,hill
+49,50,206,69,hill
+50,50,242,105,hill
+51,50,261,134,hill
+52,50,257,141,spaced out
+1,51,63,46,
+2,51,56,38,
+3,51,101,83,spaced out
+4,51,136,112,hill
+5,51,145,114,spaced out
+6,51,157,116,hill
+7,51,193,147,hill
+8,51,261,212,mountain
+9,51,274,205,mountain
+10,51,315,244,mountain
+11,51,376,295,mountain
+12,51,427,344,mountain
+13,51,615,492,spaced out
+14,51,619,395,mountain
+15,51,501,326,mountain
+16,51,288,114,hill
+17,51,375,201,spaced out
+18,51,515,325,mountain
+19,51,633,413,spaced out
+20,51,682,320,mountain
+21,51,641,270,spaced out
+22,51,739,357,mountain
+23,51,661,408,spaced out
+24,51,548,346,mountain
+25,51,594,392,mountain
+26,51,553,434,spaced out
+27,51,383,305,spaced out
+28,51,306,227,spaced out
+29,51,142,64,
+30,51,207,129,hill
+31,51,240,150,spaced out
+32,51,245,120,hill
+33,51,213,130,spaced out
+34,51,130,59,
+35,51,116,60,
+36,51,120,76,hill
+37,51,229,185,spaced out
+38,51,220,180,spaced out
+39,51,177,138,hill
+40,51,143,103,hill
+41,51,46,6,
+42,51,51,11,
+43,51,84,44,
+44,51,175,135,spaced out
+45,51,221,141,hill
+46,51,215,104,spaced out
+47,51,253,111,hill
+48,51,198,71,hill
+49,51,192,73,hill
+50,51,225,109,spaced out
+51,51,236,120,hill
+52,51,256,148,hill
+1,52,65,56,
+2,52,54,43,
+3,52,107,91,hill
+4,52,148,123,hill
+5,52,170,139,hill
+6,52,185,144,hill
+7,52,211,158,hill
+8,52,261,198,spaced out
+9,52,265,187,mountain
+10,52,424,259,spaced out
+11,52,440,193,mountain
+12,52,381,127,hill
+13,52,507,266,spaced out
+14,52,522,317,mountain
+15,52,430,260,spaced out
+16,52,246,76,spaced out
+17,52,388,218,mountain
+18,52,507,328,spaced out
+19,52,508,205,spaced out
+20,52,543,182,mountain
+21,52,682,311,spaced out
+22,52,782,438,spaced out
+23,52,665,435,spaced out
+24,52,424,243,mountain
+25,52,445,311,mountain
+26,52,428,362,spaced out
+27,52,397,330,mountain
+28,52,286,239,spaced out
+29,52,152,105,hill
+30,52,204,157,spaced out
+31,52,237,174,spaced out
+32,52,236,111,spaced out
+33,52,189,106,hill
+34,52,144,75,hill
+35,52,96,28,
+36,52,149,82,spaced out
+37,52,230,162,mountain
+38,52,238,148,hill
+39,52,220,180,spaced out
+40,52,189,149,hill
+41,52,76,36,
+42,52,40,0,
+43,52,82,42,
+44,52,149,109,spaced out
+45,52,202,122,spaced out
+46,52,188,84,spaced out
+47,52,206,83,hill
+48,52,177,50,
+49,52,143,24,
+50,52,153,37,
+51,52,190,75,hill
+52,52,240,137,hill
+1,53,44,35,
+2,53,225,213,spaced out
+3,53,226,209,spaced out
+4,53,235,210,mountain
+5,53,212,163,spaced out
+6,53,201,92,hill
+7,53,215,65,hill
+8,53,264,109,hill
+9,53,303,101,hill
+10,53,420,175,spaced out
+11,53,453,198,mountain
+12,53,401,130,hill
+13,53,332,93,spaced out
+14,53,351,201,mountain
+15,53,313,164,mountain
+16,53,246,97,hill
+17,53,340,188,mountain
+18,53,416,264,spaced out
+19,53,570,316,spaced out
+20,53,701,340,spaced out
+21,53,711,339,spaced out
+22,53,784,440,mountain
+23,53,646,415,spaced out
+24,53,425,244,mountain
+25,53,298,209,spaced out
+26,53,369,316,mountain
+27,53,367,320,spaced out
+28,53,138,93,hill
+29,53,116,71,spaced out
+30,53,160,115,hill
+31,53,235,183,mountain
+32,53,238,109,hill
+33,53,230,148,spaced out
+34,53,180,111,hill
+35,53,104,38,
+36,53,150,83,hill
+37,53,205,139,hill
+38,53,243,159,hill
+39,53,249,193,spaced out
+40,53,246,206,spaced out
+41,53,106,67,hill
+42,53,40,0,
+43,53,80,40,
+44,53,109,69,hill
+45,53,138,67,hill
+46,53,159,55,
+47,53,173,50,
+48,53,173,46,
+49,53,172,53,
+50,53,190,73,spaced out
+51,53,191,75,spaced out
+52,53,175,71,hill
+1,54,158,149,hill
+2,54,233,222,mountain
+3,54,241,225,spaced out
+4,54,297,271,mountain
+5,54,296,203,spaced out
+6,54,260,128,hill
+7,54,229,75,hill
+8,54,305,130,hill
+9,54,339,124,hill
+10,54,394,141,spaced out
+11,54,446,172,spaced out
+12,54,420,148,spaced out
+13,54,328,95,spaced out
+14,54,324,175,spaced out
+15,54,245,103,hill
+16,54,214,71,hill
+17,54,310,167,spaced out
+18,54,425,279,mountain
+19,54,600,368,mountain
+20,54,737,376,spaced out
+21,54,744,325,mountain
+22,54,767,423,mountain
+23,54,708,477,spaced out
+24,54,447,267,mountain
+25,54,302,213,mountain
+26,54,235,189,mountain
+27,54,116,70,hill
+28,54,105,60,
+29,54,69,24,
+30,54,185,140,hill
+31,54,274,222,spaced out
+32,54,279,138,spaced out
+33,54,266,178,spaced out
+34,54,212,143,spaced out
+35,54,128,61,
+36,54,111,45,
+37,54,215,149,spaced out
+38,54,237,170,spaced out
+39,54,256,162,mountain
+40,54,259,219,mountain
+41,54,111,71,hill
+42,54,40,0,
+43,54,78,38,
+44,54,119,79,hill
+45,54,166,95,spaced out
+46,54,200,96,hill
+47,54,223,101,spaced out
+48,54,233,97,hill
+49,54,204,81,spaced out
+50,54,229,111,hill
+51,54,208,93,hill
+52,54,202,99,hill
+1,55,211,202,spaced out
+2,55,229,217,mountain
+3,55,284,220,mountain
+4,55,279,103,spaced out
+5,55,282,90,hill
+6,55,280,88,spaced out
+7,55,269,77,hill
+8,55,305,110,spaced out
+9,55,394,176,spaced out
+10,55,413,158,spaced out
+11,55,424,154,hill
+12,55,423,283,spaced out
+13,55,391,287,mountain
+14,55,325,222,mountain
+15,55,234,131,hill
+16,55,181,72,spaced out
+17,55,243,118,hill
+18,55,384,238,mountain
+19,55,551,319,mountain
+20,55,703,343,spaced out
+21,55,716,403,mountain
+22,55,670,428,spaced out
+23,55,667,440,spaced out
+24,55,446,281,spaced out
+25,55,257,172,mountain
+26,55,192,146,hill
+27,55,127,82,hill
+28,55,51,6,
+29,55,109,64,
+30,55,218,173,mountain
+31,55,276,224,spaced out
+32,55,287,143,hill
+33,55,268,154,hill
+34,55,217,148,hill
+35,55,138,72,hill
+36,55,76,10,
+37,55,214,147,spaced out
+38,55,215,149,hill
+39,55,251,132,spaced out
+40,55,257,217,spaced out
+41,55,120,80,hill
+42,55,48,8,
+43,55,81,41,
+44,55,138,98,hill
+45,55,167,97,hill
+46,55,194,90,spaced out
+47,55,232,103,hill
+48,55,230,72,spaced out
+49,55,206,48,
+50,55,227,84,spaced out
+51,55,216,79,hill
+52,55,213,98,hill
+1,56,222,212,mountain
+2,56,283,222,mountain
+3,56,318,150,spaced out
+4,56,322,139,hill
+5,56,277,42,
+6,56,275,48,
+7,56,264,37,
+8,56,321,94,hill
+9,56,394,167,spaced out
+10,56,413,170,mountain
+11,56,401,259,mountain
+12,56,353,261,spaced out
+13,56,350,258,spaced out
+14,56,275,183,mountain
+15,56,230,133,spaced out
+16,56,176,74,hill
+17,56,305,180,mountain
+18,56,406,260,mountain
+19,56,558,326,spaced out
+20,56,653,338,mountain
+21,56,620,352,spaced out
+22,56,443,238,mountain
+23,56,440,255,spaced out
+24,56,326,162,mountain
+25,56,255,178,mountain
+26,56,186,141,spaced out
+27,56,87,42,
+28,56,47,2,
+29,56,169,124,hill
+30,56,252,207,spaced out
+31,56,281,207,mountain
+32,56,257,119,spaced out
+33,56,239,108,hill
+34,56,230,161,spaced out
+35,56,187,121,hill
+36,56,111,45,
+37,56,163,97,spaced out
+38,56,180,113,hill
+39,56,204,127,spaced out
+40,56,212,172,mountain
+41,56,129,89,spaced out
+42,56,49,9,
+43,56,106,66,hill
+44,56,167,127,hill
+45,56,150,76,spaced out
+46,56,178,60,
+47,56,223,102,spaced out
+48,56,222,101,spaced out
+49,56,218,97,spaced out
+50,56,238,98,hill
+51,56,222,106,spaced out
+52,56,210,94,hill
+1,57,199,124,hill
+2,57,346,194,spaced out
+3,57,408,210,mountain
+4,57,407,174,mountain
+5,57,369,135,hill
+6,57,334,101,hill
+7,57,330,104,hill
+8,57,280,74,spaced out
+9,57,346,142,spaced out
+10,57,360,166,mountain
+11,57,321,238,mountain
+12,57,280,197,mountain
+13,57,259,175,mountain
+14,57,129,46,
+15,57,171,74,hill
+16,57,260,157,hill
+17,57,367,242,mountain
+18,57,543,391,spaced out
+19,57,600,353,mountain
+20,57,591,288,mountain
+21,57,488,259,mountain
+22,57,407,202,mountain
+23,57,301,161,mountain
+24,57,253,156,spaced out
+25,57,252,182,spaced out
+26,57,183,138,hill
+27,57,91,46,
+28,57,62,17,
+29,57,197,152,hill
+30,57,252,207,spaced out
+31,57,269,147,hill
+32,57,249,126,spaced out
+33,57,242,120,spaced out
+34,57,243,165,mountain
+35,57,190,124,hill
+36,57,146,80,hill
+37,57,105,39,
+38,57,150,84,hill
+39,57,170,119,spaced out
+40,57,178,138,hill
+41,57,164,124,hill
+42,57,47,7,
+43,57,124,84,spaced out
+44,57,148,105,hill
+45,57,145,55,
+46,57,183,76,hill
+47,57,172,72,spaced out
+48,57,173,73,hill
+49,57,227,127,spaced out
+50,57,231,112,spaced out
+51,57,216,126,spaced out
+52,57,174,101,hill
+1,58,278,151,spaced out
+2,58,347,195,mountain
+3,58,454,256,spaced out
+4,58,475,217,mountain
+5,58,422,173,spaced out
+6,58,437,204,spaced out
+7,58,438,212,spaced out
+8,58,328,133,hill
+9,58,274,109,hill
+10,58,263,121,spaced out
+11,58,279,201,mountain
+12,58,246,168,spaced out
+13,58,131,53,
+14,58,197,114,hill
+15,58,313,216,mountain
+16,58,405,303,spaced out
+17,58,416,291,spaced out
+18,58,543,368,mountain
+19,58,579,305,spaced out
+20,58,561,311,spaced out
+21,58,393,167,mountain
+22,58,310,170,mountain
+23,58,263,155,hill
+24,58,233,136,hill
+25,58,197,126,hill
+26,58,152,107,spaced out
+27,58,77,32,
+28,58,104,59,
+29,58,211,166,mountain
+30,58,281,235,spaced out
+31,58,281,177,spaced out
+32,58,205,101,hill
+33,58,219,114,hill
+34,58,231,123,spaced out
+35,58,222,156,hill
+36,58,212,146,spaced out
+37,58,135,69,hill
+38,58,138,72,hill
+39,58,126,86,spaced out
+40,58,140,100,hill
+41,58,98,59,
+42,58,66,26,
+43,58,137,97,hill
+44,58,146,103,spaced out
+45,58,134,54,
+46,58,167,87,hill
+47,58,176,94,hill
+48,58,148,66,spaced out
+49,58,191,109,spaced out
+50,58,193,74,hill
+51,58,167,86,hill
+52,58,164,100,spaced out
+1,59,279,150,hill
+2,59,317,165,mountain
+3,59,423,215,mountain
+4,59,459,155,spaced out
+5,59,425,127,hill
+6,59,452,190,spaced out
+7,59,471,245,mountain
+8,59,390,194,mountain
+9,59,271,146,hill
+10,59,242,171,spaced out
+11,59,264,193,mountain
+12,59,178,107,hill
+13,59,247,172,mountain
+14,59,298,215,mountain
+15,59,477,379,spaced out
+16,59,492,356,mountain
+17,59,440,256,mountain
+18,59,387,133,hill
+19,59,401,157,hill
+20,59,381,148,hill
+21,59,354,194,mountain
+22,59,300,194,mountain
+23,59,255,152,spaced out
+24,59,224,127,spaced out
+25,59,138,93,spaced out
+26,59,136,91,spaced out
+27,59,78,32,
+28,59,200,155,hill
+29,59,274,229,spaced out
+30,59,297,224,spaced out
+31,59,298,207,mountain
+32,59,199,108,spaced out
+33,59,202,111,hill
+34,59,234,140,hill
+35,59,223,139,spaced out
+36,59,215,149,hill
+37,59,153,87,hill
+38,59,127,64,
+39,59,127,87,spaced out
+40,59,109,69,hill
+41,59,47,7,
+42,59,87,47,
+43,59,136,96,spaced out
+44,59,135,85,spaced out
+45,59,127,64,hill
+46,59,162,99,spaced out
+47,59,168,102,spaced out
+48,59,133,67,spaced out
+49,59,188,122,hill
+50,59,173,55,
+51,59,172,104,hill
+52,59,162,109,spaced out
+1,60,263,134,hill
+2,60,366,198,mountain
+3,60,480,228,mountain
+4,60,478,174,spaced out
+5,60,416,117,spaced out
+6,60,417,171,spaced out
+7,60,441,208,spaced out
+8,60,386,287,spaced out
+9,60,289,230,spaced out
+10,60,204,144,spaced out
+11,60,186,127,hill
+12,60,131,68,hill
+13,60,246,171,spaced out
+14,60,365,282,mountain
+15,60,456,307,spaced out
+16,60,469,267,spaced out
+17,60,420,218,mountain
+18,60,386,184,spaced out
+19,60,397,172,spaced out
+20,60,307,165,mountain
+21,60,290,180,spaced out
+22,60,290,184,mountain
+23,60,260,165,mountain
+24,60,126,32,
+25,60,164,119,hill
+26,60,153,108,spaced out
+27,60,77,32,
+28,60,285,240,spaced out
+29,60,288,242,mountain
+30,60,288,168,spaced out
+31,60,294,207,spaced out
+32,60,199,112,hill
+33,60,192,105,hill
+34,60,230,154,hill
+35,60,225,150,spaced out
+36,60,188,120,spaced out
+37,60,199,130,hill
+38,60,125,68,hill
+39,60,120,80,spaced out
+40,60,79,40,
+41,60,47,7,
+42,60,105,66,hill
+43,60,145,105,spaced out
+44,60,160,100,hill
+45,60,107,47,
+46,60,169,108,spaced out
+47,60,174,123,hill
+48,60,135,84,hill
+49,60,195,145,spaced out
+50,60,201,119,spaced out
+51,60,189,143,hill
+52,60,135,97,hill
+1,61,347,196,mountain
+2,61,418,214,mountain
+3,61,484,232,mountain
+4,61,509,195,spaced out
+5,61,498,241,spaced out
+6,61,370,152,spaced out
+7,61,326,165,mountain
+8,61,338,278,spaced out
+9,61,340,289,mountain
+10,61,207,157,hill
+11,61,152,101,hill
+12,61,263,200,spaced out
+13,61,287,212,spaced out
+14,61,364,272,spaced out
+15,61,365,208,spaced out
+16,61,314,168,spaced out
+17,61,323,178,mountain
+18,61,324,179,mountain
+19,61,298,180,mountain
+20,61,268,184,mountain
+21,61,261,177,spaced out
+22,61,250,166,spaced out
+23,61,138,46,
+24,61,122,74,hill
+25,61,144,99,spaced out
+26,61,134,89,spaced out
+27,61,184,139,spaced out
+28,61,288,243,mountain
+29,61,288,243,spaced out
+30,61,263,138,hill
+31,61,239,153,spaced out
+32,61,195,111,hill
+33,61,210,125,spaced out
+34,61,226,158,hill
+35,61,208,140,spaced out
+36,61,197,128,spaced out
+37,61,227,158,hill
+38,61,151,94,hill
+39,61,114,74,hill
+40,61,71,31,
+41,61,57,18,
+42,61,138,99,spaced out
+43,61,138,98,spaced out
+44,61,159,102,spaced out
+45,61,98,41,
+46,61,135,78,hill
+47,61,159,113,hill
+48,61,127,80,hill
+49,61,198,151,spaced out
+50,61,201,147,hill
+51,61,189,151,spaced out
+52,61,133,107,spaced out
+1,62,477,307,spaced out
+2,62,521,308,spaced out
+3,62,534,270,spaced out
+4,62,555,284,mountain
+5,62,537,296,spaced out
+6,62,383,168,mountain
+7,62,325,183,spaced out
+8,62,268,208,spaced out
+9,62,269,224,spaced out
+10,62,81,35,
+11,62,246,200,mountain
+12,62,290,243,spaced out
+13,62,335,259,mountain
+14,62,337,191,mountain
+15,62,337,220,spaced out
+16,62,272,155,hill
+17,62,295,179,spaced out
+18,62,312,187,mountain
+19,62,256,184,spaced out
+20,62,271,199,mountain
+21,62,219,147,hill
+22,62,168,95,spaced out
+23,62,158,66,spaced out
+24,62,135,90,hill
+25,62,114,69,hill
+26,62,79,34,
+27,62,197,152,hill
+28,62,266,221,mountain
+29,62,259,164,spaced out
+30,62,248,122,hill
+31,62,229,143,spaced out
+32,62,179,98,spaced out
+33,62,198,117,spaced out
+34,62,201,133,spaced out
+35,62,182,115,hill
+36,62,241,173,spaced out
+37,62,253,177,mountain
+38,62,147,107,spaced out
+39,62,134,94,hill
+40,62,80,40,
+41,62,116,77,spaced out
+42,62,160,121,spaced out
+43,62,141,97,hill
+44,62,140,85,hill
+45,62,93,39,
+46,62,110,56,
+47,62,154,116,spaced out
+48,62,131,93,hill
+49,62,148,110,hill
+50,62,195,157,hill
+51,62,188,163,spaced out
+52,62,114,96,spaced out
+1,63,479,298,mountain
+2,63,532,303,spaced out
+3,63,539,180,mountain
+4,63,513,242,spaced out
+5,63,472,245,mountain
+6,63,303,93,hill
+7,63,255,113,hill
+8,63,220,160,spaced out
+9,63,152,107,hill
+10,63,85,40,
+11,63,239,195,spaced out
+12,63,298,253,mountain
+13,63,287,173,spaced out
+14,63,298,193,spaced out
+15,63,308,220,mountain
+16,63,209,120,hill
+17,63,211,122,spaced out
+18,63,238,174,spaced out
+19,63,247,183,mountain
+20,63,232,168,mountain
+21,63,133,66,hill
+22,63,168,96,hill
+23,63,158,71,spaced out
+24,63,154,109,hill
+25,63,151,106,spaced out
+26,63,63,18,
+27,63,246,201,spaced out
+28,63,319,274,mountain
+29,63,308,136,spaced out
+30,63,296,171,mountain
+31,63,242,156,hill
+32,63,181,109,hill
+33,63,161,100,spaced out
+34,63,204,145,hill
+35,63,140,80,hill
+36,63,225,166,spaced out
+37,63,243,156,spaced out
+38,63,175,135,hill
+39,63,131,91,spaced out
+40,63,51,12,
+41,63,171,131,spaced out
+42,63,199,159,hill
+43,63,180,137,hill
+44,63,148,105,hill
+45,63,98,56,
+46,63,90,47,
+47,63,117,85,hill
+48,63,115,91,spaced out
+49,63,84,60,
+50,63,164,147,spaced out
+51,63,166,157,hill
+52,63,116,109,hill
+1,64,465,276,mountain
+2,64,496,203,spaced out
+3,64,510,151,hill
+4,64,454,183,spaced out
+5,64,421,197,spaced out
+6,64,306,141,spaced out
+7,64,242,100,hill
+8,64,225,163,spaced out
+9,64,170,136,hill
+10,64,134,101,hill
+11,64,138,104,hill
+12,64,281,247,spaced out
+13,64,283,243,mountain
+14,64,213,173,spaced out
+15,64,247,207,mountain
+16,64,178,131,spaced out
+17,64,218,167,mountain
+18,64,218,167,spaced out
+19,64,184,134,hill
+20,64,127,73,hill
+21,64,184,129,spaced out
+22,64,185,112,hill
+23,64,169,85,spaced out
+24,64,162,117,hill
+25,64,134,89,spaced out
+26,64,88,43,
+27,64,248,203,mountain
+28,64,307,258,spaced out
+29,64,307,119,hill
+30,64,295,189,spaced out
+31,64,217,172,mountain
+32,64,193,148,hill
+33,64,139,116,spaced out
+34,64,146,123,hill
+35,64,123,100,hill
+36,64,192,165,spaced out
+37,64,208,127,hill
+38,64,147,107,spaced out
+39,64,119,79,hill
+40,64,61,21,
+41,64,171,131,spaced out
+42,64,206,166,mountain
+43,64,198,164,spaced out
+44,64,150,119,hill
+45,64,80,48,
+46,64,92,72,hill
+47,64,79,59,
+48,64,68,48,
+49,64,56,44,
+50,64,121,115,spaced out
+51,64,131,124,hill
+52,64,85,80,hill
+1,65,417,223,mountain
+2,65,518,257,mountain
+3,65,526,201,mountain
+4,65,480,209,spaced out
+5,65,439,215,mountain
+6,65,312,148,hill
+7,65,226,92,hill
+8,65,202,106,spaced out
+9,65,205,178,spaced out
+10,65,183,155,spaced out
+11,65,166,138,hill
+12,65,200,182,spaced out
+13,65,201,183,mountain
+14,65,164,146,hill
+15,65,129,105,hill
+16,65,185,163,spaced out
+17,65,193,177,mountain
+18,65,161,145,hill
+19,65,89,73,hill
+20,65,145,124,spaced out
+21,65,192,155,hill
+22,65,202,130,hill
+23,65,233,158,hill
+24,65,213,168,spaced out
+25,65,80,35,
+26,65,124,79,hill
+27,65,249,204,mountain
+28,65,303,230,spaced out
+29,65,303,143,spaced out
+30,65,265,218,mountain
+31,65,207,172,mountain
+32,65,189,166,spaced out
+33,65,93,76,hill
+34,65,75,59,
+35,65,85,69,hill
+36,65,160,135,spaced out
+37,65,169,88,hill
+38,65,144,104,spaced out
+39,65,104,64,
+40,65,82,42,
+41,65,189,149,hill
+42,65,214,160,hill
+43,65,207,174,spaced out
+44,65,144,119,hill
+45,65,74,50,
+46,65,80,65,spaced out
+47,65,65,51,
+48,65,65,51,
+49,65,47,35,
+50,65,42,35,
+51,65,34,28,
+52,65,22,17,
+1,66,365,175,mountain
+2,66,483,228,spaced out
+3,66,498,198,spaced out
+4,66,456,164,spaced out
+5,66,376,152,hill
+6,66,327,163,spaced out
+7,66,258,125,hill
+8,66,183,101,hill
+9,66,221,197,mountain
+10,66,176,152,spaced out
+11,66,163,139,spaced out
+12,66,180,171,spaced out
+13,66,143,133,hill
+14,66,99,90,spaced out
+15,66,145,134,hill
+16,66,157,149,hill
+17,66,151,143,spaced out
+18,66,70,62,
+19,66,63,51,
+20,66,98,77,hill
+21,66,174,137,spaced out
+22,66,191,110,spaced out
+23,66,227,152,spaced out
+24,66,207,162,spaced out
+25,66,83,38,
+26,66,187,142,hill
+27,66,248,203,spaced out
+28,66,258,159,hill
+29,66,257,161,spaced out
+30,66,241,193,mountain
+31,66,199,189,spaced out
+32,66,97,88,hill
+33,66,95,85,hill
+34,66,73,62,
+35,66,134,118,hill
+36,66,188,163,spaced out
+37,66,201,120,hill
+38,66,184,145,spaced out
+39,66,90,51,
+40,66,88,48,
+41,66,204,164,mountain
+42,66,247,184,mountain
+43,66,243,209,spaced out
+44,66,180,156,spaced out
+45,66,86,72,hill
+46,66,63,50,
+47,66,37,23,
+48,66,66,53,
+49,66,147,135,hill
+50,66,137,130,spaced out
+51,66,74,69,hill
+52,66,22,18,
+1,67,338,148,spaced out
+2,67,390,135,spaced out
+3,67,437,139,hill
+4,67,417,159,spaced out
+5,67,340,135,hill
+6,67,327,163,spaced out
+7,67,278,144,hill
+8,67,212,130,hill
+9,67,191,167,mountain
+10,67,100,77,hill
+11,67,160,152,spaced out
+12,67,181,174,mountain
+13,67,109,102,spaced out
+14,67,116,109,hill
+15,67,143,137,spaced out
+16,67,121,115,spaced out
+17,67,74,68,hill
+18,67,45,38,
+19,67,72,60,
+20,67,138,118,hill
+21,67,187,150,hill
+22,67,202,120,hill
+23,67,198,135,spaced out
+24,67,162,117,hill
+25,67,115,70,hill
+26,67,182,137,spaced out
+27,67,228,183,spaced out
+28,67,239,124,hill
+29,67,221,125,hill
+30,67,203,179,spaced out
+31,67,159,151,hill
+32,67,66,58,
+33,67,49,41,
+34,67,60,53,
+35,67,161,150,hill
+36,67,220,194,mountain
+37,67,211,146,spaced out
+38,67,184,144,hill
+39,67,89,49,
+40,67,91,51,
+41,67,262,223,mountain
+42,67,307,219,mountain
+43,67,276,242,spaced out
+44,67,197,173,mountain
+45,67,124,114,hill
+46,67,36,26,
+47,67,30,20,
+48,67,73,63,
+49,67,160,148,spaced out
+50,67,157,150,spaced out
+51,67,81,76,hill
+52,67,25,20,
+1,68,350,189,mountain
+2,68,402,192,mountain
+3,68,392,94,spaced out
+4,68,365,107,hill
+5,68,324,124,hill
+6,68,285,112,hill
+7,68,278,138,spaced out
+8,68,257,175,mountain
+9,68,257,241,spaced out
+10,68,144,137,hill
+11,68,159,152,spaced out
+12,68,162,156,hill
+13,68,66,59,
+14,68,109,103,spaced out
+15,68,112,106,spaced out
+16,68,45,39,
+17,68,54,48,
+18,68,56,50,
+19,68,90,78,spaced out
+20,68,200,184,spaced out
+21,68,214,170,spaced out
+22,68,213,132,spaced out
+23,68,156,94,spaced out
+24,68,106,61,
+25,68,81,38,
+26,68,177,134,hill
+27,68,207,163,mountain
+28,68,200,113,hill
+29,68,190,106,hill
+30,68,142,118,hill
+31,68,130,122,spaced out
+32,68,45,39,
+33,68,22,16,
+34,68,101,94,hill
+35,68,188,179,mountain
+36,68,219,176,spaced out
+37,68,210,147,spaced out
+38,68,164,124,hill
+39,68,73,33,
+40,68,91,51,
+41,68,299,260,mountain
+42,68,306,218,spaced out
+43,68,285,188,spaced out
+44,68,217,191,mountain
+45,68,146,137,spaced out
+46,68,38,30,
+47,68,25,17,
+48,68,103,95,spaced out
+49,68,168,151,hill
+50,68,167,155,spaced out
+51,68,124,119,hill
+52,68,69,65,spaced out
+1,69,301,141,hill
+2,69,382,172,mountain
+3,69,401,103,hill
+4,69,408,188,spaced out
+5,69,407,209,spaced out
+6,69,343,187,mountain
+7,69,228,93,hill
+8,69,247,128,spaced out
+9,69,253,244,spaced out
+10,69,168,163,mountain
+11,69,110,105,hill
+12,69,58,53,
+13,69,77,71,hill
+14,69,100,93,hill
+15,69,67,61,
+16,69,15,9,
+17,69,68,63,
+18,69,62,56,
+19,69,99,92,hill
+20,69,223,210,spaced out
+21,69,231,180,mountain
+22,69,217,136,hill
+23,69,166,104,spaced out
+24,69,104,57,
+25,69,68,28,
+26,69,111,70,hill
+27,69,189,148,hill
+28,69,187,111,spaced out
+29,69,150,83,hill
+30,69,131,107,hill
+31,69,129,121,spaced out
+32,69,40,34,
+33,69,17,11,
+34,69,124,118,spaced out
+35,69,228,218,mountain
+36,69,227,155,spaced out
+37,69,213,149,hill
+38,69,153,113,spaced out
+39,69,80,41,
+40,69,99,59,
+41,69,299,259,spaced out
+42,69,287,198,spaced out
+43,69,243,149,spaced out
+44,69,217,181,spaced out
+45,69,154,146,hill
+46,69,68,61,
+47,69,36,30,
+48,69,122,115,hill
+49,69,174,157,hill
+50,69,172,141,spaced out
+51,69,121,116,spaced out
+52,69,71,66,hill
+1,70,357,196,mountain
+2,70,416,206,spaced out
+3,70,462,163,spaced out
+4,70,456,237,spaced out
+5,70,416,251,mountain
+6,70,321,164,spaced out
+7,70,223,119,spaced out
+8,70,197,107,spaced out
+9,70,204,197,mountain
+10,70,158,153,spaced out
+11,70,14,9,
+12,70,42,37,
+13,70,56,50,
+14,70,58,51,
+15,70,25,19,
+16,70,20,15,
+17,70,52,46,
+18,70,52,46,
+19,70,156,149,spaced out
+20,70,162,149,hill
+21,70,174,99,spaced out
+22,70,148,68,hill
+23,70,137,76,hill
+24,70,103,58,
+25,70,87,50,
+26,70,132,95,hill
+27,70,184,147,spaced out
+28,70,181,124,spaced out
+29,70,127,70,hill
+30,70,100,70,spaced out
+31,70,93,85,hill
+32,70,74,67,spaced out
+33,70,39,33,
+34,70,139,133,hill
+35,70,225,218,spaced out
+36,70,224,180,spaced out
+37,70,212,149,spaced out
+38,70,145,105,spaced out
+39,70,144,104,spaced out
+40,70,98,58,
+41,70,247,207,spaced out
+42,70,253,162,mountain
+43,70,230,138,spaced out
+44,70,163,137,spaced out
+45,70,145,137,hill
+46,70,65,58,
+47,70,48,41,
+48,70,99,92,spaced out
+49,70,202,184,spaced out
+50,70,203,147,spaced out
+51,70,164,158,hill
+52,70,90,86,hill
+1,71,425,264,mountain
+2,71,451,213,mountain
+3,71,469,211,mountain
+4,71,459,307,spaced out
+5,71,386,272,mountain
+6,71,247,144,hill
+7,71,260,171,mountain
+8,71,170,118,hill
+9,71,176,169,mountain
+10,71,140,140,hill
+11,71,12,12,
+12,71,35,34,
+13,71,30,28,
+14,71,59,52,
+15,71,25,19,
+16,71,17,11,
+17,71,55,49,
+18,71,91,85,spaced out
+19,71,159,152,spaced out
+20,71,162,149,spaced out
+21,71,162,70,hill
+22,71,156,76,spaced out
+23,71,136,85,spaced out
+24,71,83,43,
+25,71,76,40,
+26,71,130,94,spaced out
+27,71,159,123,spaced out
+28,71,162,110,spaced out
+29,71,106,55,
+30,71,93,52,
+31,71,70,61,
+32,71,79,71,hill
+33,71,67,62,
+34,71,80,75,hill
+35,71,218,213,spaced out
+36,71,220,202,mountain
+37,71,151,109,hill
+38,71,175,134,hill
+39,71,147,107,spaced out
+40,71,128,88,spaced out
+41,71,255,215,mountain
+42,71,240,149,spaced out
+43,71,234,142,hill
+44,71,164,148,hill
+45,71,114,107,spaced out
+46,71,53,47,
+47,71,52,46,
+48,71,90,84,hill
+49,71,202,160,spaced out
+50,71,204,159,hill
+51,71,178,171,spaced out
+52,71,121,116,hill

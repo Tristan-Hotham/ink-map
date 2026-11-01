@@ -1,0 +1,64 @@
+{
+ "source": "RESOLVE Ecoregions 2017 (Dinerstein et al. 2017), CC BY 4.0",
+ "size": 2048,
+ "projection": "web Mercator, whole square",
+ "classes": {
+  "1": {
+   "name": "desert",
+   "resolve_biomes": [
+    13
+   ],
+   "pixels": 99325
+  },
+  "2": {
+   "name": "grassland",
+   "resolve_biomes": [
+    7,
+    8,
+    10
+   ],
+   "pixels": 137431
+  },
+  "3": {
+   "name": "rainforest",
+   "resolve_biomes": [
+    1
+   ],
+   "pixels": 56920
+  },
+  "4": {
+   "name": "taiga",
+   "resolve_biomes": [
+    6
+   ],
+   "pixels": 168402
+  },
+  "5": {
+   "name": "ice",
+   "resolve_biomes": [
+    "Rock and Ice"
+   ],
+   "pixels": 802776
+  },
+  "6": {
+   "name": "marsh",
+   "resolve_biomes": [
+    9
+   ],
+   "pixels": 4899
+  },
+  "7": {
+   "name": "tundra",
+   "resolve_biomes": [
+    11
+   ],
+   "pixels": 245050
+  }
+ },
+ "montane": {
+  "ecoregions": 181,
+  "pixels": 95996,
+  "pattern": "montane|mountain|highland|alpine|\\bAtlas\\b|Hindu Kush|Himalaya|\\bAlps\\b|Andes|Andean|Puna|Rock(y|ies)|\\bRange\\b|Sierra|ramo|Drakensberg|Ethiopian|Tibesti|Pyrenees|Caucasus|Carpathian|Karakoram|Pamir|Tian Shan|Altai|Zagros|Hajar|Yungas|Cordillera|Rwenzori|Albertine|Eastern Arc",
+  "excluded": "Plateau|North Arabian highland"
+ }
+}

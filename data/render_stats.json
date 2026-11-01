@@ -1,0 +1,82 @@
+{
+ "world": {
+  "zoom": 1.6,
+  "relief": 1199,
+  "mountains": 671,
+  "hills": 528,
+  "trees": 0,
+  "tufts": 0
+ },
+ "asia": {
+  "zoom": 3.5,
+  "relief": 3522,
+  "mountains": 2024,
+  "hills": 1498,
+  "trees": 0,
+  "tufts": 0
+ },
+ "europe": {
+  "zoom": 3.8,
+  "relief": 1054,
+  "mountains": 661,
+  "hills": 393,
+  "trees": 0,
+  "tufts": 0
+ },
+ "gb": {
+  "zoom": 5.3,
+  "relief": 1494,
+  "mountains": 557,
+  "hills": 937,
+  "trees": 0,
+  "tufts": 0
+ },
+ "yorkshire": {
+  "zoom": 8.2,
+  "relief": 4465,
+  "mountains": 1086,
+  "hills": 3379,
+  "trees": 605,
+  "tufts": 0
+ },
+ "lakes": {
+  "zoom": 11,
+  "relief": 4512,
+  "mountains": 1950,
+  "hills": 2562,
+  "trees": 1892,
+  "tufts": 8007
+ },
+ "stress": {
+  "zoom": 9,
+  "relief": 4443,
+  "mountains": 3377,
+  "hills": 1066,
+  "trees": 1179,
+  "tufts": 3922
+ },
+ "sahara": {
+  "zoom": 3.45,
+  "relief": 1404,
+  "mountains": 757,
+  "hills": 647,
+  "trees": 0,
+  "tufts": 0
+ },
+ "amazon": {
+  "zoom": 3.45,
+  "relief": 815,
+  "mountains": 411,
+  "hills": 404,
+  "trees": 0,
+  "tufts": 0
+ },
+ "greenland": {
+  "zoom": 3.1,
+  "relief": 1972,
+  "mountains": 1196,
+  "hills": 776,
+  "trees": 0,
+  "tufts": 0
+ }
+}

@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Inked World</title>
+<meta name="description" content="A zoomable map of the whole world drawn in the style of a hand-inked fantasy map: mountains placed from real elevation, forests from OpenStreetMap, red lettering, blue rivers and rippled coasts, from continents down to single fells.">
+<meta property="og:title" content="The Inked World: a hand-inked style map of everywhere, from open data">
+<meta property="og:description" content="Mountains drawn from real elevation, forests from OpenStreetMap, red hand-lettered names and blue rivers. Zoom from the whole world to a single Lakeland fell.">
+<meta property="og:image" content="https://maps.tristanhotham.com/ink-map/header.png">
+<meta property="og:url" content="https://maps.tristanhotham.com/ink-map/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=MedievalSharp&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+/* Parchment, iron-gall black, vermilion and river blue. */
+:root{
+  --bg:#F6EED8; --panel:#EFE3C4; --fg:#2B2119; --muted:#6E604E; --rule:#E2D3AE; --card:#FBF5E4; --border:#D3C29A;
+  --hot:#A3261B; --cool:#3D6E9E; --gold:#B8862B;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --hand:"MedievalSharp","Fraunces",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1A1612; --panel:#241E18; --fg:#EFE6D4; --muted:#ADA08B; --rule:#3A3128; --card:#211B15; --border:#4D4234;
+  --hot:#E07A6C; --cool:#8FB4DA; --gold:#E2B860; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A1612; --panel:#241E18; --fg:#EFE6D4; --muted:#ADA08B; --rule:#3A3128; --card:#211B15; --border:#4D4234;
+  --hot:#E07A6C; --cool:#8FB4DA; --gold:#E2B860; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 18px/1.62 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+.wrap{max-width:700px;margin:0 auto;padding-block:28px 64px}
+a{color:inherit;text-decoration-color:var(--hot);text-underline-offset:3px}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.kicker b{background:var(--hot);color:#fff;padding:5px 8px;font-weight:500}
+header.hero{border-bottom:6px double var(--fg);padding-bottom:22px;margin-top:18px}
+h1{font:900 clamp(44px,11vw,96px)/.9 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 .a{color:var(--hot);font-family:var(--hand);font-weight:400;letter-spacing:.04em}
+.dek{font-size:21px;line-height:1.42;margin:14px 0 0;max-width:56ch}
+.byline{font:400 13px/1.4 var(--mono);color:var(--muted);margin-top:14px}
+h2{font:800 34px/1.04 var(--display);letter-spacing:-.01em;margin:54px 0 10px;text-wrap:balance}
+h2 .n{font:500 13px/1 var(--mono);color:var(--hot);display:block;letter-spacing:.1em;margin-bottom:10px}
+p{margin:0 0 16px}
+.lede::first-letter{font:400 76px/.8 var(--hand);float:left;margin:6px 10px 0 0;color:var(--hot)}
+.src{font:400 12px/1.45 var(--mono);color:var(--muted);margin-top:10px}
+ul.plain{padding-left:20px} ul.plain li{margin:4px 0}
+details{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 0;margin:18px 0;font-size:16px}
+summary{font:500 13px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted)}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0}
+.cta a{font:500 13px/1 var(--mono);text-decoration:none;border:1px solid var(--fg);padding:11px 14px;border-radius:3px}
+.cta a.p{background:var(--hot);border-color:var(--hot);color:#fff}
+footer{border-top:6px double var(--fg);margin-top:56px;padding-top:16px;font:400 13px/1.55 var(--mono);color:var(--muted)}
+footer p{margin:0 0 10px}
+.theme{position:fixed;right:12px;bottom:12px;z-index:1002;font:500 12px/1 var(--mono);background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:8px 10px;cursor:pointer;min-height:36px}
+.figure{margin:22px 0}
+.zstrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.zstrip img{width:100%;display:block;border:1px solid var(--border)}
+.zstrip span{font:400 11px/1.3 var(--mono);color:var(--muted)}
+
+/* ---- the map ---- */
+.mapband{width:100vw;margin-left:calc(50% - 50vw);margin-top:26px;padding:0 max(10px,env(safe-area-inset-left,0px))}
+#map{position:relative;height:min(86vh,940px);min-height:520px;border:1px solid #BCA676;background:#F3E5BF;max-width:1600px;margin:0 auto;overflow:hidden}
+#map::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  box-shadow:inset 0 0 90px rgba(120,84,30,.22), inset 0 0 18px rgba(120,84,30,.18)}
+.ov{position:absolute;z-index:5;font:400 13px/1.3 var(--mono);color:#2B2119}
+.ov-top{left:10px;top:10px;right:54px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;pointer-events:none}
+.ov-top>*{pointer-events:auto}
+.srch{position:relative;width:min(340px,100%)}
+.srch input{width:100%;font:400 15px/1 var(--mono);background:rgba(251,245,228,.96);color:#2B2119;border:1px solid #9C8656;border-radius:3px;padding:9px 10px;min-height:40px;box-shadow:0 1px 4px rgba(60,40,10,.18)}
+.srch input:focus-visible,.chip:focus-visible,.lp label:focus-within{outline:2px solid #A3261B;outline-offset:2px}
+.sug{position:absolute;left:0;right:0;top:100%;margin:2px 0 0;padding:0;list-style:none;background:#FBF5E4;border:1px solid #9C8656;max-height:300px;overflow:auto;display:none;box-shadow:0 3px 10px rgba(60,40,10,.2)}
+.sug li{padding:8px 10px;cursor:pointer;border-bottom:1px solid #E7D9B6}
+.sug li span{color:#7A6A52;font-size:12px}
+.sug li[aria-selected="true"],.sug li:hover{background:#EFE1BC}
+.chips{display:flex;gap:6px;overflow-x:auto;max-width:100%;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font:500 12px/1 var(--mono);background:rgba(251,245,228,.94);color:#2B2119;border:1px solid #9C8656;border-radius:999px;padding:8px 11px;cursor:pointer;min-height:34px;white-space:nowrap;box-shadow:0 1px 3px rgba(60,40,10,.14)}
+.chip:hover{background:#EFE1BC}
+.chip.lyr{background:#2B2119;color:#F6EED8;border-color:#2B2119}
+.lp{position:absolute;left:10px;top:104px;z-index:6;background:rgba(251,245,228,.98);border:1px solid #9C8656;border-radius:4px;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);color:#2B2119;box-shadow:0 3px 12px rgba(60,40,10,.25);display:none;min-width:220px;max-height:calc(100% - 120px);overflow:auto}
+.lp.open{display:block}
+.lp h4{margin:0 0 6px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#7A6A52}
+.lp label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer;min-height:30px}
+.lp input{accent-color:#A3261B;width:16px;height:16px}
+.lp hr{border:0;border-top:1px solid #E2D3AE;margin:6px 0}
+.zbadge{position:absolute;right:52px;top:14px;z-index:5;font:400 11px/1 var(--mono);color:#6E604E;background:rgba(251,245,228,.85);padding:5px 7px;border-radius:3px;border:1px solid #D3C29A}
+.maplibregl-popup-content{background:#FBF5E4;color:#2B2119;font:400 13px/1.45 var(--mono);border:1px solid #9C8656;border-radius:4px;padding:10px 12px;box-shadow:0 3px 12px rgba(60,40,10,.25);max-width:270px}
+.maplibregl-popup-content b.t{display:block;font:400 19px/1.15 var(--hand);color:#A3261B;margin-bottom:3px;letter-spacing:.02em}
+.maplibregl-popup-tip{border-top-color:#9C8656!important;border-bottom-color:#9C8656!important}
+.maplibregl-ctrl-attrib{font:400 11px/1.3 var(--mono)!important;background:rgba(251,245,228,.85)!important}
+.maplibregl-ctrl-group{background:#FBF5E4!important;border:1px solid #9C8656}
+.nojs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 14px var(--mono);color:#6E604E;padding:20px;text-align:center}
+body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.maponly .mapband{margin:0;padding:0;width:100vw}body.maponly #map{height:100vh;max-width:none;border:0}body.clean .ov,body.clean .lp,body.clean .zbadge,body.clean .mfs-btn,body.clean .maplibregl-ctrl-bottom-right{display:none!important}
+@media (max-width:600px){
+  #map{height:78vh;min-height:460px}
+  .lp{top:100px;left:8px;right:8px;min-width:0}
+  .ov-top{left:8px;top:8px}
+  .zbadge{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="kicker"><b>Data study</b><span>Maps</span><span>World, 2026</span></div>
+<header class="hero">
+  <h1>The <span class="a">Inked</span> World</h1>
+  <p class="dek">A map of everywhere, drawn in the manner of the hand-inked maps at the front of a fantasy novel: little peaks set on the real high ground, forests of tiny trees, rippled coasts, blue rivers and red lettering. Zoom from the whole world to a single Lakeland fell, and the same hand keeps drawing.</p>
+</header>
+<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap via OpenFreeMap; AWS Terrain Tiles; RESOLVE Ecoregions; Natural Earth; ONS</div>
+
+<p class="lede" style="margin-top:22px">Maps in old books and fantasy novels have a look everyone recognises: rows of inked mountains, clusters of trees, coasts traced again and again with thin lines, and names lettered in red across the land. They are drawn by hand, so they only ever show one place at one scale. I wanted one that works everywhere and at every zoom, built only from open data, so you can fly from the whole world to Britain to a single Lakeland valley and keep the same drawn feel all the way down.</p>
+<p>Every mountain glyph below sits on the highest point of its patch of ground, sized by how far that point rises above the land around it. Every tree sits inside a wood mapped in OpenStreetMap. Nothing is traced from any artist's map; the drawing rules are mine, and the data do the rest. Start with Great Britain, then try the Lake District, the Alps or the Himalaya.</p>
+</div>
+
+<div class="mapband">
+  <div id="map" data-fullscreen-map role="application" aria-label="Zoomable hand-inked style world map">
+    <div class="nojs" id="nojs">Loading the map. It needs JavaScript and WebGL.</div>
+    <div class="ov ov-top">
+      <div class="srch"><input type="search" id="q" placeholder="Find a place, hill or sea" aria-label="Find a place" autocomplete="off"><ul class="sug" id="sug" role="listbox"></ul></div>
+      <div class="chips" id="presets">
+        <button class="chip lyr" id="lyrBtn" aria-expanded="false" aria-controls="lp">Layers</button>
+      </div>
+    </div>
+    <div class="lp" id="lp" role="dialog" aria-label="Map layers">
+      <h4>Layers</h4>
+      <label><input type="checkbox" data-g="mountains" checked> Ink mountains and hills</label>
+      <label><input type="checkbox" data-g="forests" checked> Forests, marsh and moor</label>
+      <label><input type="checkbox" data-g="biomes" checked> Deserts, grassland, jungle, taiga and ice</label>
+      <label><input type="checkbox" data-g="rivers" checked> Rivers and lakes</label>
+      <label><input type="checkbox" data-g="names" checked> Place names</label>
+      <label><input type="checkbox" data-g="borders" checked> Borders</label>
+      <label><input type="checkbox" data-g="roads" checked> Roads (dotted)</label>
+      <label><input type="checkbox" data-g="sea" checked> Sea shading and ripples</label>
+      <label><input type="checkbox" data-g="hillshade"> Hill shading</label>
+      <hr>
+      <label><input type="checkbox" id="modern"> Plain modern map</label>
+    </div>
+    <div class="zbadge" id="zbadge" aria-hidden="true"></div>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:8px">
+<p class="src">Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap using the OpenMapTiles schema. Elevation from AWS Terrain Tiles. Biomes from RESOLVE Ecoregions 2017 (CC BY 4.0). Country and nation outlines for the lettering from Natural Earth and the ONS. Tap any name, peak or glyph for details; the square button at the top right fills the screen.</p>
+
+<h2><span class="n">01 · What you are looking at</span>One hand, every scale</h2>
+<p>Far out, the world is a sheet of parchment with coasts in black ink, each one shadowed by thin ripple lines and a soft wash of blue, and country names lettered in red capitals along gentle curves. The great ranges show as rows of little peaks: each is drawn on the highest point of its patch of ground, and only where the land rises well above its surroundings.</p>
+<p>Zoom in and the map does not switch to a different style. It adds. New, smaller peaks fade in between the old ones as each patch of ground splits into four; trees appear inside the woods, then marsh and moorland tufts; towns and villages get small ink symbols, rivers and lakes get blue names, and named fells get their heights. The pen width, the letter spacing and the number of coastal ripples all change smoothly with the zoom, so it reads as one drawing.</p>
+<div class="figure" id="zfig">
+  <div class="zstrip">
+    <div><img src="img/zoom_z4.jpg" alt="The ink map of north-west Europe at zoom 4" loading="lazy"><span>Zoom 4</span></div>
+    <div><img src="img/zoom_z6.jpg" alt="The ink map of northern England at zoom 6" loading="lazy"><span>Zoom 6</span></div>
+    <div><img src="img/zoom_z8.jpg" alt="The ink map of Cumbria and the Yorkshire Dales at zoom 8" loading="lazy"><span>Zoom 8</span></div>
+    <div><img src="img/zoom_z9.jpg" alt="The ink map of the Lake District at zoom 9" loading="lazy"><span>Zoom 9</span></div>
+    <div><img src="img/zoom_z10.jpg" alt="The ink map of the central fells at zoom 10" loading="lazy"><span>Zoom 10</span></div>
+    <div><img src="img/zoom_z11.jpg" alt="The ink map around Grasmere at zoom 11" loading="lazy"><span>Zoom 11</span></div>
+  </div>
+  <p class="src">The same map at six zooms, centred on the Lake District.</p>
+</div>
+
+<h2><span class="n">02 · The whole world</span>From the Himalaya to the Sahara</h2>
+<p>The same rules run everywhere. Oceans, seas, great ranges, deserts and basins are lettered by hand on curves (105 names beyond Britain and Ireland, from the Pacific to the Tian Shan), and so are 17 countries whose shapes defeat a fitted curve, such as Russia, Chile, Norway and Indonesia. No glyph is ever drawn on water: each tile reads the sea and lakes from OpenStreetMap and keeps every peak, tree and tuft off them, so a seamount or a speck of an island far out at sea never draws a lone mountain in the ocean.</p>
+<p>Mountains only go where the land is rugged, not merely high. Each candidate peak is also tested on how steep the ground is close around it, so the Sahara, the Arabian interior, the Kalahari, the Great Plains and the high floor of the Tibetan Plateau stay bare however far they rise above the sea, while the Ahaggar and Tibesti keep their peaks. Between the ranges the world is drawn by biome, from the RESOLVE Ecoregions map: crescent dunes in the deserts, sparse tufts on the steppe and savanna, crowded round crowns and palms in the rainforest, small pointed conifers across the taiga, and pale blue hatching on the ice of Greenland and Antarctica.</p>
+<div class="figure"><img src="img/world.jpg" alt="The ink map of the whole world: parchment, black coasts with blue ripples, rows of ink peaks along the Rockies, Andes, Alps, Himalaya and the ranges of central Asia, and red lettering for countries, oceans and seas" loading="lazy" style="width:100%;border:1px solid var(--border)"><p class="src">The world at zoom 1.6. Rendered from saved OpenFreeMap and Terrain Tiles.</p></div>
+
+<h2><span class="n">03 · How I made this</span>Drawing rules, not a drawing</h2>
+<p><b>Mountains and hills.</b> The page reads elevation tiles (the Terrarium encoding of the AWS Terrain Tiles) in a background worker. It lays a grid over the land whose cells are about 14 screen pixels at the zoom where they first appear, and each cell is split into four at the next zoom. In each cell it finds the highest point. That point gets a peak glyph if it rises far enough above the lowest ground in the cells around it. The threshold grows with the size of the cell on the ground: at zoom 2, where a cell spans about 237 km, a range has to rise about 477 m above its surroundings to earn a peak (measured on the coarse elevation tiles used that far out, which smooth the summits down); at zoom 11 in the Lake District, where a cell is about 311 m across, a crag needs about 130 m. Points that rise at least 40% of that get a rounded hill instead. In a great range, where every patch of ground is steep, the worker leaves out a mountain that has three or more higher mountains around it, so the Himalaya reads as ridges and summits and not as a solid mass of ink; in the Lake District this almost never happens. Because the highest point of a cell is also the highest point of one of its four children, every peak drawn at one zoom is still there at the next; new peaks fade in between them, and glyphs are drawn back to front so nearer ones overlap farther ones.</p>
+<p><b>Ruggedness and biomes.</b> Alongside relief, the worker measures the mean slope of the ground in the finest cells around each candidate peak. A mountain needs a slope above a bar that rises with the detail of the elevation tiles; in ecoregions named for mountains, such as the High Atlas, the Tibesti or the Andean puna, the bar is cut to 30%, so narrow ranges smoothed by coarse tiles still count, and in deserts, steppe, rainforest, taiga and tundra it is raised by half, so dissected plateaus are drawn as hills. The biome glyphs are scattered on the same nested grid as the trees, kept clear of mountains and water, and the rainforest and taiga glyphs give way to OpenStreetMap's own woods from zoom 7.</p>
+<p><b>Forests, marsh and moor.</b> For each tile the worker reads the OpenStreetMap land cover in the same vector tile the map uses, fills the woods, wetlands and heaths into a small mask, and scatters tree or tuft glyphs on a nested jittered grid inside it. Woods tagged as managed forest get mostly conifers; other woods mostly rounded trees.</p>
+<p><b>Lettering.</b> Country names follow a gentle arc fitted along the long axis of each country (Natural Earth outlines), and England, Scotland, Wales and Northern Ireland are lettered from ONS boundaries. The 62 names of uplands, lowlands and seas around Britain and Ireland, and 105 oceans, seas, ranges and deserts around the world, are placed by hand on curves, ranges along their flanks rather than on the crest. Each curve is cut, or drawn out a little past its ends, so that the name fits at every zoom. Everything else comes live from OpenStreetMap through OpenFreeMap. Names are placed first and never overlap each other; the glyphs then give way wherever a name sits, as a map maker would leave a gap for the lettering.</p>
+<p><b>Fonts.</b> MedievalSharp for the capitals and the IM Fell types for everything else, all under the SIL Open Font License, turned into map glyphs with fontnik.</p>
+<p><b>What this is not.</b> It is a picture of open data, not a survey. Peaks are placed on the highest point in each grid cell, not on every named summit, and their size shows local relief, not exact height. Woods are only as complete as OpenStreetMap, and woods only appear from zoom 7 because the tiles do not carry them further out. Smaller seas, bays and regions beyond the hand-placed set come from OpenStreetMap as they are, lettered straight.</p>
+
+<details><summary>Sources and licences</summary>
+<ul class="plain">
+<li>OpenStreetMap contributors, © OpenStreetMap (ODbL 1.0), served as vector tiles by OpenFreeMap (openfreemap.org) in the OpenMapTiles schema (© OpenMapTiles).</li>
+<li>AWS Terrain Tiles (registry.opendata.aws/terrain-tiles), Terrarium encoding, built by Mapzen from SRTM, GMTED2010, ETOPO1, NED, Canadian DEM and other public sources; see the terrain tiles attribution notes.</li>
+<li>RESOLVE Ecoregions 2017 (Dinerstein et al. 2017, BioScience 67, 534 to 545; ecoregions.appspot.com), CC BY 4.0: the biome mask for dunes, grassland, rainforest, taiga, ice and tundra glyphs, simplified to a 2048 pixel raster (data/biomes.png).</li>
+<li>Natural Earth 1:50m admin 0 countries, populated places and states and provinces (public domain).</li>
+<li>Office for National Statistics, Local Authority Districts (2023) boundaries, contains OS data © Crown copyright and database right 2023 (Open Government Licence v3.0).</li>
+<li>Fonts: MedievalSharp, IM Fell English, IM Fell English SC and IM Fell Great Primer Italic (SIL Open Font License 1.1), from Google Fonts.</li>
+<li>MapLibre GL JS 4.7.1 (BSD 3-Clause).</li>
+</ul></details>
+
+<div class="cta"><a class="p" href="https://doi.org/10.5281/zenodo.23860253">Read the paper</a><a href="https://github.com/Tristan-Hotham/ink-map">Data and code</a><a href="https://blog.tristanhotham.com/2026/10/31/ink-map/">Blog post</a></div>
+
+<footer>
+<p>Dr Tristan Hotham, Independent researcher. ORCID <a href="https://orcid.org/0000-0003-4931-9349">0000-0003-4931-9349</a>.</p>
+<p>Cite as: Hotham, T. (2026) The Inked World: a zoomable hand-inked style world map from open data. Zenodo. <a href="https://doi.org/10.5281/zenodo.23860253">10.5281/zenodo.23860253</a></p>
+<p>Code: <a href="https://github.com/Tristan-Hotham/ink-map">github.com/Tristan-Hotham/ink-map</a> (MIT). Text and figures CC BY 4.0. Map data © OpenStreetMap contributors (ODbL).</p>
+<p>I wrote the text, with drafting and editing assistance from Claude (Anthropic), which also helped prepare the analysis code. I reviewed and checked all text and results.</p>
+</footer>
+</div>
+<button class="theme" id="theme" aria-label="Toggle dark mode">◐</button>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="js/curated.js"></script>
+<script src="js/ink-map.js"></script>
+<script>
+(function () {
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('maponly')) document.body.classList.add('maponly');
+  if (qs.has('clean')) document.body.classList.add('clean');
+  const opts = {};
+  if (qs.get('tj')) opts.tilejson = qs.get('tj');
+  if (qs.get('dem')) opts.dem = qs.get('dem');
+  if (qs.get('demmax')) opts.demMax = +qs.get('demmax');
+  if (qs.get('wk')) { try { opts.workerConfig = JSON.parse(qs.get('wk')); } catch (e) {} }   // QA only: worker settings
+  const PRESETS = [
+    ['World', [[-168, -56], [190, 76]]],
+    ['Europe', [[-24, 35], [42, 70]]],
+    ['Great Britain', [[-10.6, 49.9], [1.9, 58.8]]],
+    ['Yorkshire', [[-2.55, 53.45], [-0.1, 54.62]]],
+    ['Lake District', [[-3.32, 54.36], [-2.86, 54.6]]],
+  ];
+  const pre = document.getElementById('presets');
+  let map;
+  PRESETS.forEach(([n, b]) => {
+    const btn = document.createElement('button'); btn.className = 'chip'; btn.textContent = n;
+    btn.addEventListener('click', () => map && map.fitBounds(b, { padding: 20, duration: 2400, essential: true }));
+    pre.appendChild(btn);
+  });
+  const start = qs.get('at') ? qs.get('at').split(',').map(Number) : null;
+  InkMap.create('map', Object.assign(opts, { mapOptions: start ? { center: [start[1], start[0]], zoom: start[2] } : { bounds: PRESETS[2][1], fitBoundsOptions: { padding: 10 } } })).then(m => {
+    map = window.__map = m;
+    document.getElementById('nojs').remove();
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+    // start with the attribution folded on small screens (the (i) button opens it)
+    const fold = () => { const at = document.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact'); if (at) { at.classList.remove('maplibregl-compact-show'); at.removeAttribute('open'); } };
+    map.once('idle', fold); map.on('resize', () => setTimeout(fold, 50)); fold();
+    map.addControl(new maplibregl.ScaleControl({ unit: 'metric', maxWidth: 110 }), 'bottom-right');
+    const zb = document.getElementById('zbadge');
+    const upd = () => { zb.textContent = 'zoom ' + map.getZoom().toFixed(1); };
+    map.on('zoom', upd); upd();
+    setupLayers(map); setupSearch(map); setupPopups(map);
+  }).catch(e => { console.error(e); const n = document.getElementById('nojs'); if (n) n.textContent = 'The map could not load: ' + e.message; });
+
+  // ---------------- layers panel
+  function setupLayers(map) {
+    const lp = document.getElementById('lp'), btn = document.getElementById('lyrBtn');
+    btn.addEventListener('click', e => { e.stopPropagation(); const o = lp.classList.toggle('open'); btn.setAttribute('aria-expanded', o); });
+    document.addEventListener('click', e => { if (!lp.contains(e.target) && e.target !== btn) { lp.classList.remove('open'); btn.setAttribute('aria-expanded', false); } });
+    const boxes = [...lp.querySelectorAll('input[data-g]')];
+    const modern = document.getElementById('modern');
+    const NAME_LAYERS = map.getStyle().layers.filter(l => l.type === 'symbol' && l.metadata && ['names', 'rivers'].includes(l.metadata.group)).map(l => l.id);
+    const saved = {};
+    NAME_LAYERS.forEach(id => saved[id] = { c: map.getPaintProperty(id, 'text-color'), h: map.getPaintProperty(id, 'text-halo-color') });
+    function apply() {
+      const m = modern.checked;
+      boxes.forEach(b => {
+        const g = b.dataset.g;
+        const inkOnly = ['mountains', 'forests', 'biomes', 'sea'].includes(g);
+        InkMap.setGroup(map, g, b.checked && !(m && inkOnly));
+      });
+      InkMap.setGroup(map, 'paper', !m); InkMap.setGroup(map, 'modern', m); InkMap.setGroup(map, 'coast', !m);
+      if (m) { InkMap.setGroup(map, 'roads', false); }
+      NAME_LAYERS.forEach(id => {
+        map.setPaintProperty(id, 'text-color', m ? (map.getLayer(id).metadata.group === 'rivers' ? '#2D6A9F' : '#333333') : saved[id].c);
+        map.setPaintProperty(id, 'text-halo-color', m ? 'rgba(255,255,255,0.9)' : saved[id].h);
+      });
+      map.setPaintProperty('rivers', 'line-color', m ? '#7FB2D9' : InkMap.INK.blue);
+    }
+    boxes.forEach(b => b.addEventListener('change', apply)); modern.addEventListener('change', apply);
+  }
+
+  // ---------------- search
+  function norm(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function setupSearch(map) {
+    const q = document.getElementById('q'), sug = document.getElementById('sug');
+    let G = null, items = [], sel = -1;
+    const load = () => G || (G = fetch('data/gazetteer.json').then(r => r.json()).then(a => a.map(r => ({ n: r[0], k: norm(r[0]), lon: r[1], lat: r[2], z: r[3], kind: r[4], ctx: r[5] }))));
+    q.addEventListener('focus', load);
+    const KR = { country: 0, sea: 1, hills: 1, region: 3, place: 2, map: 2 };
+    async function run() {
+      const t = norm(q.value.trim());
+      if (t.length < 2) { sug.style.display = 'none'; return; }
+      const g = await load();
+      const live = [];
+      try {
+        for (const f of map.querySourceFeatures('ofm', { sourceLayer: 'place' }).concat(map.querySourceFeatures('ofm', { sourceLayer: 'mountain_peak' }))) {
+          const n = f.properties['name:latin'] || f.properties.name; if (!n || !norm(n).startsWith(t)) continue;
+          const c = f.geometry.coordinates; live.push({ n, k: norm(n), lon: c[0], lat: c[1], z: f.properties.class === 'peak' ? 13 : ['village', 'hamlet'].includes(f.properties.class) ? 13 : 11.5, kind: f.properties.class === 'peak' ? 'peak' : 'map', ctx: f.properties.class + (f.properties.ele ? ', ' + f.properties.ele + ' m' : '') });
+        }
+      } catch (e) {}
+      const seen = new Set();
+      const scored = [];
+      for (const r of live.concat(g)) {
+        const i = r.k.indexOf(t); if (i < 0) continue;
+        const key = r.k + '|' + Math.round(r.lon * 10) + '|' + Math.round(r.lat * 10); if (seen.has(key)) continue; seen.add(key);
+        scored.push([(i === 0 ? 0 : 10) + (r.k === t ? -5 : 0) + (KR[r.kind] ?? 3) + r.k.length / 40, r]);
+      }
+      scored.sort((a, b) => a[0] - b[0]);
+      items = scored.slice(0, 9).map(s => s[1]); sel = -1;
+      sug.innerHTML = items.length ? items.map((r, i) => `<li role="option" data-i="${i}">${esc(r.n)} <span>${esc(r.kind === 'map' || r.kind === 'peak' ? r.ctx : (r.ctx ? r.ctx : r.kind))}</span></li>`).join('') : '<li>No match</li>';
+      sug.style.display = 'block';
+    }
+    function go(r) { if (!r) return; sug.style.display = 'none'; q.value = r.n; q.blur(); map.flyTo({ center: [r.lon, r.lat], zoom: r.z, duration: 2600, essential: true }); }
+    q.addEventListener('input', run);
+    q.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(0, Math.min(items.length - 1, sel + (e.key === 'ArrowDown' ? 1 : -1))); [...sug.children].forEach((li, i) => li.setAttribute('aria-selected', i === sel)); }
+      else if (e.key === 'Enter') { e.preventDefault(); go(items[sel < 0 ? 0 : sel]); }
+      else if (e.key === 'Escape') sug.style.display = 'none';
+    });
+    sug.addEventListener('click', e => { const li = e.target.closest('li[data-i]'); if (li) go(items[+li.dataset.i]); });
+    document.addEventListener('click', e => { if (!e.target.closest('.srch')) sug.style.display = 'none'; });
+  }
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---------------- popups
+  function setupPopups(map) {
+    const LAY = ['countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
+    const KIND = { city: 'City', town: 'Town', village: 'Village', hamlet: 'Hamlet', suburb: 'Suburb', neighbourhood: 'Neighbourhood', isolated_dwelling: 'Farm or dwelling', island: 'Island', state: 'State or province', province: 'Province' };
+    map.on('click', e => {
+      const pad = 6, bb = [[e.point.x - pad, e.point.y - pad], [e.point.x + pad, e.point.y + pad]];
+      const fs = map.queryRenderedFeatures(bb, { layers: LAY.filter(id => map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none') });
+      if (!fs.length) return;
+      const f = fs[0], p = f.properties, id = f.layer.id;
+      const nm = p['name:latin'] || p.name_int || p.name || '';
+      let h = '';
+      if (id === 'relief') {
+        h = `<b class="t">${p.k === 0 ? 'Mountain' : 'Hill'}</b>Highest point of this patch: about ${Math.round(p.e).toLocaleString('en-GB')} m.<br>Rises about ${Math.round(p.rl).toLocaleString('en-GB')} m above the lowest ground around it.<br><span style="color:#7A6A52">First drawn at zoom ${p.r}.</span>`;
+      } else if (id === 'trees') h = `<b class="t">${p.c === 1 ? 'Forest' : 'Woodland'}</b>Inside a wood mapped in OpenStreetMap${p.c === 1 ? ' (tagged as managed forest)' : ''}.`;
+      else if (id === 'biome') h = `<b class="t">${['', 'Desert', 'Grassland or steppe', 'Tropical rainforest', 'Boreal forest (taiga)', 'Ice', 'Flooded grassland or marsh', 'Tundra'][p.b] || ''}</b>Biome from RESOLVE Ecoregions 2017${p.b === 5 || p.b === 1 ? ', with OpenStreetMap glaciers and sand close in' : ''}.`;
+      else if (id === 'tufts') h = `<b class="t">${p.w === 1 ? 'Marsh or wetland' : 'Heath or moor'}</b>From OpenStreetMap land cover.`;
+      else if (id === 'peaks') h = `<b class="t">${esc(nm)}</b>${p.class === 'volcano' ? 'Volcano' : 'Summit'}${p.ele ? ', ' + Number(p.ele).toLocaleString('en-GB') + ' m' : ''}.`;
+      else if (id === 'countries') h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'nation' ? 'Nation of the United Kingdom' : 'Country'}.`;
+      else if (id.startsWith('regions')) h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'sea' ? 'Sea, firth or bay' : p.kind === 'up' ? 'Upland or hill country' : 'Lowland country'}; name placed by hand.`;
+      else if (id === 'seas') h = `<b class="t">${esc(p.name_en || p.name)}</b>${cap(p.class)}.`;
+      else if (id === 'rivers' || id === 'river-names') h = `<b class="t">${esc(nm || 'Unnamed ' + p.class)}</b>${cap(p.class || 'river')}.`;
+      else if (id.startsWith('lake')) h = `<b class="t">${esc(nm)}</b>Lake.`;
+      else if (id === 'parks') h = `<b class="t">${esc(nm)}</b>National park.`;
+      else h = `<b class="t">${esc(nm)}</b>${KIND[p.class] || cap(p.class || '')}${p.capital == 2 ? ', capital' : ''}.`;
+      new maplibregl.Popup({ closeButton: true, maxWidth: '280px' }).setLngLat(e.lngLat).setHTML(h).addTo(map);
+    });
+    map.on('mousemove', e => {
+      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['cities', 'towns', 'villages', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names'].filter(id => map.getLayer(id)) });
+      map.getCanvas().style.cursor = fs.length ? 'pointer' : '';
+    });
+  }
+  function cap(s) { s = String(s || '').toLowerCase(); return s.replace(/(^|[\s'-])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bOf\b/g, 'of').replace(/\bThe\b(?!^)/g, (m, o) => o ? 'the' : m); }
+
+  // ---------------- theme
+  const th = document.getElementById('theme');
+  th.addEventListener('click', () => { const r = document.documentElement; const dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.dataset.theme = dark ? 'light' : 'dark'; });
+})();
+</script>
+<!-- map-fullscreen v1 -->
+<style id="mfs-style">
+.mfs-btn{position:absolute;top:10px;right:10px;z-index:1001;width:34px;height:34px;border:2px solid rgba(0,0,0,.25);border-radius:4px;background:#fff;color:#222;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.mfs-btn:hover{background:#f2f2f2}
+.mfs-btn svg{width:18px;height:18px}
+.mfs-host.mfs-btn-left .mfs-btn{right:auto;left:54px}
+.mfs-fake{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:100000!important;border-radius:0!important}
+html.mfs-lock,html.mfs-lock body{overflow:hidden!important}
+:fullscreen.mfs-host{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;border-radius:0!important}
+</style>
+<script id="mfs-script">
+(function(){
+  var ICON_OPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICON_CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function poke(){setTimeout(function(){window.dispatchEvent(new Event('resize'));},60);setTimeout(function(){window.dispatchEvent(new Event('resize'));},400);}
+  function realFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function add(el){
+    if(el.__mfs)return; el.__mfs=1;
+    var cs=getComputedStyle(el); if(cs.position==='static')el.style.position='relative';
+    el.classList.add('mfs-host');
+    var tr=el.querySelector('.leaflet-top.leaflet-right');
+    if(tr&&tr.children.length){ el.classList.add('mfs-btn-left'); }
+    var b=document.createElement('button'); b.type='button'; b.className='mfs-btn';
+    b.title='Full screen map'; b.setAttribute('aria-label','Full screen map'); b.innerHTML=ICON_OPEN;
+    ['click','dblclick','mousedown','touchstart','wheel'].forEach(function(t){b.addEventListener(t,function(e){e.stopPropagation();},{passive:t!=='click'});});
+    function setIcon(on){b.innerHTML=on?ICON_CLOSE:ICON_OPEN;b.title=on?'Exit full screen':'Full screen map';b.setAttribute('aria-label',b.title);}
+    function exitFake(){el.classList.remove('mfs-fake');document.documentElement.classList.remove('mfs-lock');setIcon(false);poke();}
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      if(el.classList.contains('mfs-fake')){exitFake();return;}
+      if(realFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return;}
+      var req=el.requestFullscreen||el.webkitRequestFullscreen;
+      if(req){ try{ var p=req.call(el); if(p&&p.catch)p.catch(function(){el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke();}); }catch(err){el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke();} }
+      else { el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke(); }
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el.classList.contains('mfs-fake'))exitFake();});
+    ['fullscreenchange','webkitfullscreenchange'].forEach(function(t){document.addEventListener(t,function(){setIcon(realFS()===el);poke();});});
+    el.appendChild(b);
+  }
+  function scan(){
+    var els=document.querySelectorAll('[data-fullscreen-map], .leaflet-container, .maplibregl-map, .mapboxgl-map');
+    els.forEach(function(el){
+      if(el.closest('.mfs-host')&&!el.classList.contains('mfs-host'))return;
+      var r=el.getBoundingClientRect(); if(r.width<200||r.height<150)return;
+      add(el);
+    });
+  }
+  function start(){scan(); var n=0; var t=setInterval(function(){scan(); if(++n>20)clearInterval(t);},500);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start); else start();
+})();
+</script>
+<!-- /map-fullscreen -->
+</body>
+</html>

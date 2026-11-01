@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><title>Ink Glyph Sheet</title>
+<style>
+@font-face{font-family:"Ink Roman";src:url(../fonts/ttf/IMFeENrm28P.ttf)}
+@font-face{font-family:"Ink Caps";src:url(../fonts/ttf/MedievalSharp.ttf)}
+body{margin:0;background:#F3E5BF;font:400 22px "Ink Roman";color:#2B2119}
+.sheet{padding:26px 34px;width:1532px}
+h2{font:400 26px "Ink Caps";letter-spacing:.2em;color:#A3261B;margin:14px 0 6px}
+.row{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+canvas{display:block}
+</style></head>
+<body><div class="sheet" id="s"></div>
+<script src="../js/ink-map.js"></script>
+<script>
+// The glyphs as the map draws them (js/ink-map.js), shown at twice their size on the map.
+const S = InkMap.sprites, root = document.getElementById('s');
+function section(title, items, sc) {
+  const h = document.createElement('h2'); h.textContent = title; root.appendChild(h);
+  const r = document.createElement('div'); r.className = 'row'; root.appendChild(r);
+  for (const c of items) { const d = document.createElement('canvas'); d.width = c.width * sc; d.height = c.height * sc; d.getContext('2d').drawImage(c, 0, 0, d.width, d.height); r.appendChild(d); }
+}
+section('MOUNTAINS', [0, 1, 2, 3, 4, 5, 6, 7].map(v => S.mountainSprite(v)), 2);
+section('HILLS', [0, 1, 2, 3, 4, 5, 6, 7].map(v => S.hillSprite(v)), 2);
+section('TREES, MARSH AND MOOR', [0, 1, 2, 3].map(v => S.treeSprite(v, false)).concat([0, 1, 2, 3].map(v => S.treeSprite(v, true)), [0, 1, 2].map(v => S.tuftSprite(v, true)), [0, 1, 2].map(v => S.tuftSprite(v, false))), 3);
+section('DESERT, GRASSLAND, RAINFOREST, TAIGA AND ICE', [0, 1].map(v => S.duneSprite(v)).concat([0, 1].map(v => S.grassSprite(v)), [0, 1, 3].map(v => S.rainSprite(v)), [0, 1].map(v => S.taigaSprite(v)), [0, 1].map(v => S.iceSprite(v))), 3);
+section('SETTLEMENTS AND SUMMITS', ['capital', 'city', 'town', 'village', 'hamlet', 'peak'].map(k => S.settleSprite(k)), 3);
+window.__map = { loaded: () => true, areTilesLoaded: () => true, once: (e, f) => setTimeout(f, 50), getZoom: () => 0 };
+</script></body></html>
