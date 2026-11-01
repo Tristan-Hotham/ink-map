@@ -608,6 +608,10 @@
       'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'xbeaches', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
+    // walls, towers and star forts go on top of the drawn towns, so the houses never hide a town wall
+    const TOP = ['fort-moat', 'fort-moat-edge', 'fort-rampart', 'fort-line', 'walls', 'walls-crest', 'wall-towers', 'fort-icons'];
+    const ti = rest.findIndex(l => l.id === 'town');
+    if (ti >= 0) { const mv = TOP.map(id => rest.find(l => l.id === id)).filter(Boolean); for (const l of mv) rest.splice(rest.indexOf(l), 1); rest.splice(rest.findIndex(l => l.id === 'town') + 1, 0, ...mv); }
     const final = rest.concat(named.reverse());
     // close in, where the drawn towns pack the streets, names get a wider parchment halo so they read over the houses
     for (const l of final) {
@@ -637,8 +641,8 @@
         regions: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_regions.geojson' },
         landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
         peaks: { type: 'geojson', data: base + 'data/peaks_famous.geojson' },
-        walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson' },
-        forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson' },
+        walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson?v=20261101b' },
+        forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson?v=20261101b' },
         rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
         lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },
