@@ -1,6 +1,6 @@
-# The Inked World
+# A Tolkien-style map of the whole world (The Inked World)
 
-A Tolkien-inspired map of the modern Earth: a zoomable map of the whole world in the style of a hand-inked fantasy map, built only from open data: little ink peaks set on the real high ground, forests of tiny trees, black coasts with thin ripple lines and a soft blue wash, blue rivers and red hand-lettered names. It runs live in the browser on MapLibre GL JS, so it works everywhere from the whole world down to a single fell, with no tiles to host. 194 countries are lettered along curves (17 drawn by hand), and 167 oceans, seas, ranges, deserts, uplands and regions are lettered by hand: 105 around the world and 62 around Britain and Ireland.
+A Tolkien-style map of the whole real world: a zoomable map of the whole world in the style of a hand-inked fantasy map, built only from open data: little ink peaks set on the real high ground, forests of tiny trees, black coasts with thin ripple lines and a soft blue wash, blue rivers and red hand-lettered names. It runs live in the browser on MapLibre GL JS, so it works everywhere from the whole world down to a single fell, with no tiles to host. 194 countries are lettered along curves (17 drawn by hand), and 167 oceans, seas, ranges, deserts, uplands and regions are lettered by hand: 105 around the world and 62 around Britain and Ireland.
 
 Interactive page: https://maps.tristanhotham.com/ink-map/
 Paper: https://doi.org/10.5281/zenodo.23860253

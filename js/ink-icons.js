@@ -80,6 +80,55 @@
     p.line([[cx + 7 * s, gy - 15 * s - (spire ? 13.5 * s : 3) - 1], [cx + 7 * s, gy - 15 * s - (spire ? 13.5 * s : 3) - 5 * s]], 1);
   }
 
+
+  // ---------------- bird's-eye houses (one oblique viewpoint for every house: depth runs up and to the right)
+  const WALL = '#F3E7C9', WALLSH = '#D9C59A', TILE = '#B4472E', TILESH = '#8C2E1E', TILE2 = '#9A5A32', TILE2SH = '#73401F';
+  const DV = [0.38, -0.7];   // one unit of depth on paper
+  function bhBox(p, x0, gy, w, hw, d, rh, opt) {
+    opt = opt || {};
+    const T = opt.brown ? TILE2 : TILE, TS = opt.brown ? TILE2SH : TILESH;
+    const dx = DV[0] * d, dy = DV[1] * d, top = gy - hw;
+    const A = [x0, gy], B = [x0 + w, gy], At = [x0, top], Bt = [x0 + w, top];
+    const Bb = [B[0] + dx, B[1] + dy], Bbt = [Bt[0] + dx, Bt[1] + dy], Abt = [At[0] + dx, At[1] + dy];
+    if (opt.gable) {
+      // ridge runs back from a gable facing the street
+      const F = [x0 + w / 2, top - rh], Fb = [F[0] + dx, F[1] + dy];
+      p.poly([At, F, Fb, Abt], T, 1);                                    // left slope, seen from above
+      p.poly([B, Bb, Bbt, Bt], WALLSH, 1);                               // side wall
+      p.poly([Bt, Bbt, Fb, F], TS, 1);                                   // right slope, in shade
+      p.hatch([Bt, Bbt, Fb, F], -38, 1.6, 0.5, 'rgba(43,33,25,0.55)');
+      p.poly([A, B, Bt, F, At], WALL, 1);                                // gable front
+      p.line([[x0 + w / 2 - 0.9, top - rh * 0.45], [x0 + w / 2 + 0.9, top - rh * 0.45]], 0.7);
+    } else {
+      // ridge runs along the street
+      const R1 = [x0 + dx / 2, top + dy / 2 - rh], R2 = [x0 + w + dx / 2, top + dy / 2 - rh];
+      p.poly([R1, R2, Bbt, Abt], TS, 1);                                 // back slope, just seen over the ridge
+      p.poly([B, Bb, Bbt, Bt], WALLSH, 1);                               // side wall
+      p.poly([Bt, Bbt, R2], WALLSH, 1);                                  // gable end
+      p.poly([At, Bt, R2, R1], T, 1);                                    // front slope
+      p.hatch([At, Bt, R2, R1], 0, 1.7, 0.5, 'rgba(43,33,25,0.5)');      // tile courses
+      p.poly([A, B, Bt, At], WALL, 1);                                   // front wall
+    }
+    // windows and a door
+    const n = Math.max(1, Math.round(w / 5));
+    for (let i = 0; i < n; i++) { const cx = x0 + (i + 0.5) * w / n; if (hw >= 7) p.rect(cx - 0.6, top + 1.2, 1.2, 1.5, '#3A2C20', 0); }
+    if (opt.door !== false) { const dxo = x0 + w * (opt.doorAt || 0.5); p.rect(dxo - 0.8, gy - 2.6, 1.6, 2.6, '#3A2C20', 0); }
+    if (opt.chimney) { const cx = x0 + w * 0.72 + dx * 0.35, cy = top + dy * 0.35 - rh * 0.7; p.rect(cx - 0.8, cy - 2.6, 1.6, 2.8, WALL, 0.8); }
+    if (opt.party) for (let k = 1; k < opt.party; k++) { const xx = x0 + w * k / opt.party; p.line([[xx, top], [xx + dx / 2, top + dy / 2 - rh]], 0.8); p.line([[xx, gy], [xx, top]], 0.6); }
+  }
+  function bhVariant(p, v) {
+    // seen from high up, so roofs dominate and walls are short, as on Braun and Hogenberg's plans
+    const gy = 26;
+    if (v === 0) bhBox(p, 6, gy, 13, 4.5, 13, 3);
+    else if (v === 1) bhBox(p, 9, gy, 8, 6, 15, 4.5, { gable: true });
+    else if (v === 2) bhBox(p, 2, gy, 22, 4.5, 12, 3, { party: 3, doorAt: 0.2, chimney: true });
+    else if (v === 3) bhBox(p, 8, gy, 10, 6, 14, 4.5, { gable: true, chimney: true });
+    else if (v === 4) bhBox(p, 5, gy, 15, 5, 14, 3, { brown: true, chimney: true });
+    else if (v === 5) { bhBox(p, 4, gy - 2, 10, 4.5, 12, 3); bhBox(p, 13, gy, 7, 5.5, 14, 4, { gable: true }); }
+    else if (v === 6) bhBox(p, 6, gy, 12, 7, 12, 3, { chimney: true });
+    else bhBox(p, 4, gy, 17, 4.5, 12, 3, { party: 2, brown: v % 2 === 1 });
+  }
+
   // ---------------- settlements
   function settlements(add) {
     add('s-capital', 64, 60, p => {
@@ -114,11 +163,9 @@
       const gy = 25; church(p, 11, gy, 0.75, true); house(p, 20, gy, 8, 6, 5); p.ground(2, 30, gy + 2);
     });
     add('s-hamlet', 20, 18, p => { house(p, 4, 14, 10, 6, 5); });
-    // townhouses for the drawn towns, seen in three-quarter view; drawn facing "up" (the street is at the bottom)
-    for (let v = 0; v < 6; v++) add('th' + v, 20, 18, p => {
-      const w = 11 + (v % 3) * 2, gy = 16;
-      house(p, (20 - w) / 2, gy, w, 6 + (v % 2) * 2, 5 + (v % 3), { roof: v === 4 ? RED : undefined, door: true, chimney: v % 2 === 0 });
-    }, 3000 + v);
+    // townhouses for the drawn towns, all seen from one viewpoint (high in the south, a little to the east), as on the
+    // bird's-eye town plans of the sixteenth century: cream walls, red tiled roofs, every house turned the same way
+    for (let v = 0; v < 8; v++) add('th' + v, 32, 30, p => { bhVariant(p, v); }, 3000 + v);
     add('market', 30, 26, p => {
       p.poly([[3, 22], [27, 22], [24, 14], [6, 14]], PAPER, 1.4);   // a cobbled square with a market cross and stalls
       for (let i = 0; i < 4; i++) p.dot(8 + i * 5, 19, 0.7);

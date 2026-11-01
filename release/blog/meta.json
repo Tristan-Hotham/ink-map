@@ -1,8 +1,8 @@
 {
-  "title": "The Inked World: a Tolkien-inspired map of the modern Earth",
+  "title": "A Tolkien-style map of the whole world, drawn from real data",
   "slug": "ink-map",
   "excerpt": "A Tolkien-inspired map of the modern Earth, zoomable from continents to single hills, in the style of a hand-inked fantasy map: little peaks on the real high ground, forests of tiny trees, rippled coasts and red lettering, drawn by rules from open data, from the globe down to a single fell.",
-  "seo_description": "A Tolkien-inspired map of the modern Earth: a zoomable hand-inked fantasy-style world map drawn from open elevation and OpenStreetMap data.",
+  "seo_description": "A Tolkien-style map of the whole world: a zoomable hand-inked fantasy-style map of the real Earth, drawn from open elevation, OpenStreetMap and Wikidata data.",
   "tags": [
     "Tolkien",
     "fantasy map",

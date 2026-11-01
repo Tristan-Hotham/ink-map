@@ -393,7 +393,7 @@
       paint: { 'icon-opacity': fadeRank() } }, 'mountains');
     // drawn towns (zoom 12 and closer): townhouses facing the streets, market squares, churches, town walls
     L({ id: 'town', type: 'symbol', source: 'ink', 'source-layer': 'town', minzoom: 11.6,
-      layout: { 'icon-image': ['get', 't'], 'icon-rotate': ['get', 'a'], 'icon-rotation-alignment': 'map',
+      layout: { 'icon-image': ['get', 't'], 'icon-rotate': ['match', ['get', 't'], 'wallseg', ['get', 'a'], 0], 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport',   // every house seen from the same side, as on a bird's-eye town plan
         'icon-size': iz(12, 1.15, 13, 1.3, 14, 1.5, 16, 2.0), 'icon-overlap': 'always', 'icon-ignore-placement': true, 'icon-padding': 0, 'symbol-z-order': 'viewport-y',
         'symbol-sort-key': ['match', ['get', 't'], 'market', 0, 'townchurch', 1, 'walltower', 2, 'wallseg', 3, 5] },
       paint: { 'icon-opacity': iz(11.6, 0, 12.4, 1) } }, 'towns');

@@ -741,7 +741,7 @@ async function townPoints(z, x, y, avoid) {
               const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
               if (h >= keep) continue;
-              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 6), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
+              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 8), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
             }
           }
           carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
@@ -763,7 +763,7 @@ async function townPoints(z, x, y, avoid) {
     if (!ins && dn < 0.2 && dr > 0.4) continue;            // the old core counts as built even where the tile maps nothing
     const keep = dr < 0.18 ? 0.95 : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
-    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 6), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 8), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
   }
   // place from the centre outwards, so the cap on drawings per tile thins the edges, never the old core
   cand.sort((a, b) => a.dr - b.dr);
