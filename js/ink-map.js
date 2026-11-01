@@ -346,6 +346,20 @@
     L({ id: 'wall-towers', type: 'symbol', source: 'walls', minzoom: 12, filter: ['==', ['get', 'k'], 'wall'],
       layout: { 'symbol-placement': 'line', 'symbol-spacing': iz(12, 90, 15, 140), 'icon-image': 'walltower', 'icon-size': iz(12, 0.9, 15, 1.3), 'icon-rotation-alignment': 'viewport', 'icon-overlap': 'cooperative', 'icon-anchor': 'bottom' },
       paint: { 'icon-opacity': iz(12, 0, 12.5, 1) } }, 'heritage');
+    // star forts: the real bastioned outline (OpenStreetMap) with a moat outside and a hachured rampart inside; a drawn star fort symbol further out
+    const FPOLY = ['==', ['geometry-type'], 'Polygon'], FPT = ['==', ['geometry-type'], 'Point'];
+    L({ id: 'fort-moat', type: 'line', source: 'forts', minzoom: 11, filter: FPOLY, layout: { 'line-join': 'miter', 'line-miter-limit': 4 },
+      paint: { 'line-color': '#9DBBD6', 'line-width': iz(11, 3, 14, 12, 17, 44), 'line-offset': iz(11, -1.5, 14, -6, 17, -22), 'line-opacity': iz(11, 0, 11.6, 0.85) } }, 'heritage');
+    L({ id: 'fort-moat-edge', type: 'line', source: 'forts', minzoom: 12, filter: FPOLY, layout: { 'line-join': 'miter' },
+      paint: { 'line-color': INK.blue, 'line-width': iz(12, 0.6, 16, 1.1), 'line-offset': iz(12, -6, 14, -12, 17, -44), 'line-opacity': iz(12, 0, 12.6, 0.8) } }, 'heritage');
+    L({ id: 'fort-rampart', type: 'line', source: 'forts', minzoom: 11.5, filter: FPOLY, layout: { 'line-join': 'miter', 'line-miter-limit': 4 },
+      paint: { 'line-pattern': 'rampart', 'line-width': iz(11.5, 3, 14, 7, 17, 18), 'line-offset': iz(11.5, 1.5, 14, 3.5, 17, 9), 'line-opacity': iz(11.5, 0, 12, 1) } }, 'heritage');
+    L({ id: 'fort-line', type: 'line', source: 'forts', minzoom: 11, filter: FPOLY, layout: { 'line-join': 'miter', 'line-miter-limit': 4 },
+      paint: { 'line-color': INK.ink, 'line-width': iz(11, 1.1, 15, 2.2, 17, 3), 'line-opacity': iz(11, 0, 11.6, 1) } }, 'heritage');
+    L({ id: 'fort-icons', type: 'symbol', source: 'forts', filter: ['all', FPT, ['<=', ['get', 'z'], ['+', ['zoom'], 0.3]]], maxzoom: 12.5,
+      layout: { 'icon-image': 'h-starfort', 'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.55, 9, 0.8, 12, 1.0], 'icon-overlap': 'cooperative', 'symbol-sort-key': ['get', 'z'],
+        'text-field': ['step', ['zoom'], '', 7, ['get', 'n']], 'text-font': ['Ink Italic'], 'text-size': iz(7, 10, 12, 12.5), 'text-optional': true, 'text-variable-anchor': ['top', 'bottom', 'right', 'left'], 'text-radial-offset': 1.25 },
+      paint: { 'icon-opacity': ['interpolate', ['linear'], ['zoom'], 11.4, 1, 12.2, 0], 'text-opacity': ['interpolate', ['linear'], ['zoom'], 11.4, 1, 12.2, 0], 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.3 } }, 'heritage');
     L({ id: 'rivers', type: 'line', source: 'ofm', 'source-layer': 'waterway', filter: ['!=', ['get', 'intermittent'], 1],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': INK.blue,
@@ -624,6 +638,7 @@
         landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
         peaks: { type: 'geojson', data: base + 'data/peaks_famous.geojson' },
         walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson' },
+        forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson' },
         rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
         lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },

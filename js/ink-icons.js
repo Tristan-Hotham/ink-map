@@ -175,6 +175,38 @@
     add('townchurch', 30, 40, p => { church(p, 12, 36, 1.05, true); });
     add('wallseg', 24, 14, p => { p.rect(1, 5, 22, 7, PAPER, 1.5); p.crenels(1, 5, 22, 5); p.hatch([[1, 9], [23, 9], [23, 12], [1, 12]], 0, 1.6, 0.6); });
     add('walltower', 16, 22, p => { p.tower(8, 20, 9, 13, 'cone', { red: true, win: false }); });
+    // star fort: bastioned trace with a moat, seen from above (map symbol), and the rampart hachure for real outlines
+    // a trace italienne: a regular polygon whose every corner is an arrow-headed bastion, with flanks back to the curtain walls
+    function starPts(cx, cy, R, n, rot, sc) {
+      sc = sc || 1;
+      const C = []; for (let k = 0; k < n; k++) { const a = rot + k * 2 * Math.PI / n; C.push([cx + Math.cos(a) * R, cy + Math.sin(a) * R]); }
+      const out = [];
+      for (let k = 0; k < n; k++) {
+        const c = C[k], pv = C[(k + n - 1) % n], nx = C[(k + 1) % n];
+        const ra = Math.atan2(c[1] - cy, c[0] - cx);
+        const nrm = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy); return [dy / L, -dx / L]; };   // outward normal of a clockwise-in-screen edge
+        const np = nrm(pv, c), nn = nrm(c, nx);
+        const a1 = [c[0] + (pv[0] - c[0]) * 0.3, c[1] + (pv[1] - c[1]) * 0.3], a2 = [c[0] + (nx[0] - c[0]) * 0.3, c[1] + (nx[1] - c[1]) * 0.3];
+        const f = R * 0.13 * sc;
+        const f1 = [a1[0] + np[0] * f, a1[1] + np[1] * f], f2 = [a2[0] + nn[0] * f, a2[1] + nn[1] * f];
+        const tp = [c[0] + Math.cos(ra) * R * 0.42 * sc, c[1] + Math.sin(ra) * R * 0.42 * sc];
+        out.push(a1, f1, tp, f2, a2);
+      }
+      return out;
+    }
+    for (const [id, n, S] of [['h-starfort', 5, 1.25], ['starfort6', 6, 1.5]]) add(id, 48 * S, 48 * S, p => {
+      const c = 24 * S, R = 13.5 * S, rot = -Math.PI / 2;
+      const scale = (pts, k) => pts.map(([x0, y0]) => [c + (x0 - c) * k, c + (y0 - c) * k]);
+      const trace = starPts(c, c, R, n, rot);
+      p.poly(scale(trace, 1.3), 'rgba(111,157,198,0.5)', 0);                             // moat
+      p.col(BLUE); p.path(scale(trace, 1.3), true); p.x.lineWidth = 0.9; p.x.stroke(); p.col(INK);
+      p.poly(scale(trace, 1.12), 'rgba(214,196,140,0.95)', 0.9);                          // glacis
+      p.poly(trace, 'rgba(214,196,140,0.95)', 1.7);                                       // rampart
+      const inner = scale(trace, 0.84); p.poly(inner, PAPER, 1.0);                        // parade ground inside the parapet
+      for (let k = 0; k < trace.length; k++) { const [x0, y0] = trace[k], [x1, y1] = inner[k]; if (k % 5 === 2) p.line([[x0, y0], [x1, y1]], 0.7); }
+      p.rect(c - 3 * S, c - 1.5 * S, 6 * S, 4.5 * S, PAPER, 1); p.flag(c, c - 1.5 * S, 0.8 * S);
+    });
+    add('rampart', 10, 12, p => { p.x.fillStyle = 'rgba(214,196,140,0.9)'; p.x.fillRect(0, 2, 10, 8); p.line([[0, 2], [10, 2]], 1.6); for (const x0 of [2, 7]) p.line([[x0, 3], [x0 - 1, 9.5]], 0.9); p.line([[0, 10], [10, 10]], 0.6); });
   }
 
   // ---------------- heritage type icons

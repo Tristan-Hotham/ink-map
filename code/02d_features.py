@@ -81,8 +81,19 @@ if os.path.exists(lmg):
         for e in json.load(open(src))['elements']:
             if e['type'] == 'way' and e['id'] in seen: continue
             seen.add(e['id']); els.append(e)
+    # town walls mapped as relations (e.g. the Roman walls of Lugo): their member ways carry the relation's tags (raw13/relwalls.json)
+    rw = os.path.join(RAW, 'raw13', 'relwalls.json')
+    if os.path.exists(rw):
+        for r in json.load(open(rw))['elements']:
+            if r['type'] != 'relation': continue
+            for m in r.get('members', []):
+                if m.get('type') != 'way' or m.get('role') == 'inner' or m['ref'] in seen or len(m.get('geometry') or []) < 2: continue
+                seen.add(m['ref']); els.append({'type': 'way', 'id': m['ref'], 'tags': r.get('tags', {}), 'geometry': m['geometry']})
+    # outlines drawn as star forts instead (code/02g_forts.py) are left out here
+    sfx = os.path.join(RAW, 'raw13', 'star_wall_ways.json')
+    skip = set(json.load(open(sfx))) if os.path.exists(sfx) else set()
     for e in els:
-        if e['type'] != 'way' or len(e.get('geometry') or []) < 2: continue
+        if e['type'] != 'way' or len(e.get('geometry') or []) < 2 or e['id'] in skip: continue
         t = e.get('tags', {}); nm = t.get('name:en') or t.get('name')
         cw = t.get('historic') == 'citywalls' or t.get('barrier') == 'city_wall'
         if not nm and not cw: continue
