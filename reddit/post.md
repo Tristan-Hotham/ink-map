@@ -14,7 +14,7 @@ Data: map data © OpenStreetMap contributors (ODbL), served as vector tiles by O
 
 Tools: MapLibre GL JS with a custom web worker that turns elevation and land cover into glyph positions; glyphs drawn on canvas; fonts MedievalSharp and IM Fell (SIL OFL); Playwright for the render.
 
-Images: the_inked_world.png (world, with a Britain and Ireland inset) and britain_and_ireland_in_ink.png (4,465 mountains and 2,570 trees).
+Images: the_inked_world.png (world, with a Britain and Ireland inset) and britain_and_ireland_in_ink.png (4,303 mountains and 2,507 trees).
 
 Interactive version: https://maps.tristanhotham.com/ink-map/
 Paper: https://doi.org/10.5281/zenodo.23860253
