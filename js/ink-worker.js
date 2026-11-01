@@ -685,8 +685,8 @@ async function townPoints(z, x, y, avoid) {
   const key = (px, py) => Math.floor(px / OC) + ',' + Math.floor(py / OC);
   const free = (px, py, r) => { for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) if (occ.has((Math.floor(px / OC) + di) + ',' + (Math.floor(py / OC) + dj))) return false; return true; };
   const take = (px, py, r) => { for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) occ.add((Math.floor(px / OC) + di) + ',' + (Math.floor(py / OC) + dj)); };
-  // heritage drawings keep a little room (one cell round each), so the old core still fills with houses round them
-  for (const p of avoid) take((p.nx * n - x) * 512, (p.ny * n - y) * 512, 1);
+  // heritage drawings keep a clear square round them; the houses pack the rest of the old core
+  for (const p of avoid) take((p.nx * n - x) * 512, (p.ny * n - y) * 512, 2);
   const out = [];
   // the centre of each place in this tile: a market square and its church, and for capitals and cities a wall with towers round the old core
   for (const P of places) {

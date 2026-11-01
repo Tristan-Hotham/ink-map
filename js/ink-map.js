@@ -394,7 +394,7 @@
     // drawn towns (zoom 12 and closer): townhouses facing the streets, market squares, churches, town walls
     L({ id: 'town', type: 'symbol', source: 'ink', 'source-layer': 'town', minzoom: 11.6,
       layout: { 'icon-image': ['get', 't'], 'icon-rotate': ['get', 'a'], 'icon-rotation-alignment': 'map',
-        'icon-size': iz(12, 1.15, 13, 1.3, 14, 1.5, 16, 2.0), 'icon-overlap': 'cooperative', 'icon-padding': 0, 'symbol-z-order': 'viewport-y',
+        'icon-size': iz(12, 1.15, 13, 1.3, 14, 1.5, 16, 2.0), 'icon-overlap': 'always', 'icon-ignore-placement': true, 'icon-padding': 0, 'symbol-z-order': 'viewport-y',
         'symbol-sort-key': ['match', ['get', 't'], 'market', 0, 'townchurch', 1, 'walltower', 2, 'wallseg', 3, 5] },
       paint: { 'icon-opacity': iz(11.6, 0, 12.4, 1) } }, 'towns');
     // animals in their native ranges, whales where they gather, and a few decorative serpents far out
@@ -590,6 +590,11 @@
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     const final = rest.concat(named.reverse());
+    // close in, where the drawn towns pack the streets, names get a wider parchment halo so they read over the houses
+    for (const l of final) {
+      const hw = l.type === 'symbol' && l.paint && l.paint['text-halo-width'];
+      if (typeof hw === 'number') l.paint['text-halo-width'] = ['interpolate', ['linear'], ['zoom'], 12, hw, 13, Math.max(hw, 2.6), 15, Math.max(hw, 3.2)];
+    }
     // optional text scale (used by the poster): point names by textScale, curved names by curvedScale
     const scaleOut = (e, k) => typeof e === 'number' ? Math.round(e * k * 10) / 10
       : (Array.isArray(e) && e[0] === 'interpolate') ? e.map((v, i) => (i >= 4 && i % 2 === 0) ? scaleOut(v, k) : v)
