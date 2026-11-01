@@ -341,8 +341,11 @@
     // walls and dykes along their real lines (OpenStreetMap; approximate lines where none is mapped)
     L({ id: 'walls', type: 'line', source: 'walls', filter: ['<=', ['get', 'z'], ['+', ['zoom'], 0.5]], layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: { 'line-color': INK.ink, 'line-width': iz(3, 1.2, 8, 1.8, 13, 2.6), 'line-dasharray': [3, 0.6], 'line-opacity': fadeProp('z', 0.85) } }, 'heritage');
+    // a strip of clear parchment along every town wall, so the drawn houses never sit on it
+    L({ id: 'walls-casing', type: 'line', source: 'walls', minzoom: 12, filter: ['==', ['get', 'k'], 'wall'], layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#F1E2BA', 'line-width': iz(12, 7, 14, 14, 16, 26), 'line-opacity': iz(12, 0, 12.5, 0.97), 'line-blur': 1 } }, 'heritage');
     L({ id: 'walls-crest', type: 'line', source: 'walls', minzoom: 9, filter: ['==', ['get', 'k'], 'wall'], layout: { 'line-join': 'round' },
-      paint: { 'line-pattern': 'wallseg', 'line-width': iz(9, 5, 14, 9), 'line-opacity': iz(9, 0, 10, 0.95) } }, 'heritage');
+      paint: { 'line-pattern': 'wallseg', 'line-width': iz(9, 5, 14, 10, 16, 16), 'line-opacity': iz(9, 0, 10, 0.95) } }, 'heritage');
     L({ id: 'wall-towers', type: 'symbol', source: 'walls', minzoom: 12, filter: ['==', ['get', 'k'], 'wall'],
       layout: { 'symbol-placement': 'line', 'symbol-spacing': iz(12, 90, 15, 140), 'icon-image': 'walltower', 'icon-size': iz(12, 0.9, 15, 1.3), 'icon-rotation-alignment': 'viewport', 'icon-overlap': 'cooperative', 'icon-anchor': 'bottom' },
       paint: { 'icon-opacity': iz(12, 0, 12.5, 1) } }, 'heritage');
@@ -609,7 +612,7 @@
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     // walls, towers and star forts go on top of the drawn towns, so the houses never hide a town wall
-    const TOP = ['fort-moat', 'fort-moat-edge', 'fort-rampart', 'fort-line', 'walls', 'walls-crest', 'wall-towers', 'fort-icons'];
+    const TOP = ['fort-moat', 'fort-moat-edge', 'fort-rampart', 'fort-line', 'walls-casing', 'walls', 'walls-crest', 'wall-towers', 'fort-icons'];
     const ti = rest.findIndex(l => l.id === 'town');
     if (ti >= 0) { const mv = TOP.map(id => rest.find(l => l.id === id)).filter(Boolean); for (const l of mv) rest.splice(rest.indexOf(l), 1); rest.splice(rest.findIndex(l => l.id === 'town') + 1, 0, ...mv); }
     const final = rest.concat(named.reverse());
@@ -641,8 +644,8 @@
         regions: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_regions.geojson' },
         landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
         peaks: { type: 'geojson', data: base + 'data/peaks_famous.geojson' },
-        walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson?v=20261101b' },
-        forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson?v=20261101b' },
+        walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson?v=20261101c' },
+        forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson?v=20261101c' },
         rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
         lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },
