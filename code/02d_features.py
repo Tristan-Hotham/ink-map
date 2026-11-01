@@ -78,17 +78,23 @@ if os.path.exists(lmg):
     for e in json.load(open(lmg))['elements']:
         if e['type'] != 'way' or len(e.get('geometry') or []) < 2: continue
         t = e.get('tags', {}); nm = t.get('name:en') or t.get('name')
-        if not nm: continue
+        cw = t.get('historic') == 'citywalls' or t.get('barrier') == 'city_wall'
+        if not nm and not cw: continue
+        if not nm: nm = ''                                    # unnamed town wall: grouped by 0.1 degree cell below
         if re.search(r'Great Wall', nm): nm = 'Great Wall of China'
-        groups[(nm, t.get('wikidata', ''))].append(LineString([(g['lon'], g['lat']) for g in e['geometry']]))
+        key = (nm, t.get('wikidata', '') if nm else f"cell{round(e['geometry'][0]['lon'], 1)},{round(e['geometry'][0]['lat'], 1)}")
+        groups[key].append((LineString([(g['lon'], g['lat']) for g in e['geometry']]), cw))
     BIG = {"Great Wall of China": 3.5, "Hadrian's Wall": 6.5, 'Antonine Wall': 7, "Offa's Dyke": 7, "Wat's Dyke": 8.5, "Trajan's Wall": 7.5,
            'Aurelian Walls': 9, "Grim's Ditch": 9, "Devil's Dyke": 9.5, 'London Wall': 10.5}
     osm_walls = []
-    for (nm, qid), ls in groups.items():
+    for (nm, qid), lsc in groups.items():
+        ls = [l for l, _ in lsc]; town_wall = any(c for _, c in lsc)
+        if qid.startswith('cell'): qid = ''
         g = linemerge(MultiLineString(ls)) if len(ls) > 1 else ls[0]
         parts = list(g.geoms) if g.geom_type == 'MultiLineString' else [g]
         tol = 0.004 if nm == 'Great Wall of China' else 0.0004
-        keep = [q.simplify(tol) for q in parts if q.length * 111 > (2.0 if nm == 'Great Wall of China' else 0.15)]
+        # town walls are broken at every gate, so their short stretches are kept (more than 30 m)
+        keep = [q.simplify(tol if not town_wall else 0.00008) for q in parts if q.length * 111 > (2.0 if nm == 'Great Wall of China' else 0.03 if town_wall else 0.15)]
         if not keep: continue
         kind = 'aqueduct' if re.search(r'aque|acque|acued|Wasserleitung|Υδραγωγ', nm, re.I) else 'dyke' if re.search(r'dyke|ditch|dike', nm, re.I) else 'wall'
         z = BIG.get(nm, 10.5)

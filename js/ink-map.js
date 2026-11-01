@@ -302,6 +302,7 @@
     const OCEAN = ['==', ['get', 'class'], 'ocean'];
     const LAKE = ['in', ['get', 'class'], ['literal', ['lake', 'pond', 'river']]];
     const layers = [];
+    const HZ = ['get', 'z'];
     const L = (l, group) => { l.metadata = { group: group || 'ink' }; layers.push(l); };
 
     L({ id: 'paper', type: 'background', paint: { 'background-pattern': 'paper' } }, 'paper');
@@ -342,6 +343,9 @@
       paint: { 'line-color': INK.ink, 'line-width': iz(3, 1.2, 8, 1.8, 13, 2.6), 'line-dasharray': [3, 0.6], 'line-opacity': fadeProp('z', 0.85) } }, 'heritage');
     L({ id: 'walls-crest', type: 'line', source: 'walls', minzoom: 9, filter: ['==', ['get', 'k'], 'wall'], layout: { 'line-join': 'round' },
       paint: { 'line-pattern': 'wallseg', 'line-width': iz(9, 5, 14, 9), 'line-opacity': iz(9, 0, 10, 0.95) } }, 'heritage');
+    L({ id: 'wall-towers', type: 'symbol', source: 'walls', minzoom: 12, filter: ['==', ['get', 'k'], 'wall'],
+      layout: { 'symbol-placement': 'line', 'symbol-spacing': iz(12, 90, 15, 140), 'icon-image': 'walltower', 'icon-size': iz(12, 0.9, 15, 1.3), 'icon-rotation-alignment': 'viewport', 'icon-overlap': 'cooperative', 'icon-anchor': 'bottom' },
+      paint: { 'icon-opacity': iz(12, 0, 12.5, 1) } }, 'heritage');
     L({ id: 'rivers', type: 'line', source: 'ofm', 'source-layer': 'waterway', filter: ['!=', ['get', 'intermittent'], 1],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': INK.blue,
@@ -479,7 +483,7 @@
       opacity: ramp(3, 3.6, null, null) });
     placeLayer('towns', ['==', CL, 'town'], { minzoom: 6.5, size: iz(7, 11.5, 10, 14, 13, 16), icon: 's-town', iconSize: iz(7, 0.5, 11, 0.65), opacity: ramp(6.5, 7.6, null, null) });
     placeLayer('villages', ['==', CL, 'village'], { minzoom: 9, size: iz(9, 10.5, 13, 14), icon: 's-village', iconSize: iz(9, 0.55, 13, 0.72), opacity: ramp(9, 9.8, null, null) });
-    placeLayer('hamlets', ['in', CL, ['literal', ['hamlet', 'suburb', 'neighbourhood', 'isolated_dwelling']]], { minzoom: 10.8, size: iz(11, 10, 15, 13), icon: 's-hamlet', iconSize: iz(11, 0.8, 15, 1), opacity: ramp(10.8, 11.6, null, null), color: INK.redDeep });
+    placeLayer('hamlets', ['in', CL, ['literal', ['hamlet', 'suburb', 'quarter', 'neighbourhood', 'isolated_dwelling']]], { minzoom: 10.3, size: iz(10.5, 10, 15, 13), icon: 's-hamlet', iconSize: iz(11, 0.8, 15, 1), opacity: ramp(10.3, 10.9, null, null), color: INK.redDeep });
     placeLayer('islands', ['all', ['==', CL, 'island'], ['!', ['in', NAME_EN, ['literal', ['Great Britain', 'Ireland', 'Iceland']]]]], { minzoom: 7, font: 'Ink Italic', size: iz(7, 11, 12, 14), opacity: ramp(7, 8, null, null) });
     // peaks with names, and their heights
     L({ id: 'peaks', type: 'symbol', source: 'ofm', 'source-layer': 'mountain_peak', minzoom: 8.8,
@@ -494,26 +498,43 @@
       paint: { 'text-color': INK.redDeep, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(8.5, 9.5, null, null) } }, 'names');
     // rivers and lakes, in blue
     // river names along the line, spaced like sea names: the great rivers from zoom 5, streams close in
-    L({ id: 'river-names', type: 'symbol', source: 'ofm', 'source-layer': 'waterway', minzoom: 5,
+    // the great rivers from Natural Earth (zoom 3 to 9.5), OpenStreetMap's own waterway names from zoom 9
+    L({ id: 'river-names-ne', type: 'symbol', source: 'rivers', maxzoom: 9.5, filter: ['<=', HZ, ['zoom']],
+      layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'symbol-placement': 'line', 'symbol-spacing': iz(3, 500, 6, 600, 9, 700), 'text-max-angle': 40,
+        'text-size': iz(3, 10, 6, 11.5, 9, 13), 'text-letter-spacing': iz(3, 0.2, 9, 0.14), 'text-padding': 4, 'text-keep-upright': true }),
+      paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': byZoom(z => ['*', clamp01(['-', z + 0.7, HZ]), z >= 9.5 ? 0 : 1]) } }, 'rivers');
+    L({ id: 'river-names', type: 'symbol', source: 'ofm', 'source-layer': 'waterway', minzoom: 9,
       filter: ['all', ['has', 'name'], ['any', ['==', ['get', 'class'], 'river'], ['all', ['==', ['get', 'class'], 'canal'], ['>=', ['zoom'], 10]], ['>=', ['zoom'], 12]]],
-      layout: TXT({ 'text-field': NAME_LOCAL, 'text-font': ['Ink Italic'], 'symbol-placement': 'line', 'symbol-spacing': iz(5, 700, 9, 500, 13, 380), 'text-max-angle': 22, 'text-size': iz(5, 10, 8, 11.5, 12, 14),
-        'text-letter-spacing': iz(5, 0.22, 9, 0.16, 13, 0.12), 'text-padding': 6 }),
-      paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(5, 6, null, null) } }, 'rivers');
+      layout: TXT({ 'text-field': NAME_LOCAL, 'text-font': ['Ink Italic'], 'symbol-placement': 'line', 'symbol-spacing': iz(9, 450, 13, 350), 'text-max-angle': 40, 'text-size': iz(9, 12, 12, 14),
+        'text-letter-spacing': iz(9, 0.14, 13, 0.1), 'text-padding': 4, 'text-keep-upright': true }),
+      paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(9, 9.6, null, null) } }, 'rivers');
+    L({ id: 'lake-names-ne', type: 'symbol', source: 'lakes', maxzoom: 9.2, filter: ['<=', HZ, ['zoom']],
+      layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'text-size': iz(4, 10, 9, 12.5), 'text-max-width': 6, 'text-letter-spacing': 0.06 }),
+      paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': byZoom(z => clamp01(['-', z + 0.7, HZ])) } }, 'rivers');
+    // named hills from Wikidata where OpenStreetMap has no peak (zoom 10 and closer)
+    L({ id: 'hills', type: 'symbol', source: 'ink', 'source-layer': 'hills', minzoom: 10,
+      layout: TXT({ 'text-field': ['format', ['get', 'n'], {}, ['case', ['>', ['get', 'e'], 0], ['concat', '\n', ['to-string', ['get', 'e']], ' m'], ''], { 'font-scale': 0.78, 'text-font': ['literal', ['Ink Italic']] }],
+        'text-font': ['Ink Roman'], 'text-size': iz(10, 10.5, 13, 12.5), 'icon-image': 's-peak', 'icon-size': iz(10, 0.4, 13, 0.5), 'text-variable-anchor': ['top', 'bottom', 'left', 'right'], 'text-radial-offset': 0.55,
+        'text-justify': 'auto', 'symbol-sort-key': HZ, 'icon-overlap': 'never' }),
+      paint: { 'text-color': INK.ink, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
     for (const [id, geom] of [['lake-names', 'Point'], ['lake-names-l', 'LineString']]) {
-      L({ id, type: 'symbol', source: 'ofm', 'source-layer': 'water_name', minzoom: 7,
+      L({ id, type: 'symbol', source: 'ofm', 'source-layer': 'water_name', minzoom: 8.8,
         filter: ['all', ['==', ['get', 'class'], 'lake'], ['==', ['geometry-type'], geom]],
         layout: TXT({ 'text-field': NAME_LOCAL, 'text-font': ['Ink Italic'], 'text-size': iz(7, 10.5, 12, 14), 'text-max-width': 6, 'text-letter-spacing': 0.06,
           'symbol-placement': geom === 'Point' ? 'point' : 'line-center', 'text-max-angle': 35 }),
-        paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(7, 8, null, null) } }, 'rivers');
+        paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(8.8, 9.4, null, null) } }, 'rivers');
     }
 
     // heritage drawings (Wikidata, with the architecture, lighthouse, battle and monastery data studies): thousands appear as you
     // zoom, the best known first; names in small red italic about a zoom and a half after the drawing
-    const HZ = ['get', 'z'];
     const nameAfter = (dz) => ['step', ['zoom'], ''].concat(...[...Array(18).keys()].map(z => [z + 1, ['case', ['<=', HZ, z + 1 - dz], ['get', 'n'], '']]));
+    // names come from 'l', which the worker thins to one per cell of about 140 x 90 px (best known first); ordinary churches
+    // and chapels (fewer than about ten Wikipedia articles) are drawn unnamed until zoom 15
+    const PLAINCH = ['all', ['==', ['get', 'i'], 'church'], ['>', HZ, 7.5]];
+    const HNAME = ['step', ['zoom'], ''].concat(...[...Array(18).keys()].map(z => [z + 1, ['case', ['all', ['<=', HZ, z + 1 - 1.5], ['any', ['!', PLAINCH], z + 1 >= 15]], ['coalesce', ['get', 'l'], ''], '']]));
     L({ id: 'heritage', type: 'symbol', source: 'ink', 'source-layer': 'heritage', minzoom: 5.4,
       layout: TXT({ 'icon-image': ['concat', 'h-', ['get', 'i']], 'icon-size': iz(6, 0.7, 9, 0.85, 12, 1, 15, 1.2), 'icon-overlap': 'never', 'icon-padding': 1,
-        'symbol-sort-key': HZ, 'text-field': nameAfter(1.5), 'text-font': ['Ink Italic'], 'text-size': iz(8, 9.5, 13, 11.5), 'text-optional': true,
+        'symbol-sort-key': HZ, 'text-field': HNAME, 'text-font': ['Ink Italic'], 'text-size': iz(8, 9.5, 13, 11.5), 'text-optional': true,
         'text-variable-anchor': ['top', 'bottom', 'right', 'left'], 'text-radial-offset': 0.9, 'text-max-width': 8, 'text-letter-spacing': 0.02 }),
       paint: { 'icon-opacity': fadeProp('z'), 'text-opacity': fadeProp('z'), 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.2 } }, 'heritage');
     // world-famous monuments, each drawn in its own way, from the world view
@@ -521,10 +542,14 @@
     const LFADE = byZoom(z => clamp01(['-', z + 1.7, HZ]));
     // the drawing is placed before the city names (so the best known show from the world view); its name comes after the
     // towns, so it never pushes a city's name off the map
-    L({ id: 'landmarks', type: 'symbol', source: 'landmarks', filter: ['<=', HZ, ['+', ['zoom'], 1.7]],
-      layout: { 'icon-image': ['coalesce', ['image', ['concat', 'l-', ['get', 'i']]], ['image', ['concat', 'h-', ['get', 'i']]]], 'icon-size': iz(2, 0.6, 4, 0.75, 7, 0.95, 11, 1.15, 15, 1.4),
-        'icon-overlap': 'never', 'icon-padding': 2, 'symbol-sort-key': HZ },
+    const LIMG = ['coalesce', ['image', ['concat', 'l-', ['get', 'i']]], ['image', ['concat', 'h-', ['get', 'i']]]];
+    L({ id: 'landmarks', type: 'symbol', source: 'landmarks', maxzoom: 6, filter: ['<=', HZ, ['+', ['zoom'], 1.7]],
+      layout: { 'icon-image': LIMG, 'icon-size': iz(2, 0.6, 4, 0.75, 6, 0.9), 'icon-overlap': 'never', 'icon-padding': 2, 'symbol-sort-key': HZ },
       paint: { 'icon-opacity': LFADE } }, 'heritage');
+    // close in, place names come first and the drawing is larger (about 40 to 60 px tall from zoom 9)
+    L({ id: 'landmarks-near', type: 'symbol', source: 'landmarks', minzoom: 6,
+      layout: { 'icon-image': LIMG, 'icon-size': iz(6, 0.9, 9, 1.45, 12, 1.75, 15, 2.1), 'icon-overlap': 'never', 'icon-padding': 2, 'symbol-sort-key': HZ },
+      paint: { 'icon-opacity': iz(6, 0.95, 7, 1) } }, 'heritage');
     L({ id: 'landmark-names', type: 'symbol', source: 'landmarks', filter: ['<=', HZ, ['+', ['zoom'], 0.7]],
       layout: TXT({ 'symbol-sort-key': HZ, 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'text-size': iz(3, 9.5, 8, 11.5, 13, 13),
         'text-variable-anchor': ['top', 'bottom', 'right', 'left'], 'text-radial-offset': iz(3, 1.3, 8, 1.6, 13, 1.9), 'text-max-width': 8 }),
@@ -552,7 +577,8 @@
       paint: { 'icon-opacity': iz(7.5, 0, 8.3, 0.95), 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.2 } }, 'flight');
 
     // placement priority is top-down: reorder so names come in a sensible order (most important on top)
-    const order = ['countries', 'regions-sea', 'regions-world', 'seas', 'landmarks', 'famous-peaks', 'cities', 'regions-land', 'states', 'towns', 'famous-peak-names', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'islands', 'villages', 'river-names', 'wall-names', 'heritage', 'airports', 'landmark-names', 'hamlets'];
+    const order = ['countries', 'regions-sea', 'regions-world', 'seas', 'landmarks', 'famous-peaks', 'cities', 'regions-land', 'states', 'towns', 'landmark-names', 'landmarks-near',
+      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     const final = rest.concat(named.reverse());
@@ -580,6 +606,8 @@
         landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
         peaks: { type: 'geojson', data: base + 'data/peaks_famous.geojson' },
         walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson' },
+        rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
+        lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },
       },
       layers: final,
@@ -592,7 +620,7 @@
   // a small pool of workers; each tile always goes to the same worker (by x) so elevation caches are reused
   let pool = null;
   function setupProtocol(o, ofmTemplate) {
-    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/' }, o.workerConfig || {}) };
+    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', walls: o.base + 'data/walls.geojson' }, o.workerConfig || {}) };
     if (pool) { pool.forEach(w => w.postMessage(cfg)); return; }
     const n = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
     pool = [];

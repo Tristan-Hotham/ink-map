@@ -1,65 +1,65 @@
 {
  "3": {
-  "relief": 556,
-  "mountains": 313,
-  "hills": 243,
+  "relief": 559,
+  "mountains": 327,
+  "hills": 232,
   "trees": 0,
   "tufts": 0
  },
  "4": {
-  "relief": 519,
+  "relief": 518,
   "mountains": 169,
-  "hills": 350,
+  "hills": 349,
   "trees": 0,
   "tufts": 0
  },
  "5": {
-  "relief": 799,
-  "mountains": 321,
-  "hills": 478,
+  "relief": 808,
+  "mountains": 318,
+  "hills": 490,
   "trees": 0,
   "tufts": 0
  },
  "6": {
-  "relief": 1074,
-  "mountains": 344,
-  "hills": 730,
+  "relief": 1115,
+  "mountains": 380,
+  "hills": 735,
   "trees": 0,
   "tufts": 0
  },
  "7": {
-  "relief": 1813,
-  "mountains": 645,
-  "hills": 1168,
-  "trees": 328,
+  "relief": 1746,
+  "mountains": 600,
+  "hills": 1146,
+  "trees": 324,
   "tufts": 0
  },
  "8": {
-  "relief": 1846,
-  "mountains": 566,
-  "hills": 1280,
-  "trees": 168,
+  "relief": 1840,
+  "mountains": 563,
+  "hills": 1277,
+  "trees": 167,
   "tufts": 0
  },
  "9": {
-  "relief": 1803,
-  "mountains": 609,
-  "hills": 1194,
-  "trees": 623,
-  "tufts": 1376
+  "relief": 1773,
+  "mountains": 585,
+  "hills": 1188,
+  "trees": 608,
+  "tufts": 1338
  },
  "10": {
-  "relief": 2178,
-  "mountains": 850,
-  "hills": 1328,
-  "trees": 385,
-  "tufts": 2286
+  "relief": 1367,
+  "mountains": 363,
+  "hills": 1004,
+  "trees": 257,
+  "tufts": 1698
  },
  "11": {
-  "relief": 1109,
-  "mountains": 479,
-  "hills": 630,
-  "trees": 421,
-  "tufts": 2310
+  "relief": 984,
+  "mountains": 394,
+  "hills": 590,
+  "trees": 417,
+  "tufts": 2214
  }
 }

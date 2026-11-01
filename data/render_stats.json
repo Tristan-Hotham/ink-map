@@ -33,27 +33,27 @@
  },
  "yorkshire": {
   "zoom": 8.2,
-  "relief": 3911,
-  "mountains": 853,
-  "hills": 3058,
-  "trees": 558,
+  "relief": 3905,
+  "mountains": 850,
+  "hills": 3055,
+  "trees": 556,
   "tufts": 0
  },
  "lakes": {
   "zoom": 11,
-  "relief": 3689,
-  "mountains": 1473,
-  "hills": 2216,
-  "trees": 1609,
-  "tufts": 7232
+  "relief": 3310,
+  "mountains": 1184,
+  "hills": 2126,
+  "trees": 1702,
+  "tufts": 6933
  },
  "stress": {
   "zoom": 9,
-  "relief": 4556,
-  "mountains": 1952,
-  "hills": 764,
-  "trees": 979,
-  "tufts": 3507
+  "relief": 4606,
+  "mountains": 1948,
+  "hills": 765,
+  "trees": 968,
+  "tufts": 3491
  },
  "sahara": {
   "zoom": 3.45,

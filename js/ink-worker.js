@@ -13,7 +13,7 @@
 let CFG = {
   dem: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png', demMax: 15,
   ofm: null, ofmMax: 14,
-  C: 14, RS: 99, RMAX: 12, HILL: 0.4, SAT_NB: 6, SAT_HI: 3, SAT_Q: 2.2, SNOWF: 700, HMAX: 650, TMAX: 1100, CAP_M: 0.75, CAP_T: 1.05, CAP_SAT: 0.45, SAT_INK: 1.6, PLAT: 2.5, G0: 1, GT: [4, 4.5, 5.5, 7.5, 10, 12, 13, 22, 30, 38, 48, 60, 70], GH: 0.45, MONT: 0.3, OPEN: 1.5, CB: 20, biomes: null, demScale: 1, // no new peaks beyond rank RMAX: close in, cells would measure slopes, not summits
+  C: 14, RS: 99, RMAX: 12, HILL: 0.4, SAT_NB: 6, SAT_HI: 3, SAT_Q: 2.2, SNOWF: 700, HMAX: 650, TMAX: 1100, CHURCH_Z: 7.5, CAP_M: 0.75, CAP_T: 1.05, CAP_SAT: 0.45, SAT_INK: 1.6, PLAT: 2.5, G0: 1, GT: [4, 4.5, 5.5, 7.5, 10, 12, 13, 22, 30, 38, 48, 60, 70], GH: 0.45, MONT: 0.3, OPEN: 1.5, CB: 20, biomes: null, demScale: 1, // no new peaks beyond rank RMAX: close in, cells would measure slopes, not summits
   // (RS: optional rank from which a rank reuses the previous rank's cells, to thin close-up glyphs)
       // mountain cell size in screen px at the rank's home zoom (512 px tiles)
   CT: 10,     // tree cell size
@@ -544,7 +544,50 @@ async function heritagePoints(z, x, y) {
     out.push({ nx, ny, i: I.icons[r[2]], z: mz, n: r[4] || '', q: r[5] ? 'Q' + r[5] : '' });
   }
   out.sort((a, b) => a.z - b.z);
-  return out.slice(0, CFG.HMAX);
+  const kept = out.slice(0, CFG.HMAX);
+  // names: at most one per cell of about 140 x 90 screen pixels, the best known first (lowest first zoom = most Wikipedia
+  // articles); ordinary churches and chapels (fewer than about ten articles) stay unnamed until zoom 15 (see the style)
+  const used = new Set();
+  for (const p of kept) {
+    p.l = '';
+    if (!p.n || p.z > z - 0.5) continue;
+    if (p.i === 'church' && p.z > CFG.CHURCH_Z && z < 14) continue;
+    const k = Math.floor((p.nx * n - x) * 512 / 140) + ',' + Math.floor((p.ny * n - y) * 512 / 90);
+    if (used.has(k)) continue;
+    used.add(k); p.l = p.n;
+  }
+  return kept;
+}
+
+// ---------------- named hills (Wikidata, data/hills/{x}_{y}.json), zoom 10 and closer, where OpenStreetMap has no peak ----------------
+let hillIdx = null; const hillTiles = new Map();
+async function hillPoints(z, x, y) {
+  if (z < 10 || !CFG.hills) return [];
+  if (!hillIdx) hillIdx = (async () => { try { const r = await fetch(CFG.hills + 'index.json'); if (!r.ok) return null; const j = await r.json(); j.set = new Set(j.tiles); return j; } catch (e) { return null; } })();
+  const I = await hillIdx; if (!I) return [];
+  const sh = z - 6, k = (x >> sh) + '_' + (y >> sh);
+  if (!I.set.has(k)) return [];
+  if (!hillTiles.has(k)) hillTiles.set(k, (async () => { try { const r = await fetch(CFG.hills + k + '.json'); return r.ok ? await r.json() : []; } catch (e) { return []; } })());
+  const rows = await hillTiles.get(k), n = Math.pow(2, z), out = [];
+  for (const r of rows) {
+    if (r[3] / 10 > z + 1) continue;
+    const nx = mercX(r[0] / 1e5), ny = mercY(r[1] / 1e5);
+    if (Math.floor(nx * n) !== x || Math.floor(ny * n) !== y) continue;
+    out.push({ nx, ny, z: r[3] / 10, e: r[2], n: r[4] });
+  }
+  if (!out.length) return out;
+  // OpenStreetMap peaks in the same tile already carry a name: skip a hill with the same name nearby, or any peak right on it
+  const buf = CFG.ofm && z <= CFG.ofmMax ? await fetchOfm(z, x, y) : null;
+  const pk = [];
+  if (buf) { const L = decodeLayers(buf, new Set(['mountain_peak'])).mountain_peak; if (L) for (const span of L.feats) { const F = featureOf(buf, L, span); if (F.type !== 1) continue; const [px, py] = pointOf(buf, F.geom); pk.push({ x: px / L.extent * 512, y: py / L.extent * 512, n: String(F.props.name || '').toLowerCase() }); } }
+  const res = [];
+  for (const h of out) {
+    const hx = (h.nx * n - x) * 512, hy = (h.ny * n - y) * 512, nm = h.n.toLowerCase();
+    let dup = false;
+    for (const q of pk) { const d = Math.hypot(q.x - hx, q.y - hy); if (d < 6 || (d < 60 && q.n && (q.n === nm || q.n.startsWith(nm) || nm.startsWith(q.n)))) { dup = true; break; } }
+    if (!dup) res.push(h);
+  }
+  return res.slice(0, 300);
 }
 
 // ---------------- drawn towns (zoom 12 and closer): townhouses along the real streets of built-up land ----------------
@@ -565,6 +608,28 @@ function lineParts(buf, g) {
 function pointOf(buf, g) { const R = new Reader(buf); R.p = g[0]; R.varint(); const dx = R.varint(), dy = R.varint(); return [(dx >>> 1) ^ -(dx & 1), (dy >>> 1) ^ -(dy & 1)]; }
 // radius of the drawn town (km) and of its walled old core, by kind of place
 const TOWN_R = { capital: 4.2, city: 2.6, town: 1.25, village: 0.45 };
+// share of house sites kept at distance dr (in place radii) from the centre: packed rows in the old core, falling fast
+// through the inner streets, then scattered houses with gardens at the edge
+const townKeep = dr => dr < 0.15 ? 1 : dr < 0.35 ? 1 - 1.5 * (dr - 0.15) : Math.max(0.04, 0.7 * Math.exp(-3.2 * (dr - 0.35)));
+// real town walls (data/walls.geojson): where one runs round a core, it is drawn from the data, not as a ring
+let wallBoxes = null;
+function realWalls() {
+  if (!wallBoxes) wallBoxes = (async () => {
+    if (!CFG.walls) return [];
+    try {
+      const j = await (await fetch(CFG.walls)).json(), out = [];
+      for (const f of j.features) {
+        if (f.properties.k !== 'wall') continue;
+        const g = f.geometry, ls = g.type === 'LineString' ? [g.coordinates] : g.coordinates;
+        let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+        for (const l of ls) for (const c of l) { const X = mercX(c[0]), Y = mercY(c[1]); x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, Y); y1 = Math.max(y1, Y); }
+        out.push([x0, y0, x1, y1]);
+      }
+      return out;
+    } catch (e) { return []; }
+  })();
+  return wallBoxes;
+}
 async function townPoints(z, x, y, avoid) {
   if (z < 12 || !CFG.ofm || z > CFG.ofmMax) return [];
   const [buf, pbuf] = await Promise.all([fetchOfm(z, x, y), fetchOfm(z - 2, x >> 2, y >> 2)]);
@@ -605,7 +670,9 @@ async function townPoints(z, x, y, avoid) {
       out.push({ nx: P.nx - 8 / 512 / n, ny: P.ny + 20 / 512 / n, t: 'market', a: 0, o: 0 }); take(px - 8, py + 20, 2);
       out.push({ nx: P.nx + 14 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 14, py + 16, 2);
     } else if (px >= 0 && px < 512 && py >= 0 && py < 512) { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2); }
-    if (P.kind === 'capital' || (P.kind === 'city' && P.rank <= 3)) {
+    const W0 = await realWalls(), rk0 = P.R * 0.4 / kmPerN;
+    const hasWall = W0.some(b => b[0] < P.nx + rk0 && b[2] > P.nx - rk0 && b[1] < P.ny + rk0 && b[3] > P.ny - rk0 && (b[2] - b[0]) < rk0 * 6);
+    if (!hasWall && (P.kind === 'capital' || (P.kind === 'city' && P.rank <= 3))) {
       const rk = P.R * 0.32 / kmPerN, segs = Math.max(24, Math.round(2 * Math.PI * rk * n * 512 / 13));
       for (let s = 0; s < segs; s++) {
         const th = s / segs * 2 * Math.PI, wob = 1 + 0.06 * Math.sin(th * 3 + P.nx * 1e4);
@@ -645,7 +712,7 @@ async function townPoints(z, x, y, avoid) {
               const ins = at(built, tx, ty), dn = dens(tx, ty);
               if (!ins && dn < 0.12 && dr > 0.5) continue;
               // keep share: the old core is packed; beyond it, houses only where OpenStreetMap maps buildings
-              const keep = Math.min(1, (dr < 0.35 ? 1 : Math.max(0, 1.15 - dr * 0.85)) * w * (0.55 + 0.9 * dn) + (dr < 0.2 ? 0.4 : 0));
+              const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
               if (h >= keep || !free(hx, hy, 0)) continue;
               take(hx, hy, 0);
@@ -669,7 +736,7 @@ async function townPoints(z, x, y, avoid) {
     if (!P || dr > 1.3) continue;
     const ins = at(built, tx, ty), dn = dens(tx, ty);
     if (!ins && dn < 0.2 && dr > 0.4) continue;            // the old core counts as built even where the tile maps nothing
-    const keep = dr < 0.4 ? 0.9 : Math.min(1, Math.max(0, 1.1 - dr) * (0.45 + 0.8 * dn));
+    const keep = dr < 0.18 ? 0.95 : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep || !free(hx, hy, 0)) continue;
     take(hx, hy, 0);
     out.push({ nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 6), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 });
@@ -758,7 +825,11 @@ async function buildTile(z, x, y) {
   }
   // heritage drawings and, close in, the drawn towns
   const her = await heritagePoints(z, x, y);
-  if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q'], z, x, y));
+  if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q', 'l'], z, x, y));
+  if (z >= 10) {
+    const hills = await hillPoints(z, x, y);
+    if (hills.length) T.bytes(3, encodeLayer('hills', hills, ['z', 'e', 'n'], z, x, y));
+  }
   if (z >= 12) {
     const town = await townPoints(z, x, y, her);
     town.sort((a, b) => a.ny - b.ny);

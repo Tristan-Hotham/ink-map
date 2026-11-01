@@ -242,49 +242,49 @@
   "lng": 2.25,
   "lat": 48.83,
   "zoom": 10,
-  "check": "Palace of Versailles drawing; Paris as a walled capital; Eiffel Tower and Notre-Dame drawings"
+  "check": "PARIS lettered; Seine named in blue; Versailles drawn large"
  },
  {
   "id": "versailles_paris_z13",
   "lng": 2.33,
   "lat": 48.86,
   "zoom": 13,
-  "check": "drawn townhouses along real streets, Louvre, Notre-Dame and Eiffel drawings, park outlines dotted"
+  "check": "quarter names lettered; Notre-Dame, Sainte-Chapelle and Louvre drawn and named; church names thinned; townhouses denser at the centre"
  },
  {
   "id": "giza_z9",
   "lng": 31.13,
   "lat": 29.98,
   "zoom": 9,
-  "check": "Pyramids of Giza drawn; Nile named in blue; Cairo lettered"
+  "check": "Pyramids of Giza drawn large and named; Nile named in blue; Cairo lettered"
  },
  {
   "id": "rome_z12",
   "lng": 12.48,
   "lat": 41.895,
   "zoom": 12,
-  "check": "Colosseum and St Peter's drawn; churches and ruins in red italic; townhouses filling the centre"
+  "check": "ROME lettered; Colosseum and St Peter's drawn large and named; church names thinned, no red italic clutter"
  },
  {
   "id": "york_centre_z14",
   "lng": -1.082,
   "lat": 53.96,
   "zoom": 14,
-  "check": "York Minster, city walls and towers, market square and townhouses facing the streets, densest at the centre"
+  "check": "York Minster drawn large and named; city walls with towers; packed townhouses at the centre, sparse at the edges"
  },
  {
   "id": "blagdon_hill_somerset_z11",
-  "lng": -3.09,
-  "lat": 50.95,
+  "lng": -3.0928,
+  "lat": 50.9497,
   "zoom": 11,
-  "check": "Blagdon Hill and other named hills lettered with heights where OpenStreetMap tags them as peaks; villages and hamlets"
+  "check": "the village of Blagdon Hill lettered at the centre, with nearby villages and hamlets; named hills with heights in the Blackdown Hills"
  },
  {
   "id": "blagdon_hill_somerset_z12",
-  "lng": -3.09,
-  "lat": 50.95,
+  "lng": -3.0928,
+  "lat": 50.9497,
   "zoom": 12,
-  "check": "village churches and houses; more hamlet names; heritage drawings in red italic"
+  "check": "the village of Blagdon Hill lettered at the centre, with nearby villages and hamlets; named hills with heights in the Blackdown Hills"
  },
  {
   "id": "avebury_stonehenge_z11",
@@ -327,5 +327,26 @@
   "lat": 51.47,
   "zoom": 10,
   "check": "Heathrow drawn as a flying machine taking off; airfields as small sketches; airport names close in"
+ },
+ {
+  "id": "nile_z6",
+  "lng": 31.3,
+  "lat": 27.5,
+  "zoom": 6,
+  "check": "Nile lettered in blue along the river"
+ },
+ {
+  "id": "rhine_danube_z6",
+  "lng": 10.5,
+  "lat": 48.8,
+  "zoom": 6,
+  "check": "Rhine and Danube lettered in blue; lakes such as Lake Constance named"
+ },
+ {
+  "id": "great_lakes_z5",
+  "lng": -84,
+  "lat": 45,
+  "zoom": 5,
+  "check": "Lake Superior, Michigan, Huron named in blue"
  }
 ]
