@@ -94,6 +94,14 @@ zp = os.path.join(DATA, 'zoom_sequence_stats.json')
 if os.path.exists(zp):
     zs = json.load(open(zp))
 R['zoom_sequence_glyphs_on_screen'] = zs
+wi = os.path.join(DATA, 'world_ink_stats.json')
+if os.path.exists(wi):
+    W2 = json.load(open(wi))
+    R['world_ink'] = {k: W2[k] for k in ('ranges', 'range_peaks', 'range_relief_m', 'range_min_elev_m', 'lower_range_relief_m', 'lower_range_min_elev_m',
+                                         'range_window_km', 'dunes', 'rains', 'taigas')}
+ll = os.path.join(DATA, 'lakes_lettered.geojson')
+if os.path.exists(ll):
+    R['labels']['lakes_lettered'] = len({f['properties']['name'] for f in json.load(open(ll))['features']})
 dump(R, os.path.join(DATA, 'results.json'))
 
 # ---- checks: every number in the public text must come from here
@@ -107,11 +115,16 @@ for needle in [f"about {m['cell_px_mountains']} screen pixels", f"about {fmt(m['
     assert needle in page, ('page', needle)
 assert m['cap_m'] == 0.75 and 'three quarters of the patch' in page and m['cap_sat'] < 0.5 and 'under half' in page
 assert m['plateau_factor'] == 2.5 and 'two and a half times' in page
+if 'world_ink' in R:
+    w = R['world_ink']
+    for needle in [f"at least {fmt(w['range_relief_m'])} m within about {w['range_window_km']} km", f"above {w['range_min_elev_m']} m", f"count from {w['lower_range_relief_m']} m"]:
+        assert needle in page, ('page', needle)
 readme = os.path.join(ROOT, 'README.md')
 if os.path.exists(readme) and 'poster' in R and not os.environ.get('INK_RESULTS_ONLY'):
     t = open(readme).read()
-    for needle in [fmt(R['poster']['mountains']), fmt(R['poster']['hills']), fmt(R['poster']['trees']), f"{m['threshold_lakes_z11_m']} m",
-                   fmt(R['poster_world']['mountains']), fmt(R['labels']['all_hand_placed'])]:
+    for needle in ([fmt(R['poster']['mountains']), fmt(R['poster']['hills']), fmt(R['poster']['trees']), f"{m['threshold_lakes_z11_m']} m",
+                   fmt(R['poster_world']['mountains']), fmt(R['labels']['all_hand_placed'])]
+                  + ([fmt(R['world_ink']['ranges']), fmt(R['world_ink']['range_peaks']), f"{R['labels']['lakes_lettered']} lakes"] if 'world_ink' in R else [])):
         assert needle in t, ('readme', needle)
 post = os.path.join(ROOT, 'reddit', 'post.md')
 if os.path.exists(post) and 'poster' in R and not os.environ.get('INK_RESULTS_ONLY'):

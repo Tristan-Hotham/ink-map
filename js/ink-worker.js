@@ -6,6 +6,7 @@
  *   biome   desert, grassland, rainforest, taiga, ice, marsh and tundra glyphs (RESOLVE Ecoregions 2017)
  *   heritage  castles, churches, stone circles and other sites (Wikidata, zoom 6 and closer)
  *   town    townhouses along real streets, market squares, churches and town walls (zoom 12 and closer)
+ *   beasts  deer, boar, sheep, cattle, eagles, herons and fish in suitable country (zoom 6 to 14)
  * Every point carries the rank (r) at which it first appears, so the map can fade new glyphs in
  * smoothly as you zoom: the set at one zoom is always contained in the set at the next.
  * Dr Tristan Hotham, Independent researcher, 2026. MIT licence. */
@@ -236,7 +237,7 @@ async function reliefPoints(z, x, y) {
       seen.add(a);
       const I = L.i0 + ii, J = L.j0 + jj;
       const eM = v * CFG.demScale, sl = snowLine(latOfY(ny)) + (plateauAt(BR, nx, ny) ? 1500 : 0);
-      out.push({ nx, ny, r: Math.max(r, 0), k, s: Math.round(s * 100) / 100, v: Math.floor(hash3(I, J, r + 99) * 8), e: Math.round(eM), rl: Math.round(rel[c]), rg: Math.round(rug[c] * 10) / 10,
+      out.push({ id: I + ':' + J + ':' + r, nx, ny, r: Math.max(r, 0), k, s: Math.round(s * 100) / 100, v: Math.floor(hash3(I, J, r + 99) * 8), e: Math.round(eM), rl: Math.round(rel[c]), rg: Math.round(rug[c] * 10) / 10,
                  sn: k === 0 && eM >= sl ? 1 : 0 });
     }
     // snowfields and glaciers: pale blue hatching on high, rugged ground well above the snow line (finest cells only)
@@ -376,11 +377,16 @@ function glyphScale(zv, k, s, r) {
   const cap = zv <= 11 ? 1.45 : Math.min(1.75, 1.45 + (zv - 11) * 0.1);
   return (k === 0 ? 0.54 : 0.52) * s * f * Math.min(cap, Math.pow(2, 0.42 * (zv - r)));
 }
-function inkCap(pts, z, x, y) {
+// a stable id for a relief point: the same point has the same id in a tile and in its parent
+const pid = p => p.id || (Math.round(p.nx * 1e7) + ':' + Math.round(p.ny * 1e7) + ':' + p.r);   // the grid cell and rank
+// parentKept: ids the parent tile drew. Points the parent tile also had (rank <= z) are kept exactly as the parent kept them, so
+// zooming in never drops a mountain that was on screen a moment ago or brings back one it left out; the cap then only
+// decides among the new, finer points.
+function inkCap(pts, z, x, y, parentKept) {
   // ink density per patch: the summed footprints of the glyphs (overlaps counted, as the pen would draw them)
   const zv = z + 0.5, n = Math.pow(2, z), T = 512 * Math.pow(2, 0.5), NP = 6, P = T / NP;
   const inkM = new Float32Array(NP * NP), inkT = new Float32Array(NP * NP);
-  const order = pts.map((p, i) => i).sort((a, b) => (pts[a].r - pts[b].r) || (pts[a].k - pts[b].k) || (pts[b].rl - pts[a].rl));
+  const order = pts.map((p, i) => i).sort((a, b) => (pts[a].r - pts[b].r) || (pts[a].k - pts[b].k) || (pts[b].rl - pts[a].rl));   // coarse ranks (the parent's) come first
   // where a patch is saturated (candidate mountains would ink it more than SAT_INK times over, as in the Himalaya or
   // on a high plateau), the cap is cut to CAP_SAT, so the great ranges come out as ridges with paper between
   const cand = new Float32Array(NP * NP);
@@ -393,6 +399,11 @@ function inkCap(pts, z, x, y) {
     const a = p.k === 0 ? 0.5 * 36 * 31 * sc * sc : 0.7 * 27 * 13 * sc * sc;
     const cx = (p.nx * n - x) * T, by = (p.ny * n - y) * T;
     const c = Math.max(0, Math.min(NP - 1, Math.floor(by / P))) * NP + Math.max(0, Math.min(NP - 1, Math.floor(cx / P)));
+    if (parentKept && p.r <= z) {
+      if (!parentKept.has(pid(p))) continue;
+      if (p.k === 0) inkM[c] += a / (P * P); else inkT[c] += a / (P * P);
+      keep.push(p); continue;
+    }
     const capM = cand[c] > CFG.SAT_INK ? CFG.CAP_SAT : CFG.CAP_M;
     if (p.k === 0) { if (inkM[c] + a / (P * P) > capM) continue; inkM[c] += a / (P * P); }
     else { if (inkM[c] + inkT[c] + a / (P * P) > CFG.CAP_T) continue; inkT[c] += a / (P * P); }
@@ -429,7 +440,7 @@ async function coverMask(z, x, y) {
   if (!L) return null;
   const c = new OffscreenCanvas(MS, MS), ctx = c.getContext('2d', { willReadFrequently: true });
   const sc = MS / L.extent;
-  const groups = { forest: [], wood: [], wet: [], heath: [] };
+  const groups = { forest: [], wood: [], wet: [], heath: [], farm: [], meadow: [] };
   for (const span of L.feats) {
     const F = featureOf(buf, L, span);
     if (F.type !== 3) continue;
@@ -437,11 +448,13 @@ async function coverMask(z, x, y) {
     if (cl === 'wood') (sub === 'forest' ? groups.forest : groups.wood).push(F.geom);
     else if (cl === 'wetland') groups.wet.push(F.geom);
     else if (cl === 'grass' && (sub === 'heath' || sub === 'moor' || sub === 'fell')) groups.heath.push(F.geom);
+    else if (cl === 'farmland') groups.farm.push(F.geom);
+    else if (cl === 'grass' && (sub === 'meadow' || sub === 'grassland' || sub === 'park')) groups.meadow.push(F.geom);
   }
-  if (!groups.forest.length && !groups.wood.length && !groups.wet.length && !groups.heath.length) return null;
+  if (!Object.values(groups).some(g => g.length)) return null;
   // channels: R forest, G wood, B wetland, A heath (drawn as separate passes into separate arrays)
   const out = {};
-  for (const k of ['forest', 'wood', 'wet', 'heath']) {
+  for (const k of ['forest', 'wood', 'wet', 'heath', 'farm', 'meadow']) {
     if (!groups[k].length) { out[k] = null; continue; }
     ctx.clearRect(0, 0, MS, MS); ctx.fillStyle = '#fff'; ctx.beginPath();
     for (const g of groups[k]) tracePolygon(buf, g, ctx, sc);
@@ -538,7 +551,9 @@ async function heritagePoints(z, x, y) {
   if (!I.set.has(bx + '_' + by)) return [];
   const rows = await heritageBin(bx, by), n = Math.pow(2, z), out = [];
   for (const r of rows) {
-    const mz = r[3] / 10; if (mz > z + 1) continue;
+    let mz = r[3] / 10;
+    if (I.icons[r[2]] === 'lighthouse') mz = Math.min(mz, 8);   // every lighthouse on the coast from zoom 8, the famous ones earlier
+    if (mz > z + 1) continue;
     const nx = mercX(r[0] / 1e5), ny = mercY(r[1] / 1e5);
     if (Math.floor(nx * n) !== x || Math.floor(ny * n) !== y) continue;
     out.push({ nx, ny, i: I.icons[r[2]], z: mz, n: r[4] || '', q: r[5] ? 'Q' + r[5] : '' });
@@ -705,7 +720,10 @@ async function townPoints(z, x, y, avoid) {
       // set just below the name, which sits on the place point
       out.push({ nx: P.nx - 8 / 512 / n, ny: P.ny + 20 / 512 / n, t: 'market', a: 0, o: 0 }); take(px - 8, py + 20, 2);
       out.push({ nx: P.nx + 14 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 14, py + 16, 2);
-    } else if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind === 'village') { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2); }
+      // market stalls round the square
+      for (const [dx, dy, k] of [[-22, 24, 0], [-14, 32, 1], [2, 30, 2]]) { if (free(px + dx, py + dy, 0)) { out.push({ nx: P.nx + dx / 512 / n, ny: P.ny + dy / 512 / n, t: 'stall' + k, a: 0, o: 0 }); take(px + dx, py + dy, 0); } }
+    } else if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind === 'village') { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2);
+      if (free(px - 16, py + 22, 1)) { out.push({ nx: P.nx - 16 / 512 / n, ny: P.ny + 22 / 512 / n, t: 'green', a: 0, o: 0 }); take(px - 16, py + 22, 1); } }
     const W0 = await realWalls(), rk0 = P.R * 0.4 / kmPerN;
     const hasWall = W0.some(b => b[0] < P.nx + rk0 && b[2] > P.nx - rk0 && b[1] < P.ny + rk0 && b[3] > P.ny - rk0 && (b[2] - b[0]) < rk0 * 6);
     if (!hasWall && (P.kind === 'capital' || (P.kind === 'city' && P.rank <= 3))) {
@@ -751,7 +769,7 @@ async function townPoints(z, x, y, avoid) {
               const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
               if (h >= keep) continue;
-              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 8), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
+              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 12), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
             }
           }
           carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
@@ -774,7 +792,7 @@ async function townPoints(z, x, y, avoid) {
     const small = P.kind === 'village' || P.kind === 'hamlet';
     const keep = dr < 0.18 ? 0.95 : small && dr < 0.6 ? 0.8 - 0.6 * dr : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
-    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 8), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 12), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
   }
   // place from the centre outwards, so the cap on drawings per tile thins the edges, never the old core
   cand.sort((a, b) => a.dr - b.dr);
@@ -786,7 +804,7 @@ async function townPoints(z, x, y, avoid) {
   return out;
 }
 
-async function buildTile(z, x, y) {
+async function buildTile(z, x, y, parentKept) {
   const T = new Writer();
   const [relief0, water] = await Promise.all([reliefPoints(z, x, y), z <= CFG.ofmMax && CFG.ofm ? waterMask(z, x, y) : null]);
   const n = Math.pow(2, z);
@@ -802,8 +820,21 @@ async function buildTile(z, x, y) {
     return false;
   };
   const snowf = relief0.filter(p => p.k === 2 && !nearWet(p));
-  const relief = inkCap(relief0.filter(p => p.k !== 2 && !nearWet(p)), z, x, y).concat(snowf);
+  // the parent tile's mountains: a coarse cell measured again on finer elevation can come out a little differently, so any
+  // the parent drew that this tile did not find are carried over as they were (and never dropped), so nothing pops out
+  let pk = null;
+  if (parentKept && parentKept.length) {
+    pk = new Set(); const have = new Set(relief0.map(pid));
+    for (const a of parentKept) {
+      const [id, nx, ny, r, k, sz, v, e, rl, rg, sn] = a; pk.add(id);
+      if (have.has(id) || r > z || nx < x / n || nx >= (x + 1) / n || ny < y / n || ny >= (y + 1) / n) continue;
+      relief0.push({ id, nx, ny, r, k, s: sz, v, e, rl, rg, sn, carried: true });
+    }
+  }
+  const relief = inkCap(relief0.filter(p => p.k !== 2 && (p.carried || !nearWet(p))), z, x, y, pk).concat(snowf);
   relief.sort((a, b) => a.ny - b.ny);
+  const keptIds = relief.filter(p => p.k !== 2).map(p => [pid(p), p.nx, p.ny, p.r, p.k, p.s, p.v, p.e, p.rl, p.rg, p.sn]);
+  let cover = null;
   // ---- biome glyphs: dunes, grass, rainforest, taiga, ice, marsh, tundra
   const BR = await biomeRaster();
   if (BR || (water && water.ice)) {
@@ -838,6 +869,7 @@ async function buildTile(z, x, y) {
     const oz = Math.min(z, CFG.ofmMax);
     if (oz === z) {
       const mask = await coverMask(z, x, y);
+      cover = mask;
       if (mask) {
         const at = p => { const n = Math.pow(2, z); const i = Math.floor((p.nx * n - x) * MS), j = Math.floor((p.ny * n - y) * MS); return j * MS + i; };
         if (mask.forest || mask.wood) {
@@ -865,6 +897,34 @@ async function buildTile(z, x, y) {
       }
     }
   }
+  // beasts of the countryside: a few a tile, in country that suits them, on the same nested grid so they stay put as you zoom
+  if (z >= 6 && z <= 14) {
+    const BR2 = await biomeRaster(), beasts = [];
+    const mtn = relief.filter(p => p.k === 0);
+    // eagles only over real mountains: three or more peaks above 600 m close by
+    const nearHigh = p => mtn.filter(q => q.e > 600 && Math.abs(q.nx - p.nx) * n * 512 < 50 && Math.abs(q.ny - p.ny) * n * 512 < 50).length >= 3;
+    const atc = (m, p) => m && m[Math.max(0, Math.min(MS - 1, Math.floor((p.ny * n - y) * MS))) * MS + Math.max(0, Math.min(MS - 1, Math.floor((p.nx * n - x) * MS)))] === 1;
+    const pick = (h, arr) => arr[Math.min(arr.length - 1, Math.floor(h * arr.length))];
+    for (const p of nestedPoints(z, x, y, 150, 6, z + 1, 61)) {
+      if (p.h >= 0.3) continue;
+      const h2 = hash3(Math.round(p.nx * 1e7), Math.round(p.ny * 1e7), 63);
+      const b = biomeAt(BR2, p.nx, p.ny);
+      let a = null;
+      const hab = cover ? (atc(cover.forest, p) || atc(cover.wood, p) ? 'wood' : atc(cover.heath, p) ? 'heath' : atc(cover.farm, p) ? 'farm' : atc(cover.meadow, p) ? 'meadow' : null) : null;
+      if (wet(p)) { if (z >= 8 && p.h < 0.05) a = 'fish'; }
+      else if (z >= 8 && nearWet(p) && p.h < 0.12) a = 'heron';
+      else if (hab === 'wood') a = b === 4 ? pick(h2, ['bear', 'wolf', 'reindeer', 'deer']) : pick(h2, ['deer', 'deer', 'boar']);
+      else if (hab === 'heath') a = 'sheep';
+      else if (hab === 'farm') a = pick(h2, ['cow', 'cow', 'sheep']);
+      else if (hab === 'meadow') a = pick(h2, ['sheep', 'cow']);
+      else if (p.h < 0.1 && nearHigh(p)) a = 'eagle';
+      else if (!cover && z < 7 && b === 4) a = pick(h2, ['bear', 'wolf', 'reindeer', 'moose']);
+      if (a) beasts.push({ nx: p.nx, ny: p.ny, r: p.r, a });
+    }
+    beasts.sort((p, q) => p.r - q.r);
+    const kept = beasts.slice(0, 6);
+    if (kept.length) T.bytes(3, encodeLayer('beasts', kept, ['r', 'a'], z, x, y));
+  }
   // heritage drawings and, close in, the drawn towns
   const her = await heritagePoints(z, x, y);
   if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q', 'l'], z, x, y));
@@ -879,8 +939,10 @@ async function buildTile(z, x, y) {
     town.sort((a, b) => a.ny - b.ny);
     if (town.length) T.bytes(3, encodeLayer('town', town, ['t', 'a', 'o'], z, x, y));
   }
-  return new Uint8Array(T.a).buffer;
+  return { buf: new Uint8Array(T.a).buffer, kept: keptIds };
 }
+// finished tiles, kept a while: zooming back out and in again, or panning back, costs nothing
+const tileCache = new Map();
 
 const live = new Set();
 self.onmessage = async (ev) => {
@@ -890,10 +952,16 @@ self.onmessage = async (ev) => {
   live.add(m.id);
   try {
     const t0 = performance.now();
-    const buf = await buildTile(m.z, m.x, m.y);
+    const key = m.z + '/' + m.x + '/' + m.y;
+    let res = tileCache.get(key);
+    if (!res) {
+      res = await buildTile(m.z, m.x, m.y, m.parentKept);
+      tileCache.set(key, res); if (tileCache.size > 160) tileCache.delete(tileCache.keys().next().value);
+    }
     if (!live.has(m.id)) return;
     live.delete(m.id);
-    self.postMessage({ id: m.id, buf, ms: performance.now() - t0 }, [buf]);
+    const buf = res.buf.slice(0);
+    self.postMessage({ id: m.id, buf, kept: res.kept, ms: performance.now() - t0 }, [buf]);
   } catch (e) {
     live.delete(m.id);
     self.postMessage({ id: m.id, err: String(e && e.stack || e) });

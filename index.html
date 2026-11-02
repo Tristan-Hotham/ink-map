@@ -56,19 +56,51 @@ summary{font:500 13px/1.4 var(--mono);letter-spacing:.06em;text-transform:upperc
 .cta a.p{background:var(--hot);border-color:var(--hot);color:#fff}
 footer{border-top:6px double var(--fg);margin-top:56px;padding-top:16px;font:400 13px/1.55 var(--mono);color:var(--muted)}
 footer p{margin:0 0 10px}
-.theme{position:fixed;right:12px;bottom:12px;z-index:1002;font:500 12px/1 var(--mono);background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:8px 10px;cursor:pointer;min-height:36px}
+.theme{order:-1;font:500 12px/1 var(--mono);background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:4px 8px;cursor:pointer;min-height:28px;margin-top:-8px}
 .figure{margin:22px 0}
 .zstrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .zstrip img{width:100%;display:block;border:1px solid var(--border)}
 .zstrip span{font:400 11px/1.3 var(--mono);color:var(--muted)}
 
 /* ---- the map ---- */
-.mapband{width:100vw;margin-left:calc(50% - 50vw);margin-top:26px;padding:0 max(10px,env(safe-area-inset-left,0px))}
-#map{position:relative;height:min(86vh,940px);min-height:520px;border:1px solid #BCA676;background:#F3E5BF;max-width:1600px;margin:0 auto;overflow:hidden}
+.topbar{height:40px;display:flex;align-items:center;gap:14px;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(14px,env(safe-area-inset-left,0px));border-bottom:3px double var(--fg);background:var(--bg);overflow:hidden;white-space:nowrap}
+.tb-name{font:400 19px/1 var(--hand);color:var(--hot);text-decoration:none;letter-spacing:.03em}
+.tb-k{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tb-links{margin-left:auto;display:flex;gap:16px;font:500 12px/1 var(--mono)}
+.tb-links a{text-decoration:none}.tb-links a:hover{text-decoration:underline}
+.mapband{width:100vw;margin-left:calc(50% - 50vw);margin-top:0;padding:0}
+#map{position:relative;height:calc(100vh - 43px);height:calc(100svh - 43px);min-height:460px;border:0;border-bottom:1px solid #BCA676;background:#F3E5BF;margin:0 auto;overflow:hidden}
+/* the title as a cartouche on the map */
+.cartouche{position:absolute;left:14px;top:14px;z-index:5;max-width:min(400px,calc(100% - 28px));background:rgba(251,243,220,.95);color:#2B2119;border:2px solid #2B2119;outline:1px solid #2B2119;outline-offset:-6px;padding:12px 16px 12px;box-shadow:0 3px 14px rgba(60,40,10,.22)}
+.cartouche::before,.cartouche::after{content:"";position:absolute;width:9px;height:9px;background:#A3261B;border:1px solid #2B2119;border-radius:50%}
+.cartouche::before{left:-6px;top:-6px}.cartouche::after{right:-6px;bottom:-6px}
+.cartouche h1{font:900 clamp(26px,3.2vw,40px)/.98 var(--display);letter-spacing:-.015em;margin:6px 0 0;text-wrap:balance;color:#2B2119}
+.cartouche h1 .a{color:#A3261B;font-family:var(--hand);font-weight:400;letter-spacing:.03em}
+.cartouche .dek{font-size:15px;line-height:1.38;margin:8px 0 0;color:#2B2119}
+.cartouche .byline{font:400 11.5px/1.35 var(--mono);color:#6E604E;margin-top:8px}
+.cartouche .kicker{color:#6E604E}
+.ct-toggle{display:none;font:400 17px/1 var(--hand);color:#A3261B;background:none;border:0;padding:2px 0;cursor:pointer;letter-spacing:.03em;min-height:30px}
+.cartouche.folded .ct-body{display:none}.cartouche.folded .ct-toggle{display:block}.cartouche.folded{padding:6px 12px}
+.cartouche.folded .ct-toggle span{display:inline-block;transform:rotate(-90deg)}
+.ov-bl{position:absolute;left:12px;bottom:12px;z-index:4;display:flex;align-items:flex-end;gap:6px;pointer-events:none}
+.rose svg{display:block;filter:drop-shadow(0 1px 2px rgba(60,40,10,.2))}
+.scalebar canvas{display:block}
+.ov-bl .zbadge{position:static}
+.cue{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;font:500 12px/1 var(--mono);color:#2B2119;background:rgba(251,245,228,.92);border:1px solid #9C8656;border-radius:999px;padding:8px 12px;text-decoration:none;box-shadow:0 1px 4px rgba(60,40,10,.18)}
+.ink-frame{position:absolute;inset:0;z-index:3;pointer-events:none}
+.chip.ink{background:#A3261B;color:#fff;border-color:#A3261B}
+.pdlg{position:absolute;right:54px;top:104px;z-index:8;width:min(330px,calc(100% - 20px));background:#FBF5E4;color:#2B2119;border:2px solid #2B2119;outline:1px solid #2B2119;outline-offset:-6px;padding:14px 16px;font:400 13px/1.4 var(--mono);box-shadow:0 4px 16px rgba(60,40,10,.3)}
+.pdlg h4{margin:0 0 6px;font:400 22px/1 var(--hand);color:#A3261B}
+.pdlg p{margin:0 0 10px}
+.pdlg label{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+.pdlg label.row{flex-direction:row;align-items:center;gap:8px}
+.pdlg input[type=text],.pdlg select{font:400 15px/1 var(--mono);padding:8px;border:1px solid #9C8656;border-radius:3px;background:#fff;color:#2B2119;min-height:38px}
+.pbtns{display:flex;gap:8px;margin-top:10px}
+.pstat{margin:8px 0 0;color:#6E604E;min-height:1.2em}
 #map::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
   box-shadow:inset 0 0 90px rgba(120,84,30,.22), inset 0 0 18px rgba(120,84,30,.18)}
 .ov{position:absolute;z-index:5;font:400 13px/1.3 var(--mono);color:#2B2119}
-.ov-top{left:10px;top:10px;right:54px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;pointer-events:none}
+.ov-top{right:54px;top:10px;left:auto;max-width:calc(100% - 470px);display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
 .ov-top>*{pointer-events:auto}
 .srch{position:relative;width:min(340px,100%)}
 .srch input{width:100%;font:400 15px/1 var(--mono);background:rgba(251,245,228,.96);color:#2B2119;border:1px solid #9C8656;border-radius:3px;padding:9px 10px;min-height:40px;box-shadow:0 1px 4px rgba(60,40,10,.18)}
@@ -82,7 +114,7 @@ footer p{margin:0 0 10px}
 .chip{flex:0 0 auto;font:500 12px/1 var(--mono);background:rgba(251,245,228,.94);color:#2B2119;border:1px solid #9C8656;border-radius:999px;padding:8px 11px;cursor:pointer;min-height:34px;white-space:nowrap;box-shadow:0 1px 3px rgba(60,40,10,.14)}
 .chip:hover{background:#EFE1BC}
 .chip.lyr{background:#2B2119;color:#F6EED8;border-color:#2B2119}
-.lp{position:absolute;left:10px;top:104px;z-index:6;background:rgba(251,245,228,.98);border:1px solid #9C8656;border-radius:4px;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);color:#2B2119;box-shadow:0 3px 12px rgba(60,40,10,.25);display:none;min-width:220px;max-height:calc(100% - 120px);overflow:auto}
+.lp{position:absolute;right:54px;top:104px;z-index:6;background:rgba(251,245,228,.98);border:1px solid #9C8656;border-radius:4px;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);color:#2B2119;box-shadow:0 3px 12px rgba(60,40,10,.25);display:none;min-width:220px;max-height:calc(100% - 120px);overflow:auto}
 .lp.open{display:block}
 .lp h4{margin:0 0 6px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#7A6A52}
 .lp label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer;min-height:30px}
@@ -93,7 +125,7 @@ footer p{margin:0 0 10px}
 .key div{display:flex;align-items:center;gap:8px;min-height:34px;font:400 13px/1.25 var(--mono)}
 .key canvas{width:auto;height:30px;max-width:46px;object-fit:contain;flex:none;background:#F3E5BF;border-radius:3px;padding:2px}
 .key i{color:var(--muted);font-style:italic}
-.zbadge{position:absolute;right:52px;top:14px;z-index:5;font:400 11px/1 var(--mono);color:#6E604E;background:rgba(251,245,228,.85);padding:5px 7px;border-radius:3px;border:1px solid #D3C29A}
+.zbadge{z-index:5;font:400 11px/1 var(--mono);color:#6E604E;background:rgba(251,245,228,.85);padding:5px 7px;border-radius:3px;border:1px solid #D3C29A}
 .maplibregl-popup-content{background:#FBF5E4;color:#2B2119;font:400 13px/1.45 var(--mono);border:1px solid #9C8656;border-radius:4px;padding:10px 12px;box-shadow:0 3px 12px rgba(60,40,10,.25);max-width:300px}
 .maplibregl-popup-content b.t{display:block;font:400 19px/1.15 var(--hand);color:#A3261B;margin-bottom:3px;letter-spacing:.02em}
 .maplibregl-popup-content .wk{margin-top:8px;padding-top:7px;border-top:1px dashed #C9B583;font:400 13px/1.45 var(--serif,Georgia,serif)}
@@ -106,35 +138,53 @@ footer p{margin:0 0 10px}
 .maplibregl-ctrl-attrib{font:400 11px/1.3 var(--mono)!important;background:rgba(251,245,228,.85)!important}
 .maplibregl-ctrl-group{background:#FBF5E4!important;border:1px solid #9C8656}
 .nojs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 14px var(--mono);color:#6E604E;padding:20px;text-align:center}
-body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.maponly .mapband{margin:0;padding:0;width:100vw}body.maponly #map{height:100vh;max-width:none;border:0}body.clean .ov,body.clean .lp,body.clean .zbadge,body.clean .mfs-btn,body.clean .maplibregl-ctrl-bottom-right{display:none!important}
+body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topbar,body.maponly .cue{display:none}body.maponly .mapband{margin:0;padding:0;width:100vw}body.maponly #map{height:100vh;max-width:none;border:0}body.clean .ov,body.clean .lp,body.clean .zbadge,body.clean .mfs-btn,body.clean .maplibregl-ctrl-bottom-right,body.clean .cartouche,body.clean .ov-bl,body.clean .cue{display:none!important}
+:fullscreen .cue,.mfs-fake .cue{display:none}
+@media (max-width:1000px){
+  .ov-top{left:10px;right:54px;max-width:none;align-items:flex-start}
+  .lp{left:10px;right:auto}
+  .cartouche{top:104px}
+  .pdlg{left:10px;right:auto}
+}
 @media (max-width:600px){
-  #map{height:78vh;min-height:460px}
+  #map{height:calc(100vh - 43px - 64px);height:calc(100svh - 43px - 64px);min-height:420px}
+  .tb-k,.tb-links a:not(:first-of-type){display:none}
   .lp{top:100px;left:8px;right:8px;min-width:0}
   .ov-top{left:8px;top:8px}
-  .zbadge{display:none}
+  .cartouche{left:8px;top:100px;max-width:calc(100% - 16px);padding:10px 12px}
+  .cartouche h1{font-size:25px}.cartouche .dek{font-size:14px}
+  .ct-toggle{display:block}
+  .ov-bl{left:8px;bottom:8px}.rose svg{width:46px;height:auto}
+  .ov-bl .zbadge{display:none}
+  .cue{display:none}
+  .pdlg{left:8px;right:8px;top:100px;width:auto}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="kicker"><b>Data study</b><span>The Inked World</span><span>World, 2026</span></div>
-<header class="hero">
-  <h1 style="font-size:clamp(38px,8vw,78px)">A <span class="a">Tolkien-style</span> map of the whole world</h1>
-  <p class="dek">A map of everywhere, drawn in the manner of the hand-inked maps at the front of a fantasy novel: little peaks set on the real high ground, forests of tiny trees, rippled coasts, blue rivers and red lettering. Zoom from the whole world to a single Lakeland fell, and the same hand keeps drawing.</p>
-</header>
-<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap via OpenFreeMap; AWS Terrain Tiles; RESOLVE Ecoregions; Wikidata; Natural Earth; ONS; CLIWOC</div>
-
-<p class="lede" style="margin-top:22px">Maps in old books and fantasy novels have a look everyone recognises, made famous by the maps Tolkien drew for his books: rows of inked mountains, clusters of trees, coasts traced again and again with thin lines, and names lettered in red across the land. They are drawn by hand, so they only ever show one place at one scale. I wanted a Tolkien-style map of the whole world that works everywhere and at every zoom, built only from open data, so you can fly from the whole world to Britain to a single Lakeland valley and keep the same drawn feel all the way down.</p>
-<p>Every mountain glyph below sits on the highest point of its patch of ground, sized by how far that point rises above the land around it. Every tree sits inside a wood mapped in OpenStreetMap. Nothing is traced from any artist's map; the drawing rules are mine, and the data do the rest. Start with Great Britain, then try the Lake District, the Alps or the Himalaya.</p>
+<div class="topbar">
+  <a class="tb-name" href="#map">The Inked World</a>
+  <span class="tb-k">Data study · 2026</span>
+  <nav class="tb-links"><a href="#essay">About the map</a><button class="theme" id="theme" aria-label="Toggle dark mode">◐</button><a href="https://doi.org/10.5281/zenodo.23860253">Paper</a><a href="https://github.com/Tristan-Hotham/ink-map">Data and code</a></nav>
 </div>
 
 <div class="mapband">
   <div id="map" data-fullscreen-map role="application" aria-label="Zoomable hand-inked style world map">
     <div class="nojs" id="nojs">Loading the map. It needs JavaScript and WebGL.</div>
+    <div class="cartouche" id="cartouche">
+      <button class="ct-toggle" id="ctToggle" aria-expanded="true" aria-controls="ctBody" title="Fold the title">The Inked World <span aria-hidden="true">▾</span></button>
+      <div class="ct-body" id="ctBody">
+        <div class="kicker"><b>Data study</b><span>2026</span></div>
+        <h1>A <span class="a">Tolkien-style</span> map of the whole world</h1>
+        <p class="dek">Drawn from open data in the manner of the inked maps in the front of a fantasy novel. Zoom from the whole world to a single Lakeland fell.</p>
+        <div class="byline">Dr Tristan Hotham · Independent researcher · 2026</div>
+      </div>
+    </div>
     <div class="ov ov-top">
       <div class="srch"><input type="search" id="q" placeholder="Find a place, hill or sea" aria-label="Find a place" autocomplete="off"><ul class="sug" id="sug" role="listbox"></ul></div>
       <div class="chips" id="presets">
         <button class="chip lyr" id="lyrBtn" aria-expanded="false" aria-controls="lp">Layers</button>
+        <button class="chip ink" id="posterBtn" aria-haspopup="dialog">Ink your home</button>
       </div>
     </div>
     <div class="lp" id="lp" role="dialog" aria-label="Map layers">
@@ -142,24 +192,40 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       <label><input type="checkbox" data-g="mountains" checked> Ink mountains and hills</label>
       <label><input type="checkbox" data-g="forests" checked> Forests, marsh and moor</label>
       <label><input type="checkbox" data-g="biomes" checked> Deserts, grassland, jungle, taiga and ice</label>
+      <label><input type="checkbox" data-g="farms" checked> Fields, orchards and vineyards</label>
       <label><input type="checkbox" data-g="rivers" checked> Rivers and lakes</label>
       <label><input type="checkbox" data-g="names" checked> Place names</label>
       <label><input type="checkbox" data-g="borders" checked> Borders</label>
-      <label><input type="checkbox" data-g="roads" checked> Roads (dotted)</label>
+      <label><input type="checkbox" data-g="roads" checked> Roads and tracks</label>
       <label><input type="checkbox" data-g="sea" checked> Sea shading and ripples</label>
       <label><input type="checkbox" data-g="heritage" checked> Heritage, monuments and parks</label>
       <label><input type="checkbox" data-g="towns" checked> Drawn towns (zoom 12 and closer)</label>
-      <label><input type="checkbox" data-g="animals" checked> Animals, sea life and ships</label>
+      <label><input type="checkbox" data-g="animals" checked> Beasts, sea life and ships</label>
       <label><input type="checkbox" data-g="flight" checked> Flight: airports and balloons</label>
       <label><input type="checkbox" data-g="hillshade"> Hill shading</label>
       <hr>
+      <label><input type="checkbox" id="compassBox" checked> Compass rose</label>
+      <label><input type="checkbox" id="frameBox"> Decorative border</label>
       <label><input type="checkbox" id="modern"> Plain modern map</label>
     </div>
-    <div class="zbadge" id="zbadge" aria-hidden="true"></div>
+    <div class="ov-bl" id="ovbl"><div class="rose" id="rose"></div><div class="scalebar" id="scalebar"></div><div class="zbadge" id="zbadge" aria-hidden="true"></div></div>
+    <a class="cue" href="#essay">About this map ↓</a>
+    <div class="pdlg" id="pdlg" role="dialog" aria-modal="true" aria-labelledby="pdlgH" hidden>
+      <h4 id="pdlgH">Ink your home</h4>
+      <p>Saves this view as a poster: drawn again at two or three times your screen's pixels, with a title, a compass rose, a scale bar and the credits.</p>
+      <label>Title <input type="text" id="pTitle" maxlength="60" placeholder="My corner of the world"></label>
+      <label>Sharpness <select id="pScale"><option value="2">2 × screen</option><option value="3" selected>3 × screen</option></select></label>
+      <label class="row"><input type="checkbox" id="pBorder" checked> Decorative border</label>
+      <div class="pbtns"><button class="chip lyr" id="pGo">Make the poster</button><button class="chip" id="pCancel">Close</button></div>
+      <p class="pstat" id="pStat" aria-live="polite"></p>
+    </div>
   </div>
 </div>
 
-<div class="wrap" style="padding-top:8px">
+<div class="wrap" id="essay">
+<p class="lede" style="margin-top:6px">Maps in old books and fantasy novels have a look everyone recognises, made famous by the maps Tolkien drew for his books: rows of inked mountains, clusters of trees, coasts traced again and again with thin lines, and names lettered in red across the land. They are drawn by hand, so they only ever show one place at one scale. I wanted a Tolkien-style map of the whole world that works everywhere and at every zoom, built only from open data, so you can fly from the whole world to Britain to a single Lakeland valley and keep the same drawn feel all the way down.</p>
+<p>Every mountain glyph above sits on the highest point of its patch of ground, sized by how far that point rises above the land around it. Every tree sits inside a wood mapped in OpenStreetMap. Nothing is traced from any artist's map; the drawing rules are mine, and the data do the rest. Start with Great Britain, then try the Lake District, the Alps or the Himalaya, or search for your own home and press "Ink your home" to save it as a poster.</p>
+<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap via OpenFreeMap; AWS Terrain Tiles; RESOLVE Ecoregions; Wikidata; Natural Earth; ONS; CLIWOC</div>
 <p class="src">Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap using the OpenMapTiles schema. Elevation from AWS Terrain Tiles. Biomes from RESOLVE Ecoregions 2017 (CC BY 4.0). Heritage sites and summits from Wikidata (CC0). Ship lanes from the CLIWOC logbook database. Country and nation outlines for the lettering from Natural Earth and the ONS. Tap any name, peak or drawing for details; the square button at the top right fills the screen.</p>
 
 <details open><summary>Key</summary>
@@ -184,6 +250,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 <h2><span class="n">02 · The whole world</span>From the Himalaya to the Sahara</h2>
 <p>The same rules run everywhere. Oceans, seas, great ranges, deserts and basins are lettered by hand on curves (105 names beyond Britain and Ireland, from the Pacific to the Tian Shan), and so are 17 countries whose shapes defeat a fitted curve, such as Russia, Chile, Norway and Indonesia. No glyph is ever drawn on water: each tile reads the sea and lakes from OpenStreetMap and keeps every peak, tree and tuft off them, so a seamount or a speck of an island far out at sea never draws a lone mountain in the ocean.</p>
 <p>Mountains only go where the land is rugged, not merely high. Each candidate peak is also tested on how steep the ground is close around it, so the Sahara, the Arabian interior, the Kalahari, the Great Plains and the high floor of the Tibetan Plateau stay bare however far they rise above the sea, while the Ahaggar and Tibesti keep their peaks. Between the ranges the world is drawn by biome, from the RESOLVE Ecoregions map: crescent dunes in the sandy deserts, sparse tufts on the steppe, savanna and shrub steppe, crowded round crowns and palms in the rainforest, small pointed conifers across the taiga, and pale blue hatching on the ice of Greenland and Antarctica.</p>
+<p>Far out, the great ranges are also drawn as rows of little peaks along their length, as a map maker draws a range at the scale of a continent. These come from the elevation too: wherever the ground rises at least 1,000 m within about 40 km and stands above 600 m, the high ground is thinned to its centre line and inked as a chain of peaks, and lower ranges that run a long way, such as the Urals, count from 650 m. Dune fields fill the flat parts of the great sand seas, from the ergs of the Sahara to the Rub' al Khali, the Taklamakan and the Simpson, and bands of trees mark the taiga and the rainforests. Between zoom 3 and 4 they fade out as the glyphs measured tile by tile take over. Many more countries and the great ranges are lettered from the world view.</p>
 <div class="figure"><img src="img/world.jpg" alt="The ink map of the whole world: parchment, black coasts with blue ripples, rows of ink peaks along the Rockies, Andes, Alps, Himalaya and the ranges of central Asia, and red lettering for countries, oceans and seas" loading="lazy" style="width:100%;border:1px solid var(--border)"><p class="src">The world at zoom 1.6. Rendered from saved OpenFreeMap and Terrain Tiles.</p></div>
 
 <h2><span class="n">03 · The living map</span>Monuments, towns, beasts and ships</h2>
@@ -191,14 +258,20 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 <p>The great summits, each country's highest point and the famous peaks, get a finer drawing with snow and their name and height in red over a flourish. Every mountain above the snow line for its latitude (about 3,500 m in the tropics, falling towards the poles) gets a white cap with fine snow lines, and the highest rugged ground is hatched in pale blue for snowfields and glaciers. Capitals are drawn as walled cities, cities as clusters of roofs and spires, towns and villages smaller. From zoom 12 the towns fill in: little townhouses line both sides of the real streets, facing them, densest round a market square and church at the centre and thinning out with the buildings mapped in OpenStreetMap, and great cities keep a ring of wall and towers round the old core.</p>
 <p>Far out, animals stand in their native ranges, as on a medieval map: elephants and lions in Africa, tigers and pandas in Asia, bison and moose in North America, kangaroos in Australia, penguins on the Antarctic coast. Whales gather where they really do, humpbacks off Hawaii and Tonga, blue whales off Sri Lanka and California, sperm whales off the Azores and Kaikoura. Sailing ships leave the great historic ports along lanes taken from real logbooks of 1750 to 1850. The busiest airports are drawn as flying machines in the manner of Renaissance notebooks, taking off along the runway, and a few hot-air balloons drift over places famous for them. The sea serpents and the balloons are decoration, and the key says so.</p>
 
-<h2><span class="n">04 · How I made this</span>Drawing rules, not a drawing</h2>
+<p>Closer in, the countryside is drawn in the same hand. From zoom 7 farmland takes a faint ochre wash and meadows a green one, so farming country reads differently from forest and moor; from about zoom 10 each field is hatched in ploughed strips running one of four ways, vineyards are rows of stakes, orchards little round trees and allotments small plots, and parks and gardens get a green wash, trees and a railing line, with parterres in formal gardens. Beasts of the countryside are sprinkled sparsely where the land suits them, a few to a tile: deer and boar in the woods, sheep on the moors, cattle on the farms, eagles over the mountains, herons by the water. They are drawn in the manner of a medieval bestiary, cut out on a gilt ground, and they are pictures, not sightings.</p>
+<p>Capitals are lettered on a ribbon with a small shield, before any other city, and the great cities on a banner; from zoom 6.5 a drawn walled city with its gates, cathedral and castle marks them until the streets take over. Main roads become pale tracks between faint ink lines, the lakes of the Lake District are lettered along their length in blue, and national parks are named along the inside of their dotted boundary. In the Layers panel you can add a decorative border, or turn off the compass rose.</p>
+
+<h2><span class="n">04 · Ink your home</span>A poster of anywhere</h2>
+<p>Search for anywhere, frame it, and press "Ink your home". The page draws the same view again at two or three times your screen's pixels and saves it as a PNG poster, with your own title (or the place you searched for) in a cartouche, a compass rose, an ink scale bar and the credits in small print. The map data stay under their own licences, and OpenStreetMap's licence asks for its credit to travel with the picture, so every poster carries it.</p>
+
+<h2><span class="n">05 · How I made this</span>Drawing rules, not a drawing</h2>
 <p><b>Mountains and hills.</b> The page reads elevation tiles (the Terrarium encoding of the AWS Terrain Tiles) in a background worker. It lays a grid over the land whose cells are about 14 screen pixels at the zoom where they first appear, and each cell is split into four at the next zoom. In each cell it finds the highest point. That point gets a peak glyph if it rises far enough above the lowest ground in the cells around it. The threshold grows with the size of the cell on the ground: at zoom 2, where a cell spans about 237 km, a range has to rise about 477 m above its surroundings to earn a peak (measured on the coarse elevation tiles used that far out, which smooth the summits down); at zoom 11 in the Lake District, where a cell is about 311 m across, a crag needs about 130 m. Points that rise at least 40% of that get a rounded hill instead. In a great range, where every patch of ground is steep, the worker leaves out a mountain that has three or more higher mountains around it, so the Himalaya reads as ridges and summits and not as a solid mass of ink; in the Lake District this almost never happens. Because the highest point of a cell is also the highest point of one of its four children, every peak drawn at one zoom is still there at the next; new peaks fade in between them, and glyphs are drawn back to front so nearer ones overlap farther ones.</p>
 <p><b>Ruggedness and biomes.</b> Alongside relief, the worker measures the mean slope of the ground in the finest cells around each candidate peak. A mountain needs a slope above a bar that rises with the detail of the elevation tiles; in ecoregions named for mountains, such as the High Atlas, the Tibesti or the Andean puna, the bar is cut to 30%, so narrow ranges smoothed by coarse tiles still count, and in deserts, steppe, rainforest, taiga and tundra it is raised by half, so dissected plateaus are drawn as hills; on the Tibetan Plateau it is raised two and a half times, so only its ranges are peaked. Finally an ink cap keeps paper between the peaks: within each small patch of the map, mountains are taken coarsest and most prominent first until their summed footprints reach three quarters of the patch, or under half where a great range would otherwise be a solid mass of ink. In hill country such as the Lake District this trims fewer than one peak in ten; in the Himalaya it leaves ridgelines. The biome glyphs are scattered on the same nested grid as the trees, kept clear of mountains and water, and the rainforest and taiga glyphs give way to OpenStreetMap's own woods from zoom 7.</p>
 <p><b>Forests, marsh and moor.</b> For each tile the worker reads the OpenStreetMap land cover in the same vector tile the map uses, fills the woods, wetlands and heaths into a small mask, and scatters tree or tuft glyphs on a nested jittered grid inside it. Woods tagged as managed forest get mostly conifers; other woods mostly rounded trees.</p>
 <p><b>Lettering.</b> Country names follow a gentle arc fitted along the long axis of each country (Natural Earth outlines), and England, Scotland, Wales and Northern Ireland are lettered from ONS boundaries. The 62 names of uplands, lowlands and seas around Britain and Ireland, and 105 oceans, seas, ranges and deserts around the world, are placed by hand on curves, ranges along their flanks rather than on the crest. Each curve is cut, or drawn out a little past its ends, so that the name fits at every zoom. Everything else comes live from OpenStreetMap through OpenFreeMap. Names are placed first and never overlap each other; the glyphs then give way wherever a name sits, as a map maker would leave a gap for the lettering.</p>
 <p><b>Heritage, towns and decoration.</b> The heritage sites come from Wikidata queries for castles, palaces, seats of government, churches, cathedrals and abbeys, monasteries, great houses, ruins, prehistoric sites, parks, natural features and World Heritage Sites, joined with architecture, tall building, lighthouse, battle and monastery data sets. Each site gets a first zoom from its number of Wikipedia articles, and they ship as small files, one per zoom 6 tile, that the worker reads as you pan. The towns are drawn by the same worker from the streets, land use and buildings in the OpenStreetMap tile, with an occupancy grid so no two houses overprint and every name still comes first. The great rivers and lakes are named from Natural Earth out to zoom 9, and from OpenStreetMap closer in; named hills from Wikidata (every one in Britain and Ireland, the better known elsewhere) fill in where OpenStreetMap has no summit. Heritage names are thinned to about one per 140 by 90 pixels, the best known first, and every place name outranks them. Animals, whales, ships, balloons and airports sit in a small hand-made list with real places and ranges; the ships follow passages from the CLIWOC logbook database and are never placed on land.</p>
 <p><b>Fonts.</b> MedievalSharp for the capitals and the IM Fell types for everything else, all under the SIL Open Font License, turned into map glyphs with fontnik.</p>
-<p><b>What this is not.</b> It is a picture of open data, not a survey. It is inspired by the general style of Tolkien's hand-drawn maps and is not connected with or endorsed by the Tolkien Estate; it uses none of their artwork, places or lettering. Peaks are placed on the highest point in each grid cell, not on every named summit, and their size shows local relief, not exact height. Woods are only as complete as OpenStreetMap, and woods only appear from zoom 7 because the tiles do not carry them further out. Smaller seas, bays and regions beyond the hand-placed set come from OpenStreetMap as they are, lettered straight. Heritage sites are only as complete and as well placed as Wikidata, and a few large battles carry one arbitrary point there. The animals stand somewhere in their native range, not at a sighting; the drawn towns follow the real streets but each house is a symbol, not a mapped building. Named hills come from OpenStreetMap summits and, where it has none, from Wikidata; a hill missing from both stays unnamed.</p>
+<p><b>What this is not.</b> It is a picture of open data, not a survey. It is inspired by the general style of Tolkien's hand-drawn maps and is not connected with or endorsed by the Tolkien Estate; it uses none of their artwork, places or lettering. Peaks are placed on the highest point in each grid cell, not on every named summit, and their size shows local relief, not exact height. Woods are only as complete as OpenStreetMap, and woods only appear from zoom 7 because the tiles do not carry them further out. Smaller seas, bays and regions beyond the hand-placed set come from OpenStreetMap as they are, lettered straight. Heritage sites are only as complete and as well placed as Wikidata, and a few large battles carry one arbitrary point there. The animals stand somewhere in their native range, not at a sighting; the drawn towns follow the real streets but each house is a symbol, not a mapped building. Named hills come from OpenStreetMap summits and, where it has none, from Wikidata; a hill missing from both stays unnamed. The vector tiles carry no hedgerows, shipwrecks, fords, wells or beacons, so those are not drawn, and the direction of each field's strips is chosen from its number in OpenStreetMap, not from the real ploughing. The beasts are placed by the kind of land, not by any record of animals.</p>
 
 <details><summary>Sources and licences</summary>
 <ul class="plain">
@@ -223,12 +296,12 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 <p>I wrote the text, with drafting and editing assistance from Claude (Anthropic), which also helped prepare the analysis code. I reviewed and checked all text and results.</p>
 </footer>
 </div>
-<button class="theme" id="theme" aria-label="Toggle dark mode">◐</button>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="js/curated.js"></script>
-<script src="js/ink-icons.js?v=20261101c"></script>
-<script src="js/ink-map.js?v=20261101c"></script>
+<script src="js/curated.js?v=20261102"></script>
+<script src="js/ink-icons.js?v=20261102"></script>
+<script src="js/ink-map.js?v=20261102"></script>
+<script src="js/ink-extras.js?v=20261102"></script>
 <script>
 (function () {
   const qs = new URLSearchParams(location.search);
@@ -261,21 +334,31 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
     // start with the attribution folded on small screens (the (i) button opens it)
     const fold = () => { const at = document.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact'); if (at) { at.classList.remove('maplibregl-compact-show'); at.removeAttribute('open'); } };
     map.once('idle', fold); map.on('resize', () => setTimeout(fold, 50)); fold();
-    map.addControl(new maplibregl.ScaleControl({ unit: 'metric', maxWidth: 110 }), 'bottom-right');
+    // an ink scale bar and a compass rose in the bottom-left corner; the decorative border on request
+    InkExtras.scaleBar(map, document.getElementById('scalebar'));
+    document.getElementById('rose').innerHTML = InkExtras.compassSVG(58);
     const zb = document.getElementById('zbadge');
     const upd = () => { zb.textContent = 'zoom ' + map.getZoom().toFixed(1); };
     map.on('zoom', upd); upd();
-    setupLayers(map); setupSearch(map); setupPopups(map);
+    setupLayers(map); setupSearch(map); setupPopups(map); setupPoster(map);
   }).catch(e => { console.error(e); const n = document.getElementById('nojs'); if (n) n.textContent = 'The map could not load: ' + e.message; });
   try { buildKey(); } catch (e) { console.warn('key', e); }
+  // the title cartouche folds away (folded from the start on phones, and when the map fills the screen)
+  const ct = document.getElementById('cartouche'), ctT = document.getElementById('ctToggle');
+  const fold = f => { ct.classList.toggle('folded', f); ctT.setAttribute('aria-expanded', String(!f)); };
+  if (matchMedia('(max-width:600px)').matches) fold(true);
+  ctT.addEventListener('click', () => fold(!ct.classList.contains('folded')));
+  ct.querySelector('h1').addEventListener('click', () => { if (matchMedia('(max-width:600px)').matches) fold(true); });
+  document.addEventListener('fullscreenchange', () => { if (document.fullscreenElement) fold(true); });
 
   // ---------------- key: every symbol drawn by the same code as the map
   function buildKey() {
     const K = [
-      ['Settlements', [['s-capital', 'Capital: walled city'], ['s-city', 'City'], ['s-town', 'Town'], ['s-village', 'Village'], ['th2', 'Townhouses on real streets, zoom 12 and closer'], ['market', 'Market square'], ['walltower', 'Town wall and tower']]],
+      ['Settlements', [['s-capital', 'Capital: walled city'], ['citybig', 'Capital or great city, middle zooms'], ['s-city', 'City'], ['s-town', 'Town'], ['s-village', 'Village'], ['th2', 'Townhouses on real streets, zoom 12 and closer'], ['market', 'Market square'], ['stall0', 'Market stall'], ['green', 'Village green'], ['walltower', 'Town wall and tower']]],
       ['Heritage', [['h-castle', 'Castle'], ['h-palace', 'Palace'], ['h-parliament', 'Parliament'], ['h-cityhall', 'Town or city hall'], ['h-cathedral', 'Cathedral or abbey'], ['h-church', 'Church or chapel'], ['h-monastery', 'Monastery'], ['h-mosque', 'Mosque'], ['h-temple', 'Temple'], ['h-pagoda', 'Pagoda'], ['h-synagogue', 'Synagogue'], ['h-mansion', 'Great house'], ['h-ruins', 'Ruins'], ['h-stone_circle', 'Stone circle'], ['h-standing_stone', 'Standing stone'], ['h-cairn', 'Cairn'], ['h-barrow', 'Barrow'], ['h-hillfort', 'Hillfort'], ['h-starfort', 'Star fort (its real outline, moat and rampart from zoom 11)'], ['h-battle', 'Battlefield'], ['h-lighthouse', 'Lighthouse'], ['h-windmill', 'Windmill'], ['h-tower', 'Tower'], ['h-skyscraper', 'Tall building'], ['h-bridge', 'Bridge'], ['h-monument', 'Monument'], ['h-park', 'Park or garden'], ['h-natpark', 'National park']]],
       ['Famous monuments (each drawn in its own way)', [['l-eiffel', 'Eiffel Tower'], ['l-bigben', 'Westminster'], ['l-opera', 'Sydney Opera House'], ['l-tajmahal', 'Taj Mahal'], ['l-pyramids', 'Pyramids of Giza'], ['l-machupicchu', 'Machu Picchu'], ['l-liberty', 'Statue of Liberty'], ['l-stonehenge', 'Stonehenge']]],
-      ['Land and water', [['bigpeak', 'Great summit, with its name and height'], ['ms1', 'Mountain above the snow line'], ['snowf0', 'Snowfield or glacier'], ['m2', 'Mountain'], ['h3', 'Hill'], ['h-waterfall', 'Waterfall'], ['h-cave', 'Cave'], ['h-spring', 'Spring'], ['h-pass', 'Mountain pass'], ['h-gorge', 'Gorge or canyon'], ['h-glacier_mark', 'Glacier']]],
+      ['Land and water', [['bigpeak', 'Great summit, with its name and height'], ['ms1', 'Mountain above the snow line'], ['snowf0', 'Snowfield or glacier'], ['m2', 'Mountain'], ['h3', 'Hill'], ['h-waterfall', 'Waterfall'], ['h-cave', 'Cave'], ['h-spring', 'Spring'], ['h-pass', 'Mountain pass'], ['h-gorge', 'Gorge or canyon'], ['h-glacier_mark', 'Glacier'], ['quarry', 'Quarry or mine'], ['anchor', 'Harbour']]],
+      ['Beasts of the countryside (zoom 6 to 14)', [['a_deer', 'Deer in the woods'], ['a_boar', 'Boar in the woods'], ['a_sheep', 'Sheep on moor and pasture'], ['a_cow', 'Cattle on farmland'], ['a_eagle', 'Eagle over the mountains'], ['a_heron', 'Heron by the water'], ['a_fish', 'Fish in lake or sea']]],
       ['Animals and the sea', [['a_elephant', 'Animal in its native range'], ['a_humpback_s', 'Whales where they gather'], ['a_turtle', 'Sea turtle'], ['ship', 'Sailing ship on a historic lane'], ['a_serpent', 'Sea serpent <i>(decorative)</i>']]],
       ['Flight', [['ornithopter', 'Busy airport: a flying machine taking off'], ['airfield', 'Airfield'], ['balloon', 'Hot-air balloon <i>(decorative)</i>']]],
     ];
@@ -305,7 +388,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       const m = modern.checked;
       boxes.forEach(b => {
         const g = b.dataset.g;
-        const inkOnly = ['mountains', 'forests', 'biomes', 'sea'].includes(g);
+        const inkOnly = ['mountains', 'forests', 'biomes', 'sea', 'farms'].includes(g);
         InkMap.setGroup(map, g, b.checked && !(m && inkOnly));
       });
       InkMap.setGroup(map, 'paper', !m); InkMap.setGroup(map, 'modern', m); InkMap.setGroup(map, 'coast', !m);
@@ -317,6 +400,10 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       map.setPaintProperty('rivers', 'line-color', m ? '#7FB2D9' : InkMap.INK.blue);
     }
     boxes.forEach(b => b.addEventListener('change', apply)); modern.addEventListener('change', apply);
+    const rose = document.getElementById('rose'), cb = document.getElementById('compassBox'), fb = document.getElementById('frameBox');
+    cb.addEventListener('change', () => { rose.style.display = cb.checked ? '' : 'none'; });
+    let frame = null;
+    fb.addEventListener('change', () => { if (fb.checked && !frame) frame = InkExtras.frameOverlay(document.getElementById('map')); if (frame) frame.style.display = fb.checked ? '' : 'none'; });
   }
 
   // ---------------- search
@@ -350,7 +437,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       sug.innerHTML = items.length ? items.map((r, i) => `<li role="option" data-i="${i}">${esc(r.n)} <span>${esc(r.kind === 'map' || r.kind === 'peak' ? r.ctx : (r.ctx ? r.ctx : r.kind))}</span></li>`).join('') : '<li>No match</li>';
       sug.style.display = 'block';
     }
-    function go(r) { if (!r) return; sug.style.display = 'none'; q.value = r.n; q.blur(); map.flyTo({ center: [r.lon, r.lat], zoom: r.z, duration: 2600, essential: true }); }
+    function go(r) { if (!r) return; sug.style.display = 'none'; q.value = r.n; window.__lastPlace = r.n; q.blur(); map.flyTo({ center: [r.lon, r.lat], zoom: r.z, duration: 2600, essential: true }); }
     q.addEventListener('input', run);
     q.addEventListener('keydown', e => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(0, Math.min(items.length - 1, sel + (e.key === 'ArrowDown' ? 1 : -1))); [...sug.children].forEach((li, i) => li.setAttribute('aria-selected', i === sel)); }
@@ -361,6 +448,27 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
     document.addEventListener('click', e => { if (!e.target.closest('.srch')) sug.style.display = 'none'; });
   }
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---------------- "Ink your home": save the current view as a poster
+  function setupPoster(map) {
+    const btn = document.getElementById('posterBtn'), dlg = document.getElementById('pdlg'), go = document.getElementById('pGo'), st = document.getElementById('pStat');
+    const title = document.getElementById('pTitle');
+    btn.addEventListener('click', e => { e.stopPropagation(); dlg.hidden = !dlg.hidden; if (!dlg.hidden) { if (!title.value) title.value = window.__lastPlace || ''; title.focus(); } });
+    document.getElementById('pCancel').addEventListener('click', () => { dlg.hidden = true; });
+    dlg.addEventListener('keydown', e => { if (e.key === 'Escape') dlg.hidden = true; });
+    go.addEventListener('click', async () => {
+      go.disabled = true;
+      try {
+        const t = title.value.trim() || window.__lastPlace || 'My corner of the world';
+        const r = await InkExtras.poster(map, { title: t, scale: +document.getElementById('pScale').value, border: document.getElementById('pBorder').checked, onStatus: m => { st.textContent = m; } });
+        const slug = t.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'home';
+        InkExtras.download(r.blob, 'inked-' + slug + '.png');
+        window.__lastPoster = { width: r.width, height: r.height, pixelRatio: r.pixelRatio, bytes: r.blob.size };
+        st.textContent = `Saved: ${r.width} × ${r.height} pixels.`;
+      } catch (e) { console.error(e); st.textContent = 'The poster could not be drawn: ' + e.message; }
+      go.disabled = false;
+    });
+  }
 
   // ---------------- Wikipedia tidbits for the popups (English Wikipedia, looked up when a name is clicked)
   const WKC = new Map();
@@ -413,7 +521,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
 
   // ---------------- popups
   function setupPopups(map) {
-    const LAY = ['fort-icons', 'fort-line', 'fort-rampart', 'famous-peak-names', 'famous-peaks', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'lake-names-ne', 'wall-towers', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
+    const LAY = ['beasts', 'harbours', 'quarries', 'lake-names-ink', 'park-edge-names', 'capitals', 'bigcities', 'city-marks', 'nations', 'nations-pt', 'world-ranges', 'fort-icons', 'fort-line', 'fort-rampart', 'famous-peak-names', 'famous-peaks', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'lake-names-ne', 'wall-towers', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
     const HT = { barrow: 'Barrow', battle: 'Battlefield', bridge: 'Bridge', cairn: 'Cairn', castle: 'Castle', cathedral: 'Cathedral, abbey or minster', cave: 'Cave', church: 'Church or chapel', cityhall: 'Town or city hall', glacier_mark: 'Glacier', gorge: 'Gorge or canyon', hillfort: 'Hillfort', lighthouse: 'Lighthouse', mansion: 'Great house', monastery: 'Monastery', monument: 'Monument', mosque: 'Mosque', natpark: 'National park or protected area', pagoda: 'Pagoda', palace: 'Palace', park: 'Park or garden', parliament: 'Parliament or seat of government', pass: 'Mountain pass', pyramid: 'Pyramid', ruins: 'Ruins or archaeological site', skyscraper: 'Tall building', spring: 'Spring', standing_stone: 'Standing stone', stone_circle: 'Stone circle', synagogue: 'Synagogue', temple: 'Temple', tower: 'Tower', waterfall: 'Waterfall', windmill: 'Windmill' };
     const wd = q => q ? `<br><a href="https://www.wikidata.org/wiki/${esc(q)}" target="_blank" rel="noopener">Wikidata ${esc(q)}</a>` : '';
     const wp = w => w ? `<br><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(String(w).replace(/ /g, '_'))}" target="_blank" rel="noopener">Wikipedia</a>` : '';
@@ -445,6 +553,13 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       else if (id === 'biome') h = `<b class="t">${['', 'Desert', 'Grassland or steppe', 'Tropical rainforest', 'Boreal forest (taiga)', 'Ice', 'Flooded grassland or marsh', 'Tundra'][p.b] || ''}</b>Biome from RESOLVE Ecoregions 2017${p.b === 5 || p.b === 1 ? ', with OpenStreetMap glaciers and sand close in' : ''}.`;
       else if (id === 'tufts') h = `<b class="t">${p.w === 1 ? 'Marsh or wetland' : 'Heath or moor'}</b>From OpenStreetMap land cover.`;
       else if (id === 'peaks') h = `<b class="t">${esc(nm)}</b>${p.class === 'volcano' ? 'Volcano' : 'Summit'}${p.ele ? ', ' + Number(p.ele).toLocaleString('en-GB') + ' m' : ''}.`;
+      else if (id === 'beasts') h = `<b class="t">${esc(cap1(p.a))}</b>Drawn where the country suits it (woods, moor, farmland, mountains or water, from OpenStreetMap and the elevation); a picture, not a sighting.`;
+      else if (id === 'harbours') h = `<b class="t">${esc(nm || 'Harbour')}</b>Harbour or ferry terminal (OpenStreetMap).`;
+      else if (id === 'quarries') h = `<b class="t">${esc(nm || 'Quarry')}</b>Quarry or mine (OpenStreetMap land use).`;
+      else if (id === 'lake-names-ink') h = `<b class="t">${esc(p.name)}</b>Lake, lettered along its length.`;
+      else if (id === 'park-edge-names') h = `<b class="t">${esc(p.name_en || p.name)}</b>National park; its boundary is the dotted green line.`;
+      else if (id === 'world-ranges') h = `<b class="t">Mountain range</b>Drawn along high, rugged ground: at least 1,000 m of relief within about 40 km (some lower ranges at 650 m), from the elevation tiles.`;
+      else if (id === 'nations' || id === 'nations-pt') h = `<b class="t">${esc(cap(p.name))}</b>Nation of the United Kingdom.`;
       else if (id === 'countries') h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'nation' ? 'Nation of the United Kingdom' : 'Country'}.`;
       else if (id.startsWith('regions')) h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'sea' ? 'Sea, firth or bay' : p.kind === 'up' ? 'Upland or hill country' : 'Lowland country'}; name placed by hand.`;
       else if (id === 'seas') h = `<b class="t">${esc(p.name_en || p.name)}</b>${cap(p.class)}.`;
@@ -455,13 +570,14 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       else if (id === 'xplaces') h = `<b class="t">${esc(p.n)}</b>${p.k === 1 ? 'Village' : 'Hamlet'} (from Wikidata).`;
       else h = `<b class="t">${esc(nm)}</b>${KIND[p.class] || cap(p.class || '')}${p.capital == 2 ? ', capital' : ''}.`;
       // a little from Wikipedia for every named place, sight and feature
-      const DECOR = ['relief', 'trees', 'tufts', 'biome', 'town', 'serpents', 'ships', 'balloons'];
+      const DECOR = ['relief', 'trees', 'tufts', 'biome', 'town', 'serpents', 'ships', 'balloons', 'beasts', 'world-ranges', 'quarries', 'harbours'];
       let look = null;
       if (!DECOR.includes(id)) {
         const title = p.w || null, qid = p.q || null;
         let name = p.n || nm || p.name_en || p.name || '';
-        if (id === 'countries' || id.startsWith('regions')) name = cap(p.name || '');
-        const broad = ['countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names-ne', 'lake-names-ne', 'states', 'river-names', 'rivers', 'animals', 'flyers'].includes(id);
+        if (id === 'countries' || id.startsWith('nations') || id.startsWith('regions') || id === 'lake-names-ink') name = cap(p.name || '');
+        if (id === 'lake-names-ink') name = p.name;
+        const broad = ['countries', 'nations', 'nations-pt', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names-ne', 'lake-names-ne', 'states', 'river-names', 'rivers', 'animals', 'flyers'].includes(id);
         if (title || qid || name) look = { title, qid, name, broad, lat: e.lngLat.lat, lng: e.lngLat.lng };
       }
       if (look) h += '<div class="wk"><span class="wk-l">Looking it up on Wikipedia…</span></div>';
@@ -473,7 +589,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme{display:none}body.
       });
     });
     map.on('mousemove', e => {
-      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'lake-names', 'parks', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
+      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['capitals', 'bigcities', 'beasts', 'lake-names-ink', 'park-edge-names', 'nations', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'lake-names', 'parks', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
       map.getCanvas().style.cursor = fs.length ? 'pointer' : '';
     });
   }

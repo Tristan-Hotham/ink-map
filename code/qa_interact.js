@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
 (async () => {
   const cfg = JSON.parse(fs.readFileSync(process.argv[2], 'utf8')), out = process.argv[3];
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  const page = await (await browser.newContext({ viewport: { width: 1280, height: 860 } })).newPage();
+  const page = await (await browser.newContext({ viewport: { width: 1280, height: 860 }, acceptDownloads: true })).newPage();
   const errors = [];
   page.on('console', m => { if (m.type() === 'error' && !/404|ERR_FAILED/.test(m.text())) errors.push(m.text().slice(0, 200)); });
   page.on('pageerror', e => errors.push('pageerror ' + e.message));
@@ -38,6 +38,20 @@ const { chromium } = require('playwright');
   await idle();
   log.layers = await page.evaluate(() => ({ hillshade: window.__map.getLayoutProperty('hillshade', 'visibility'), relief: window.__map.getLayoutProperty('relief', 'visibility') }));
   await page.screenshot({ path: path.join(out, 'interact_layers.png') });
+  // compass rose and border toggles
+  await page.click('#frameBox'); await page.waitForTimeout(300);
+  log.frame = await page.evaluate(() => !!document.querySelector('.ink-frame') && document.querySelector('.ink-frame').style.display !== 'none');
+  await page.click('#compassBox');
+  log.compass_hidden = await page.evaluate(() => document.getElementById('rose').style.display === 'none');
+  await page.click('#compassBox'); await page.click('#frameBox');
+  await page.click('#lyrBtn');
+  log.scalebar = await page.$eval('#scalebar canvas', c => c.getAttribute('aria-label'));
+  // "Ink your home": make a poster at 2 x and catch the download
+  await page.click('#posterBtn'); await page.fill('#pTitle', 'Keswick'); await page.selectOption('#pScale', '2');
+  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 240000 }), page.click('#pGo')]);
+  const pf = path.join(require('os').tmpdir(), 'ink_poster_test.png'); await dl.saveAs(pf); log.poster_saved_to = pf;
+  log.poster = await page.evaluate(() => window.__lastPoster); log.poster_file = dl.suggestedFilename();
+  await page.click('#pCancel');
   // full screen button
   await page.click('.mfs-btn'); await page.waitForTimeout(800);
   log.fullscreen = await page.evaluate(() => !!(document.fullscreenElement || document.querySelector('.mfs-fake')));

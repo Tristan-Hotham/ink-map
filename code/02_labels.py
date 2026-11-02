@@ -119,15 +119,20 @@ MAXPX = 880   # longest label line (screen px) kept in one tile band, so tiles n
 
 # Lettering sizes: these stops mirror js/ink-map.js (countries, regions-land, regions-sea layers).
 SIZES = {
-    'country': ([(1, 9.5), (2, 11), (3, 13.5), (4, 16), (5, 18), (7, 25), (9, 32)], [(1, .16), (3, .26), (5, .36), (8, .48)], 'MedievalSharp.ttf'),
+    'country': ([(1, 8.5), (2, 10), (3, 12.5), (4, 16), (5, 18), (7, 25), (9, 32)], [(1, .1), (3, .22), (5, .36), (8, .48)], 'MedievalSharp.ttf'),
     'up': ([(5, 10.5), (7, 14), (9, 18), (11, 21)], [(5, .25), (8, .4), (11, .5)], 'MedievalSharp.ttf'),
     'sea': ([(3, 11), (5, 14), (7, 17), (9, 20), (11, 22)], [(3, .3), (6, .45), (9, .6)], 'IMFeGPit28P.ttf'),
 }
 # oceans: a larger italic, from the world view
 SIZES['ocean'] = ([(1, 12.5), (3, 16), (5, 20), (7, 23)], [(1, .32), (4, .48), (7, .6)], 'IMFeGPit28P.ttf')
-SIZES['nation'] = SIZES['country']; SIZES['low'] = SIZES['up']
-# ranges, deserts and regions beyond Britain and Ireland (layer regions-world): a little larger far out
-SIZES['world'] = ([(2, 11), (4, 13), (6, 16), (9, 19), (11, 21)], [(2, .22), (5, .3), (8, .4), (11, .5)], 'MedievalSharp.ttf')
+SIZES['low'] = SIZES['up']
+# the four nations of the United Kingdom (layer nations): smaller than country names, from zoom 5
+SIZES['nation'] = ([(5, 12), (6, 14), (7, 17), (9, 24)], [(5, .3), (7, .4), (9, .5)], 'MedievalSharp.ttf')
+# ranges, deserts and regions beyond Britain and Ireland (layer regions-world): small far out, so the great ranges
+# can be lettered from the world view
+SIZES['world'] = ([(1, 8.5), (2, 9.5), (3, 11), (4, 13), (6, 16), (9, 19), (11, 21)], [(1, .16), (2, .2), (5, .3), (8, .4), (11, .5)], 'MedievalSharp.ttf')
+# lakes lettered along their length (layer lake-names-ink)
+SIZES['lake'] = ([(9, 11), (12, 14), (15, 15.5)], [(9, .12), (12, .1)], 'IMFeGPit28P.ttf')
 TTF = os.environ.get('INK_TTF', os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'fonts', 'ttf'))
 _fonts = {}
 
@@ -164,7 +169,7 @@ def _extend(P, need_frac):
     return [P[0] + d0 * add] + P + [P[-1] + d1 * add]
 
 
-def line_feature(pts_merc, props, zfrom=0, zto=12, ext=1.6):
+def line_feature(pts_merc, props, zfrom=0, zto=12, ext=1.6, ext_low=None):
     """One feature per integer zoom band. MapLibre fits a curved name using the line's length at the band's
     zoom and the text size one zoom higher, so each band gets a line just long enough: the central part of
     the curve when it is long, or the curve drawn out a little past its ends when the name is wider than
@@ -182,7 +187,7 @@ def line_feature(pts_merc, props, zfrom=0, zto=12, ext=1.6):
             frac = target / arc
             pts, _ = _resample(pts_merc, 0.5 - frac / 2, 0.5 + frac / 2, 18)
         else:
-            if target > arc * ext:
+            if target > arc * (ext_low if ext_low and zb <= 2 else ext):
                 continue
             pts, _ = _resample(_extend(pts_merc, target / arc - 1), 0, 1, 18)
         coords = [list(map(lambda q: round(q, 4), unmerc(x, y))) for x, y in pts]
@@ -251,7 +256,8 @@ for f in ne['features']:
     gm = largest(to_merc(g))
     if gm.area <= 0:
         continue
-    pts = smooth(COUNTRY_CURVES[p['ADM0_A3']]) if p['ADM0_A3'] in COUNTRY_CURVES else arc_for(gm)
+    # Great Britain is lettered along the length of the island (its fitted axis is steeper than the usual limit)
+    pts = smooth(COUNTRY_CURVES[p['ADM0_A3']]) if p['ADM0_A3'] in COUNTRY_CURVES else arc_for(gm, max_angle=80 if p['ADM0_A3'] == 'GBR' else 50)
     short = {'United States of America': 'United States', 'Democratic Republic of the Congo': 'DR Congo',
              'Central African Republic': 'Central African Rep.', 'Bosnia and Herzegovina': 'Bosnia',
              "People's Republic of China": 'China', 'Republic of the Congo': 'Congo',
@@ -259,7 +265,8 @@ for f in ne['features']:
     zf = zoom_for_area(gm.area)
     feats += line_feature(pts, {'name': short.upper(), 'kind': 'country', 'iso': p['ADM0_A3'],
                                 'z': zf, 'lr': p.get('LABELRANK', 5),
-                                'uk': 1 if p['ADM0_A3'] == 'GBR' else 0}, 0, 9 if p['ADM0_A3'] != 'GBR' else 4, ext=1.9)
+                                'uk': 1 if p['ADM0_A3'] == 'GBR' else 0}, 0, 9 if p['ADM0_A3'] != 'GBR' else 4, ext=1.9,
+                          ext_low=2.4 if zf <= 2.4 else None)
 
 # UK nations from ONS local authorities (Dec 2023), dissolved by the first letter of the code
 lad = json.load(open(os.path.join(GEO, 'lad23_bsc.geojson')))
@@ -270,6 +277,12 @@ nations = {'E': 'ENGLAND', 'S': 'SCOTLAND', 'W': 'WALES', 'N': 'NORTHERN IRELAND
 for k, nm in nations.items():
     u = unary_union(groups[k])
     gm = largest(to_merc(u))
+    if k == 'N':
+        # Northern Ireland is too small for its name on one line: lettered on two lines at its middle (layer nations-pt)
+        c = largest(u).representative_point()
+        feats.append({'type': 'Feature', 'properties': {'name': nm, 'kind': 'nation', 'z': 5.4, 'lr': 2, 'uk': 2, 'zf': 5.4},
+                      'geometry': {'type': 'Point', 'coordinates': [round(c.x, 4), round(c.y, 4)]}})
+        continue
     pts = arc_for(gm, max_angle=45)
     feats += line_feature(pts, {'name': nm, 'kind': 'nation', 'z': 4.6, 'lr': 2, 'uk': 2}, 5, 9, ext=1.6)
 
@@ -322,9 +335,9 @@ R = [
     # seas, firths and bays
     ('Atlantic Ocean', 'sea', 3.6, [(-13.2, 50.6), (-13.0, 53.6), (-11.8, 56.6)]),
     ('North Sea', 'sea', 4.0, [(1.0, 54.4), (2.0, 55.6), (2.8, 57.2)]),
-    ('Irish Sea', 'sea', 5.4, [(-5.95, 53.45), (-5.25, 53.72), (-4.6, 53.92)]),
+    ('Irish Sea', 'sea', 5.0, [(-5.8, 52.95), (-4.95, 53.5), (-3.9, 53.95)]),
     ('English Channel', 'sea', 4.8, [(-4.0, 49.95), (-2.0, 50.15), (-0.4, 50.35)]),
-    ('Celtic Sea', 'sea', 5.0, [(-8.2, 50.75), (-7.1, 51.05), (-6.2, 51.25)]),
+    ('Celtic Sea', 'sea', 4.8, [(-9.0, 50.65), (-7.4, 50.95), (-5.9, 51.0)]),
     ('Bristol Channel', 'sea', 6.4, [(-4.75, 51.32), (-4.2, 51.4), (-3.7, 51.42)]),
     ("St George's Channel", 'sea', 6.0, [(-6.15, 52.05), (-5.75, 52.18), (-5.35, 52.35)]),
     ('North Channel', 'sea', 6.2, [(-6.05, 55.05), (-5.85, 55.25), (-5.6, 55.45)]),
@@ -394,37 +407,37 @@ WORLD = [
     ('Andaman Sea', 'sea', 4.4, [(95.6, 10.2), (96.5, 11.9), (97.0, 13.6)], 9),
     ('Gulf of California', 'sea', 4.8, [(-112.9, 28.6), (-111.2, 26.6), (-109.6, 24.8)], 9),
     # great ranges: lettered along the flank, where a map maker would leave room, not on the crest
-    ('Alps', 'up', 3.8, [(6.2, 46.6), (8.4, 47.25), (11.0, 47.6), (13.6, 47.75)], 9),
-    ('Pyrenees', 'up', 4.8, [(-1.2, 43.25), (0.9, 43.05), (2.6, 42.85)], 9),
-    ('Carpathians', 'up', 4.2, [(19.6, 49.9), (23.6, 49.3), (26.2, 47.4), (26.2, 45.9)], 9),
-    ('Caucasus', 'up', 4.2, [(40.0, 44.3), (43.2, 43.7), (46.8, 42.8)], 9),
-    ('Ural Mountains', 'up', 3.4, [(57.3, 52.5), (57.6, 56.5), (58.0, 61.0), (59.0, 65.0)], 9),
-    ('Himalaya', 'up', 2.8, [(78.6, 32.4), (82.0, 30.6), (86.0, 29.5), (90.0, 29.0), (94.0, 29.3)], 9),
-    ('Karakoram', 'up', 4.8, [(74.6, 35.4), (76.5, 34.7), (78.0, 34.1)], 9),
-    ('Hindu Kush', 'up', 4.4, [(68.6, 35.0), (70.6, 35.8), (72.6, 36.4)], 9),
+    ('Alps', 'up', 2.4, [(6.2, 46.6), (8.4, 47.25), (11.0, 47.6), (13.6, 47.75)], 9),
+    ('Pyrenees', 'up', 3.2, [(-1.2, 43.25), (0.9, 43.05), (2.6, 42.85)], 9),
+    ('Carpathians', 'up', 2.8, [(19.6, 49.9), (23.6, 49.3), (26.2, 47.4), (26.2, 45.9)], 9),
+    ('Caucasus', 'up', 2.8, [(40.0, 44.3), (43.2, 43.7), (46.8, 42.8)], 9),
+    ('Ural Mountains', 'up', 2.2, [(57.3, 52.5), (57.6, 56.5), (58.0, 61.0), (59.0, 65.0)], 9),
+    ('Himalaya', 'up', 1.6, [(78.6, 32.4), (82.0, 30.6), (86.0, 29.5), (90.0, 29.0), (94.0, 29.3)], 9),
+    ('Karakoram', 'up', 3.0, [(74.6, 35.4), (76.5, 34.7), (78.0, 34.1)], 9),
+    ('Hindu Kush', 'up', 2.8, [(68.6, 35.0), (70.6, 35.8), (72.6, 36.4)], 9),
     ('Pamir', 'up', 5.2, [(72.2, 38.6), (74.0, 38.2)], 9),
-    ('Tian Shan', 'up', 3.6, [(73.0, 41.3), (78.0, 42.2), (83.0, 42.8), (87.0, 43.3)], 9),
-    ('Kunlun Mountains', 'up', 4.0, [(80.0, 37.4), (85.0, 37.4), (90.0, 37.5), (95.0, 37.0)], 9),
-    ('Altai', 'up', 4.2, [(86.0, 50.0), (89.0, 49.0), (92.0, 47.6)], 9),
-    ('Zagros Mountains', 'up', 3.8, [(46.0, 35.0), (48.5, 32.5), (51.5, 30.0), (54.0, 28.3)], 9),
+    ('Tian Shan', 'up', 2.4, [(73.0, 41.3), (78.0, 42.2), (83.0, 42.8), (87.0, 43.3)], 9),
+    ('Kunlun Mountains', 'up', 2.6, [(80.0, 37.4), (85.0, 37.4), (90.0, 37.5), (95.0, 37.0)], 9),
+    ('Altai', 'up', 2.8, [(86.0, 50.0), (89.0, 49.0), (92.0, 47.6)], 9),
+    ('Zagros Mountains', 'up', 2.6, [(46.0, 35.0), (48.5, 32.5), (51.5, 30.0), (54.0, 28.3)], 9),
     ('Taurus Mountains', 'up', 4.8, [(30.0, 37.0), (33.0, 36.8), (36.0, 37.6)], 9),
-    ('Atlas Mountains', 'up', 3.8, [(-8.5, 31.0), (-5.2, 32.2), (-1.5, 33.4), (3.0, 34.6)], 9),
-    ('Ethiopian Highlands', 'up', 4.0, [(36.4, 8.0), (38.0, 10.4), (38.8, 12.9)], 9),
-    ('Drakensberg', 'up', 4.8, [(26.6, -30.8), (28.0, -28.9), (29.4, -27.4)], 9),
-    ('Rocky Mountains', 'up', 3.0, [(-106, 37), (-110, 43), (-115, 48.5), (-120, 53.5), (-125, 58)], 9),
+    ('Atlas Mountains', 'up', 2.4, [(-8.5, 31.0), (-5.2, 32.2), (-1.5, 33.4), (3.0, 34.6)], 9),
+    ('Ethiopian Highlands', 'up', 2.6, [(36.4, 8.0), (38.0, 10.4), (38.8, 12.9)], 9),
+    ('Drakensberg', 'up', 3.0, [(26.6, -30.8), (28.0, -28.9), (29.4, -27.4)], 9),
+    ('Rocky Mountains', 'up', 1.4, [(-106, 37), (-110, 43), (-115, 48.5), (-120, 53.5), (-125, 58)], 9),
     ('Sierra Nevada', 'up', 5.2, [(-119.4, 39.0), (-118.4, 37.4), (-117.6, 36.0)], 9),
-    ('Sierra Madre Occidental', 'up', 4.4, [(-108.6, 30.0), (-106.4, 26.0), (-104.6, 23.0)], 9),
-    ('Appalachian Mountains', 'up', 4.0, [(-84.8, 34.6), (-81.2, 37.2), (-78.2, 39.6), (-75.5, 41.5)], 9),
-    ('Brooks Range', 'up', 4.8, [(-158, 69.0), (-151, 69.3), (-145, 69.4)], 9),
-    ('Andes', 'up', 2.6, [(-69.3, -33.0), (-68.3, -27.0), (-68.2, -22.0), (-69.0, -18.0)], 9),
+    ('Sierra Madre Occidental', 'up', 2.8, [(-108.6, 30.0), (-106.4, 26.0), (-104.6, 23.0)], 9),
+    ('Appalachian Mountains', 'up', 2.6, [(-84.8, 34.6), (-81.2, 37.2), (-78.2, 39.6), (-75.5, 41.5)], 9),
+    ('Brooks Range', 'up', 2.8, [(-158, 69.0), (-151, 69.3), (-145, 69.4)], 9),
+    ('Andes', 'up', 1.4, [(-69.3, -33.0), (-68.3, -27.0), (-68.2, -22.0), (-69.0, -18.0)], 9),
     ('Guiana Highlands', 'up', 4.4, [(-66.0, 4.6), (-62.0, 5.0), (-58.0, 4.2)], 9),
     ('Brazilian Highlands', 'up', 4.2, [(-48.0, -16.0), (-45.0, -18.0), (-42.0, -20.0)], 9),
-    ('Great Dividing Range', 'up', 3.4, [(145.4, -36.8), (148.6, -32.0), (149.6, -27.0), (145.8, -21.5), (143.8, -17.4)], 9),
-    ('Southern Alps', 'up', 5.0, [(169.6, -45.0), (171.2, -43.9), (172.6, -42.9)], 9),
-    ('Scandinavian Mountains', 'up', 3.6, [(8.6, 61.6), (12.4, 63.6), (15.0, 66.4), (18.2, 68.6)], 9),
+    ('Great Dividing Range', 'up', 2.2, [(145.4, -36.8), (148.6, -32.0), (149.6, -27.0), (145.8, -21.5), (143.8, -17.4)], 9),
+    ('Southern Alps', 'up', 3.0, [(169.6, -45.0), (171.2, -43.9), (172.6, -42.9)], 9),
+    ('Scandinavian Mountains', 'up', 2.4, [(8.6, 61.6), (12.4, 63.6), (15.0, 66.4), (18.2, 68.6)], 9),
     ('Apennines', 'up', 4.8, [(10.0, 44.2), (12.5, 43.2), (14.5, 41.6), (16.0, 40.4)], 9),
     ('Dinaric Alps', 'up', 4.8, [(16.4, 45.2), (18.3, 43.9), (20.2, 42.8)], 9),
-    ('Verkhoyansk Range', 'up', 4.4, [(128, 67.5), (130, 65.0), (134, 62.5)], 9),
+    ('Verkhoyansk Range', 'up', 3.0, [(128, 67.5), (130, 65.0), (134, 62.5)], 9),
     # deserts, basins and regions
     ('Sahara', 'low', 2.0, [(-10, 23.5), (0, 24.6), (12, 24.6), (24, 23.0)], 8),
     ('Sahel', 'low', 3.2, [(-5, 15.0), (5, 15.3), (15, 14.5), (25, 13.8)], 8),
@@ -515,10 +528,119 @@ for n, k, *_ in R:
     if k in ('sea', 'ocean'):
         for a in [n] + ALIAS.get(n, []):
             cur[a] = zf_of.get(n.upper(), 99)
+
+# ---- the lakes of the Lake District, lettered in blue italic along their length (data/lakes_lettered.geojson) ----
+# Each line is the long axis of the lake, fitted to its OpenStreetMap water polygon in the saved zoom 12 (or zoom 10)
+# tiles when they are on disk (RAW9), otherwise the hand-placed line below; 'osm' lists the names OpenStreetMap uses,
+# whose own label the page then hides.
+LAKES = [
+    ('Windermere', ['Windermere'], [(-2.962, 54.415), (-2.942, 54.36), (-2.955, 54.275)]),
+    ('Ullswater', ['Ullswater'], [(-2.935, 54.548), (-2.885, 54.585), (-2.82, 54.613)]),
+    ('Derwentwater', ['Derwent Water', 'Derwentwater'], [(-3.145, 54.588), (-3.152, 54.566), (-3.16, 54.55)]),
+    ('Coniston Water', ['Coniston Water'], [(-3.072, 54.375), (-3.06, 54.34), (-3.045, 54.31)]),
+    ('Bassenthwaite', ['Bassenthwaite Lake', 'Bassenthwaite'], [(-3.19, 54.632), (-3.212, 54.66), (-3.232, 54.688)]),
+    ('Wast Water', ['Wast Water', 'Wastwater'], [(-3.265, 54.455), (-3.295, 54.44), (-3.322, 54.427)]),
+    ('Ennerdale Water', ['Ennerdale Water'], [(-3.423, 54.522), (-3.395, 54.518), (-3.367, 54.514)]),
+    ('Buttermere', ['Buttermere'], [(-3.284, 54.544), (-3.27, 54.537), (-3.256, 54.529)]),
+    ('Crummock Water', ['Crummock Water'], [(-3.318, 54.567), (-3.305, 54.555), (-3.293, 54.542)]),
+    ('Thirlmere', ['Thirlmere'], [(-3.062, 54.522), (-3.065, 54.54), (-3.07, 54.562)]),
+    ('Haweswater', ['Haweswater Reservoir', 'Haweswater'], [(-2.828, 54.495), (-2.8, 54.512), (-2.776, 54.527)]),
+    ('Loweswater', ['Loweswater'], [(-3.372, 54.582), (-3.36, 54.578), (-3.348, 54.574)]),
+    ('Grasmere', ['Grasmere'], [(-3.032, 54.453), (-3.026, 54.449), (-3.02, 54.446)]),
+    ('Rydal Water', ['Rydal Water'], [(-3.008, 54.449), (-2.999, 54.448), (-2.99, 54.447)]),
+    ('Esthwaite Water', ['Esthwaite Water'], [(-2.988, 54.372), (-2.986, 54.363), (-2.984, 54.354)]),
+]
+
+
+def _osm_water(z, lon0, lat0, lon1, lat1):
+    """Water polygons (lon/lat) from saved OpenFreeMap tiles in RAW9, or [] if none are on disk."""
+    try:
+        import mapbox_vector_tile as mvt
+        from common import RAW9
+    except Exception:
+        return []
+    n = 2 ** z
+    x0, y0 = merc(lon0, lat1); x1, y1 = merc(lon1, lat0)
+    out = []
+    for tx in range(int(x0 * n), int(x1 * n) + 1):
+        for ty in range(int(y0 * n), int(y1 * n) + 1):
+            fn = os.path.join(RAW9, 'ofm', str(z), str(tx), f'{ty}.pbf')
+            if not os.path.exists(fn):
+                continue
+            t = mvt.decode(open(fn, 'rb').read(), default_options={'y_coord_down': True})
+            if 'water' not in t:
+                continue
+            E = t['water']['extent']
+            for f in t['water']['features']:
+                if f['properties'].get('class') != 'lake':
+                    continue
+                g = f['geometry']
+                polys = g['coordinates'] if g['type'] == 'MultiPolygon' else [g['coordinates']]
+                for pp in polys:
+                    rings = [[unmerc((tx + a / E) / n, (ty + b / E) / n) for a, b in r] for r in pp]
+                    try:
+                        out.append(Polygon(rings[0], rings[1:]).buffer(0))
+                    except Exception:
+                        pass
+    return out
+
+
+lake_feats = []
+_W = {z: _osm_water(z, -3.5, 54.2, -2.7, 54.75) for z in (12, 10)}
+_W = {z: unary_union(v) if v else None for z, v in _W.items()}
+n_fitted = 0
+for name, osm, pts in LAKES:
+    seed = Point(pts[len(pts) // 2])
+    line = None
+    for z in (12, 10):
+        U = _W.get(z)
+        if U is None:
+            continue
+        parts = list(U.geoms) if hasattr(U, 'geoms') else [U]
+        hit = [g for g in parts if g.distance(seed) < 0.004]
+        if hit:
+            poly = max(hit, key=lambda g: g.area)
+            fit = arc_for(to_merc(poly), max_angle=89)
+            # keep the fitted axis only if it runs inside the lake for most of its length
+            ll = LineString([unmerc(*q) for q in fit])
+            if ll.length > 0 and poly.buffer(0.0005).intersection(ll).length / ll.length > 0.8:
+                line = fit
+                n_fitted += 1
+            break
+    if line is None:
+        line = smooth(pts)
+    lake_feats += line_feature(line, {'name': name, 'kind': 'lake', 'osm': '|'.join(osm)}, 8, 15, ext=1.5)
+dump({'type': 'FeatureCollection', 'features': lake_feats}, os.path.join(DATA, 'lakes_lettered.geojson'))
+print('lettered lakes', len(LAKES), 'fitted to OpenStreetMap', n_fitted, 'features', len(lake_feats))
+lake_osm = sorted({a for _, osm, _ in LAKES for a in osm})
+
+# hand-lettered land names, with the names OpenStreetMap and Wikidata use for the same place (national parks and so on):
+# the page hides those duplicates while the hand lettering shows
+LAND_ALIAS = {'Lake District': ['Lake District National Park', 'English Lake District', 'The Lake District'],
+              'Peak District': ['Peak District National Park'], 'Yorkshire Dales': ['Yorkshire Dales National Park'],
+              'North York Moors': ['North York Moors National Park'], 'Dartmoor': ['Dartmoor National Park'],
+              'Exmoor': ['Exmoor National Park'], 'Cairngorms': ['Cairngorms National Park', 'Cairngorm Mountains'],
+              'Eryri': ['Eryri National Park', 'Snowdonia', 'Snowdonia National Park'],
+              'Brecon Beacons': ['Bannau Brycheiniog', 'Bannau Brycheiniog National Park', 'Brecon Beacons National Park'],
+              'The Cotswolds': ['Cotswolds', 'Cotswolds National Landscape', 'Cotswolds Area of Outstanding Natural Beauty'],
+              'South Downs': ['South Downs National Park'], 'North Pennines': ['North Pennines National Landscape'],
+              'Forest of Bowland': ['Forest of Bowland National Landscape'], 'The Pennines': ['Pennines'],
+              'Mourne Mountains': ['Mournes', 'Mourne Mountains National Landscape'], 'Wicklow Mountains': ['Wicklow Mountains National Park'],
+              'Connemara': ['Connemara National Park'], 'The Burren': ['Burren', 'Burren National Park'], 'The Fens': ['Fens']}
+lettered = {}
+for n, k, *_ in R:
+    if k in ('up', 'low'):
+        zf = zf_of.get(n.upper(), 99)
+        for a in [n] + LAND_ALIAS.get(n, []):
+            lettered[a] = zf
 open(os.path.join(os.path.dirname(DATA), 'js', 'curated.js'), 'w').write(
     '/* Generated by code/02_labels.py: sea names lettered by hand, with the zoom from which the hand lettering\n'
     '   fits; from there on, OpenStreetMap\'s own label for the same sea is hidden. */\n'
-    'window.INK_CURATED = ' + json.dumps(cur, ensure_ascii=False, sort_keys=True) + ';\n')
+    'window.INK_CURATED = ' + json.dumps(cur, ensure_ascii=False, sort_keys=True) + ';\n'
+    '/* hand-lettered land names and their aliases, with the zoom from which the lettering shows (duplicates are hidden) */\n'
+    'window.INK_LETTERED = ' + json.dumps(lettered, ensure_ascii=False, sort_keys=True) + ';\n'
+    '/* OpenStreetMap names of the lakes lettered along their length (data/lakes_lettered.geojson) */\n'
+    'window.INK_LAKES = ' + json.dumps(lake_osm, ensure_ascii=False) + ';\n')
 print('curated sea names', len(cur))
 dump(gz, os.path.join(DATA, 'gazetteer.json'))
 print('gazetteer', len(gz), os.path.getsize(os.path.join(DATA, 'gazetteer.json')) // 1024, 'KB')

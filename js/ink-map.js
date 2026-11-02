@@ -328,6 +328,29 @@
     L(water({ id: 'm-water', type: 'fill', layout: { visibility: 'none' }, paint: { 'fill-color': '#AAD3DF' } }), 'modern');
     L({ id: 'm-wood', type: 'fill', source: 'ofm', 'source-layer': 'landcover', layout: { visibility: 'none' }, filter: ['==', ['get', 'class'], 'wood'], paint: { 'fill-color': '#ADD19E', 'fill-opacity': 0.7 } }, 'modern');
     L({ id: 'm-urban', type: 'fill', source: 'ofm', 'source-layer': 'landuse', layout: { visibility: 'none' }, filter: ['in', ['get', 'class'], ['literal', ['residential', 'suburb', 'neighbourhood', 'commercial', 'industrial']]], paint: { 'fill-color': '#E0DFDF', 'fill-opacity': 0.8 } }, 'modern');
+    // ---- the countryside in the same hand (OpenStreetMap land cover and land use): a soft wash from zoom 7, then ploughed
+    // strips (one of eight directions and tints per field, by its id), vine rows, orchard trees, allotment plots and meadow tufts
+    const LC = ['get', 'class'], LS = ['get', 'subclass'];
+    const FARM = ['all', ['==', LC, 'farmland']], MEAD = ['all', ['==', LC, 'grass'], ['in', LS, ['literal', ['meadow', 'grassland', 'village_green']]]];
+    L({ id: 'farm-wash', type: 'fill', source: 'ofm', 'source-layer': 'landcover', minzoom: 6.5, filter: ['any', FARM, MEAD],
+      paint: { 'fill-color': ['case', FARM, '#D6B36A', '#A9B672'], 'fill-antialias': false, 'fill-opacity': iz(6.5, 0, 7.5, 0.16, 10, 0.12, 12, 0.08) } }, 'farms');
+    L({ id: 'farm-fields', type: 'fill', source: 'ofm', 'source-layer': 'landcover', minzoom: 9.6, filter: FARM,
+      paint: { 'fill-pattern': ['match', LS, 'vineyard', 'vin', ['orchard', 'plant_nursery'], 'orc', 'allotments', 'alt', ['concat', 'fld', ['to-string', ['%', ['coalesce', ['id'], 0], 8]]]],
+        'fill-opacity': iz(9.6, 0, 10.6, 0.5, 14, 0.45) } }, 'farms');
+    L({ id: 'farm-allot', type: 'fill', source: 'ofm', 'source-layer': 'landuse', minzoom: 12, filter: ['==', ['get', 'class'], 'allotments'],
+      paint: { 'fill-pattern': 'alt', 'fill-opacity': iz(12, 0, 12.6, 0.7) } }, 'farms');
+    L({ id: 'meadows', type: 'fill', source: 'ofm', 'source-layer': 'landcover', minzoom: 10.5, filter: MEAD,
+      paint: { 'fill-pattern': 'mdw', 'fill-opacity': iz(10.5, 0, 11.5, 0.8) } }, 'farms');
+    L({ id: 'field-edges', type: 'line', source: 'ofm', 'source-layer': 'landcover', minzoom: 11.5, filter: FARM,
+      paint: { 'line-color': '#7C6A3E', 'line-width': iz(11.5, 0.4, 14, 0.8), 'line-opacity': iz(11.5, 0, 12.5, 0.45) } }, 'farms');
+    // parks and gardens as areas: a soft green wash, little round trees, parterres in formal gardens, a railing line round
+    const PARK = ['any', ['all', ['==', LC, 'grass'], ['in', LS, ['literal', ['park', 'garden', 'recreation_ground']]]]];
+    L({ id: 'park-fill', type: 'fill', source: 'ofm', 'source-layer': 'landcover', minzoom: 10.5, filter: PARK,
+      paint: { 'fill-pattern': ['match', LS, 'garden', 'par', 'prk'], 'fill-opacity': iz(10.5, 0, 11.5, 0.95) } }, 'heritage');
+    L({ id: 'park-fill-lu', type: 'fill', source: 'ofm', 'source-layer': 'landuse', minzoom: 11, filter: ['in', ['get', 'class'], ['literal', ['park', 'garden', 'recreation_ground']]],
+      paint: { 'fill-pattern': ['match', ['get', 'class'], 'garden', 'par', 'prk'], 'fill-opacity': iz(11, 0, 12, 0.9) } }, 'heritage');
+    L({ id: 'park-rail', type: 'line', source: 'ofm', 'source-layer': 'landcover', minzoom: 11.5, filter: PARK,
+      paint: { 'line-color': '#4F6B3A', 'line-width': iz(11.5, 0.6, 15, 1.2), 'line-dasharray': [3, 1.2], 'line-opacity': iz(11.5, 0, 12.2, 0.8) } }, 'heritage');
     // ---- lakes and rivers
     L(water({ id: 'lake-edge', type: 'line', filter: ['!', OCEAN], minzoom: 5, paint: { 'line-color': INK.ink, 'line-width': iz(5, 0.4, 9, 0.8, 13, 1.1), 'line-opacity': iz(5, 0, 6, 0.85) } }), 'ink');
     // ripples inside lakes and reservoirs (blue, as along the coast)
@@ -377,8 +400,23 @@
       paint: { 'line-color': INK.ink, 'line-width': iz(4, 0.4, 9, 0.8), 'line-opacity': iz(4, 0, 5, 0.45), 'line-dasharray': [1, 2.4] } }, 'borders');
     // ---- roads, faint dotted
     const RC = ['get', 'class'];
+    // main roads are drawn from zoom 8 as pale tracks between two faint ink lines, as on old county maps; lanes and paths stay dotted
+    const MAIN = ['motorway', 'trunk', 'primary', 'secondary'];
+    L({ id: 'roads-track-case', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 8, filter: ['all', ['in', RC, ['literal', MAIN]], ['!=', ['get', 'brunnel'], 'tunnel']],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#6B4E2E', 'line-width': ['interpolate', ['linear'], ['zoom'], 8, ['match', RC, ['motorway', 'trunk'], 2.6, 1.8], 12, ['match', RC, ['motorway', 'trunk', 'primary'], 5, 4], 15, 9],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0, 8.8, ['match', RC, ['motorway', 'trunk', 'primary'], 0.4, 0], 10.5, 0.42] } }, 'roads');
+    L({ id: 'roads-track', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 8, filter: ['all', ['in', RC, ['literal', MAIN]], ['!=', ['get', 'brunnel'], 'tunnel']],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#F4E8C8', 'line-width': ['interpolate', ['linear'], ['zoom'], 8, ['match', RC, ['motorway', 'trunk'], 1.4, 0.8], 12, ['match', RC, ['motorway', 'trunk', 'primary'], 3.4, 2.6], 15, 7],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0, 8.8, ['match', RC, ['motorway', 'trunk', 'primary'], 0.95, 0], 10.5, 0.95] } }, 'roads');
+    // pale streets in the drawn towns, and piers in ink
+    L({ id: 'streets', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 12, filter: ['in', RC, ['literal', ['tertiary', 'minor', 'service']]],
+      layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#F6ECD2', 'line-width': iz(12, 2.2, 15, 6), 'line-opacity': iz(12, 0, 12.6, 0.85) } }, 'roads');
+    L({ id: 'piers', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 12, filter: ['==', RC, 'pier'],
+      paint: { 'line-color': INK.ink, 'line-width': iz(12, 1.4, 16, 4), 'line-opacity': 0.8 } }, 'heritage');
     L({ id: 'roads', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 6,
-      filter: ['in', RC, ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor', 'track', 'path']]],
+      filter: ['any', ['in', RC, ['literal', ['tertiary', 'minor', 'track', 'path']]], ['all', ['in', RC, ['literal', MAIN]], ['<', ['zoom'], 9]]],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': '#6B4E2E', 'line-dasharray': [0.1, 2.6],
         'line-width': ['interpolate', ['linear'], ['zoom'], 6, ['match', RC, ['motorway', 'trunk'], 1.3, 0.9], 12, ['match', RC, ['motorway', 'trunk', 'primary'], 2.2, ['secondary', 'tertiary'], 1.8, 1.4]],
@@ -390,6 +428,25 @@
 
     // ---- glyphs (cooperative: they overlap each other but give way to every name)
     const glyphLayout = (img, size, extra) => Object.assign({ 'icon-image': img, 'icon-size': size, 'icon-overlap': 'cooperative', 'icon-ignore-placement': false, 'symbol-z-order': 'viewport-y', 'icon-anchor': 'bottom', 'icon-padding': 0 }, extra || {});
+    // world-scale ink (data/world_ink.geojson, code/02h_world_ink.py): range "caterpillars" of little peaks along the axis of every
+    // high, rugged range, dune fields in the great sand seas and bands of trees across the taiga and the rainforests. They fade out
+    // between zoom 3 and 4, where the glyphs drawn tile by tile take over.
+    const WZ = ['get', 'z'];
+    const wfade = (hi) => byZoom(z => ['*', clamp01(['-', z + 0.6, WZ]), z <= 3 ? hi : z >= 4 ? 0 : hi * (4 - z)]);
+    L({ id: 'world-ranges', type: 'symbol', source: 'world', maxzoom: 4.2, filter: ['all', ['==', ['get', 'kind'], 'range'], ['<=', WZ, ['+', ['zoom'], 0.6]]],
+      layout: { 'icon-image': ['concat', 'rng', ['to-string', ['get', 'v']]],
+        'icon-size': iz(0.5, ['*', ['get', 's'], 0.5], 2, ['*', ['get', 's'], 0.68], 3.5, ['*', ['get', 's'], 0.85]), 'icon-anchor': 'bottom',
+        'icon-overlap': 'cooperative', 'icon-padding': 0, 'symbol-z-order': 'viewport-y', 'symbol-avoid-edges': false },
+      paint: { 'icon-opacity': wfade(0.95) } }, 'mountains');
+    L({ id: 'world-biome', type: 'symbol', source: 'world', maxzoom: 4.2, filter: ['all', ['!=', ['get', 'kind'], 'range'], ['<=', WZ, ['+', ['zoom'], 0.6]]],
+      layout: glyphLayout(['concat', ['match', ['get', 'kind'], 'dune', 'b1-', 'rain', 'b3-', 'b4-'], ['to-string', ['get', 'v']]],
+        iz(0.5, ['*', ['match', ['get', 'kind'], 'dune', 0.75, 'rain', 0.62, 0.8], 0.62], 2, ['*', ['match', ['get', 'kind'], 'dune', 0.75, 'rain', 0.62, 0.8], 0.75], 3.5, ['*', ['match', ['get', 'kind'], 'dune', 0.75, 'rain', 0.62, 0.8], 0.9])),
+      paint: { 'icon-opacity': wfade(0.85) } }, 'biomes');
+    // beasts of the countryside, zoom 6 to 14: deer and boar in the woods, sheep on the moors, cattle on the farms, eagles over
+    // the mountains, herons by the water (js/ink-worker.js: one in a few cells of the nested grid, a few a tile at most)
+    L({ id: 'beasts', type: 'symbol', source: 'ink', 'source-layer': 'beasts', minzoom: 6,
+      layout: { 'icon-image': ['concat', 'a_', ['get', 'a']], 'icon-size': iz(6, 0.5, 9, 0.62, 12, 0.75, 14, 0.85), 'icon-overlap': 'never', 'icon-padding': 3, 'symbol-sort-key': ['get', 'r'], 'icon-anchor': 'bottom' },
+      paint: { 'icon-opacity': fadeRank(z => z < 6.5 ? 0.9 : 0.92) } }, 'animals');
     // biome glyphs (RESOLVE Ecoregions 2017 with OpenStreetMap ice and sand): grow and multiply with zoom like the peaks;
     // rainforest and taiga crowns fade out at zoom 7, where OpenStreetMap's own woods take over
     const BB = ['get', 'b'];
@@ -446,13 +503,22 @@
     // zoom 18, so each size ramp drops to a small value just past the zooms where the layer is shown; the label
     // lines themselves are cut to fit the real size (code/02_labels.py).
     L({ id: 'countries', type: 'symbol', source: 'labels', maxzoom: 10.5,
-      filter: ['all', ['in', ['get', 'kind'], ['literal', ['country', 'nation']]], ['==', ['get', 'zb'], ['zoom']]],
+      filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'zb'], ['zoom']]],
       layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 28, 'text-keep-upright': true,
-        'text-size': iz(1, 9.5, 2, 11, 3, 13.5, 4, 16, 5, 18, 7, 25, 9, 32, 10.6, 32, 11, 6),
-        'text-letter-spacing': iz(1, 0.16, 3, 0.26, 5, 0.36, 8, 0.48), 'symbol-sort-key': ['get', 'lr'], 'text-padding': 2 }),
+        'text-size': iz(1, 8.5, 2, 10, 3, 12.5, 4, 16, 5, 18, 7, 25, 9, 32, 10.6, 32, 11, 6),
+        'text-letter-spacing': iz(1, 0.1, 3, 0.22, 5, 0.36, 8, 0.48), 'symbol-sort-key': ['get', 'lr'], 'text-padding': 2 }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.6, 'text-halo-blur': 0.6,
         'text-opacity': byZoom(z => ['*', clamp01(['+', 0.62, ['*', 0.6, ['-', z, ['get', 'zf']]]]),
           1, z >= 10 ? 0 : z >= 9 ? 0.6 : 1]) } }, 'names');
+    // England, Scotland and Wales on curves from zoom 5; Northern Ireland on two lines at its middle
+    L({ id: 'nations', type: 'symbol', source: 'labels', minzoom: 4.6, maxzoom: 10.5, filter: ['all', ['==', ['get', 'kind'], 'nation'], ['==', ['geometry-type'], 'LineString'], ['==', ['get', 'zb'], ['zoom']]],
+      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 28, 'text-keep-upright': true,
+        'text-size': iz(5, 12, 6, 14, 7, 17, 9, 24, 10.6, 24, 11, 6), 'text-letter-spacing': iz(5, 0.3, 7, 0.4, 9, 0.5) }),
+      paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.6, 'text-halo-blur': 0.6, 'text-opacity': iz(4.6, 0, 5.2, 1, 9, 1, 10, 0.6) } }, 'names');
+    L({ id: 'nations-pt', type: 'symbol', source: 'labels', minzoom: 5, maxzoom: 10.5, filter: ['all', ['==', ['get', 'kind'], 'nation'], ['==', ['geometry-type'], 'Point']],
+      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'text-max-width': 7, 'text-line-height': 1.1,
+        'text-size': iz(5, 10.5, 7, 15, 9, 20), 'text-letter-spacing': iz(5, 0.2, 9, 0.35) }),
+      paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.6, 'text-opacity': iz(5, 0, 5.6, 1, 9, 1, 10, 0.6) } }, 'names');
     // hand-placed upland, lowland and sea names around Britain and Ireland
     const OCN = ['==', ['get', 'kind'], 'ocean'];
     L({ id: 'regions-sea', type: 'symbol', source: 'regions', maxzoom: 12, filter: ['all', ['in', ['get', 'kind'], ['literal', ['sea', 'ocean']]], ['==', ['get', 'zb'], ['zoom']], ['>=', ['zoom'], ['floor', ['get', 'zf']]]],
@@ -464,13 +530,13 @@
           6, ['case', OCN, 0.54, 0.45], 7, ['case', OCN, 0.6, 0.5], 9, 0.6] }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': byZoom(z => ['*', clamp01(['+', 0.62, ['*', 0.6, ['-', z, ['get', 'zf']]]]), z >= 11 ? 0.5 : 1]) } }, 'names');
     L({ id: 'regions-land', type: 'symbol', source: 'regions', maxzoom: 12.5, filter: ['all', ['==', ['get', 'uk'], 1], ['in', ['get', 'kind'], ['literal', ['up', 'low']]], ['==', ['get', 'zb'], ['zoom']], ['>=', ['zoom'], ['floor', ['get', 'zf']]]],
-      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 30,
+      layout: TXT({ 'text-field': ['format', ['slice', ['get', 'name'], 0, 1], { 'text-color': '#2F5D8A', 'font-scale': 1.32 }, ['slice', ['get', 'name'], 1], {}], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 30,
         'text-size': iz(5, 10.5, 7, 14, 9, 18, 11, 21, 12.6, 21, 13, 6), 'text-letter-spacing': iz(5, 0.25, 8, 0.4, 11, 0.5) }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.5, 'text-opacity': byZoom(z => ['*', clamp01(['+', 0.62, ['*', 0.6, ['-', z, ['get', 'zf']]]]), z >= 12 ? 0 : z >= 11 ? 0.7 : 1]) } }, 'names');
     // ranges, deserts and regions beyond Britain and Ireland: lettered before cities, as on a hand-drawn map
     L({ id: 'regions-world', type: 'symbol', source: 'regions', maxzoom: 12.5, filter: ['all', ['!=', ['get', 'uk'], 1], ['in', ['get', 'kind'], ['literal', ['up', 'low']]], ['==', ['get', 'zb'], ['zoom']], ['>=', ['zoom'], ['floor', ['get', 'zf']]]],
-      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 30,
-        'text-size': iz(2, 11, 4, 13, 6, 16, 9, 19, 11, 21, 12.6, 21, 13, 6), 'text-letter-spacing': iz(2, 0.22, 5, 0.3, 8, 0.4, 11, 0.5) }),
+      layout: TXT({ 'text-field': ['format', ['slice', ['get', 'name'], 0, 1], { 'text-color': '#2F5D8A', 'font-scale': 1.32 }, ['slice', ['get', 'name'], 1], {}], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 30,
+        'text-size': iz(1, 8.5, 2, 9.5, 3, 11, 4, 13, 6, 16, 9, 19, 11, 21, 12.6, 21, 13, 6), 'text-letter-spacing': iz(1, 0.16, 2, 0.2, 5, 0.3, 8, 0.4, 11, 0.5) }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.5, 'text-opacity': byZoom(z => ['*', clamp01(['+', 0.62, ['*', 0.6, ['-', z, ['get', 'zf']]]]), z >= 12 ? 0 : z >= 11 ? 0.7 : 1]) } }, 'names');
     // seas and bays from OpenStreetMap
     // OpenStreetMap's own sea labels give way to the hand lettering from the zoom where it fits (js/curated.js)
@@ -489,11 +555,35 @@
         'text-letter-spacing': iz(1, 0.25, 5, 0.4, 9, 0.5) }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.3,
         'text-opacity': ['interpolate', ['linear'], ['zoom'], 0, 1, 4.5, ['case', ['==', ['get', 'class'], 'ocean'], 1, 1], 6, ['case', ['==', ['get', 'class'], 'ocean'], 0.0, 1]] } }, 'names');
+    // names lettered by hand hide their duplicates (Wikidata heritage, OpenStreetMap parks) while the lettering shows (js/curated.js)
+    const LET = global.INK_LETTERED || {}, letGroups = {};
+    for (const [n, zf] of Object.entries(LET)) (letGroups[Math.floor(zf)] = letGroups[Math.floor(zf)] || []).push(n);
+    const notLettered = (nameExpr) => { const e = ['match', nameExpr]; for (const [zf, names] of Object.entries(letGroups)) e.push(names, ['any', ['<', ['zoom'], +zf], ['>=', ['zoom'], 12.5]]); e.push(true); return Object.keys(letGroups).length ? e : true; };
     // states and provinces (not the UK nations, which are lettered above)
     placeLayer('states', ['all', ['in', CL, ['literal', ['state', 'province']]], ['!', ['in', NAME_EN, ['literal', ['England', 'Scotland', 'Wales', 'Northern Ireland']]]], ['<=', ['coalesce', ['get', 'rank'], 9], 5]],
       { minzoom: 4.6, maxzoom: 8.5, font: 'Ink Caps', field: NAME_EN, transform: 'uppercase', ls: 0.25, size: iz(4.6, 9.5, 6, 11, 8, 13), opacity: ramp(4.6, 5.6, 7.6, 8.4) });
+    // capitals first, on a ribbon with a small shield (from zoom 3; a capital is always lettered before any other city);
+    // the great cities on a plain banner; a drawn walled city marks both from zoom 6.5 until the drawn towns take over
+    const CAP = ['==', ['get', 'capital'], 2], RK = ['coalesce', ['get', 'rank'], 9];
+    L({ id: 'city-marks', type: 'symbol', source: 'ofm', 'source-layer': 'place', minzoom: 3, maxzoom: 12.4,
+      filter: ['all', ['==', CL, 'city'], ['any', CAP, ['<=', RK, 3]], ['<=', RK, ['step', ['zoom'], 2, 4, 4, 5, 6, 6, 99]]],
+      layout: { 'icon-image': ['step', ['zoom'], ['case', CAP, 's-capital', 's-city'], 6.5, 'citybig'], 'icon-size': iz(3, ['case', CAP, 0.6, 0.48], 6.4, ['case', CAP, 0.85, 0.7], 6.5, 0.42, 9, 0.62, 11, 0.8, 12, 0.9),
+        'icon-overlap': 'always', 'icon-ignore-placement': true, 'icon-padding': 1, 'symbol-sort-key': ['case', CAP, 0, RK] },
+      paint: { 'icon-opacity': iz(3, 0, 3.5, 1, 11.6, 1, 12.3, 0) } }, 'names');
+    L({ id: 'capitals', type: 'symbol', source: 'ofm', 'source-layer': 'place', minzoom: 3,
+      filter: ['all', ['==', CL, 'city'], CAP, ['<=', RK, ['step', ['zoom'], 2, 4, 4, 5, 6, 6, 99]]],
+      layout: TXT({ 'text-field': NAME_EN, 'text-font': ['Ink SC'], 'text-size': iz(3, 11.5, 7, 16, 11, 19), 'text-letter-spacing': 0.06, 'text-max-width': 12,
+        'text-anchor': 'bottom', 'text-offset': iz(3, ['literal', [0, -0.9]], 6.4, ['literal', [0, -1.1]], 6.5, ['literal', [0, -1.6]], 11, ['literal', [0, -2.4]]),
+        'icon-image': ['step', ['zoom'], 'banner', 5, 'ribbon'], 'icon-text-fit': 'both', 'icon-text-fit-padding': [2, 8, 2, 8], 'icon-overlap': 'never', 'symbol-sort-key': RK }),
+      paint: { 'text-color': INK.redDeep, 'text-halo-color': 'rgba(251,243,220,0.6)', 'text-halo-width': 0.6, 'text-opacity': iz(3, 0, 3.5, 1), 'icon-opacity': iz(3, 0, 3.5, 1) } }, 'names');
+    L({ id: 'bigcities', type: 'symbol', source: 'ofm', 'source-layer': 'place', minzoom: 5,
+      filter: ['all', ['==', CL, 'city'], ['!', CAP], ['<=', RK, ['step', ['zoom'], 2, 6, 3, 7, 4]]],
+      layout: TXT({ 'text-field': NAME_EN, 'text-font': ['Ink SC'], 'text-size': iz(5, 12, 9, 16, 11, 18), 'text-letter-spacing': 0.05, 'text-max-width': 12,
+        'text-anchor': 'bottom', 'text-offset': iz(5, ['literal', [0, -0.9]], 6.4, ['literal', [0, -1.0]], 6.5, ['literal', [0, -1.6]], 11, ['literal', [0, -2.4]]),
+        'icon-image': 'banner', 'icon-text-fit': 'both', 'icon-text-fit-padding': [1, 7, 1, 7], 'icon-overlap': 'never', 'symbol-sort-key': RK }),
+      paint: { 'text-color': INK.red, 'text-halo-color': 'rgba(251,243,220,0.6)', 'text-halo-width': 0.6, 'text-opacity': iz(5, 0, 5.6, 1), 'icon-opacity': iz(5, 0, 5.6, 0.95) } }, 'names');
     // which cities are lettered is set by filter, not by opacity, so unlettered cities never push glyphs aside
-    placeLayer('cities', ['all', ['==', CL, 'city'], ['<=', ['coalesce', ['get', 'rank'], 9], ['step', ['zoom'], 0, 3, 3, 4, 5, 5, 7, 6, 99]]], {
+    placeLayer('cities', ['all', ['==', CL, 'city'], ['!', CAP], ['!', ['all', ['>=', ['zoom'], 5], ['<=', RK, ['step', ['zoom'], 2, 6, 3, 7, 4]]]], ['<=', ['coalesce', ['get', 'rank'], 9], ['step', ['zoom'], 0, 3, 3, 4, 5, 5, 7, 6, 99]]], {
       minzoom: 3,
       font: 'Ink SC', field: NAME_EN, size: ['interpolate', ['linear'], ['zoom'], 3, ['case', ['==', ['get', 'capital'], 2], 12, ['<=', ['coalesce', ['get', 'rank'], 9], 2], 11, 9.5], 7, ['case', ['==', ['get', 'capital'], 2], 18, ['<=', ['coalesce', ['get', 'rank'], 9], 4], 16, 13.5], 11, ['case', ['==', ['get', 'capital'], 2], 21, 18]],
       icon: ['case', ['==', ['get', 'capital'], 2], 's-capital', 's-city'], iconSize: iz(3, ['case', ['==', ['get', 'capital'], 2], 0.62, 0.48], 7, ['case', ['==', ['get', 'capital'], 2], 0.8, 0.62], 11, ['case', ['==', ['get', 'capital'], 2], 0.95, 0.75]),
@@ -510,9 +600,22 @@
         'symbol-sort-key': ['coalesce', ['get', 'rank'], 9], 'icon-overlap': 'never' }),
       paint: { 'text-color': INK.ink, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(8.8, 9.4, null, null), 'icon-opacity': ramp(8.8, 9.4, null, null) } }, 'names');
     // national parks
-    L({ id: 'parks', type: 'symbol', source: 'ofm', 'source-layer': 'park', minzoom: 8.5, filter: ['all', ['==', ['get', 'class'], 'national_park'], ['==', ['geometry-type'], 'Point']],
+    L({ id: 'parks', type: 'symbol', source: 'ofm', 'source-layer': 'park', minzoom: 8.5, filter: ['all', ['==', ['get', 'class'], 'national_park'], ['==', ['geometry-type'], 'Point'], notLettered(['coalesce', ['get', 'name'], ''])],
       layout: TXT({ 'text-field': NAME_LOCAL, 'text-font': ['Ink SC'], 'text-size': iz(9, 12, 12, 15), 'text-letter-spacing': 0.12, 'text-max-width': 12 }),
       paint: { 'text-color': INK.redDeep, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(8.5, 9.5, null, null) } }, 'names');
+    // national parks: the name lettered along the inside of the dotted boundary
+    L({ id: 'park-edge-names', type: 'symbol', source: 'ofm', 'source-layer': 'park', minzoom: 9,
+      filter: ['all', ['==', ['geometry-type'], 'Polygon'], ['any', ['==', ['get', 'class'], 'national_park'], ['in', 'National Park', ['coalesce', ['get', 'name'], '']]]],
+      layout: TXT({ 'text-field': ['coalesce', ['get', 'name_en'], ['get', 'name']], 'text-font': ['Ink SC'], 'symbol-placement': 'line', 'symbol-spacing': 700, 'text-max-angle': 25,
+        'text-size': iz(9, 11, 13, 14), 'text-letter-spacing': 0.14, 'text-offset': [0, 0.9], 'text-keep-upright': true, 'text-padding': 6 }),
+      paint: { 'text-color': '#4F6B3A', 'text-halo-color': HALO, 'text-halo-width': 1.3, 'text-opacity': iz(9, 0, 9.6, 0.9) } }, 'heritage');
+    // the lakes of the Lake District lettered along their length (data/lakes_lettered.geojson)
+    L({ id: 'lake-names-ink', type: 'symbol', source: 'lakesink', filter: ['==', ['get', 'zb'], ['zoom']],
+      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Italic'], 'symbol-placement': 'line-center', 'text-max-angle': 35, 'text-keep-upright': true,
+        'text-size': iz(9, 11, 12, 14, 15, 15.5, 16.2, 15.5, 16.6, 6), 'text-letter-spacing': iz(9, 0.12, 12, 0.1) }),
+      paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': iz(8, 0, 8.6, 1) } }, 'rivers');
+    const LAKESET = global.INK_LAKES || [];
+    const notInkLake = LAKESET.length ? ['!', ['in', ['coalesce', ['get', 'name:latin'], ['get', 'name_int'], ['get', 'name'], ''], ['literal', LAKESET]]] : true;
     // rivers and lakes, in blue
     // river names along the line, spaced like sea names: the great rivers from zoom 5, streams close in
     // the great rivers from Natural Earth (zoom 3 to 9.5), OpenStreetMap's own waterway names from zoom 9
@@ -525,22 +628,22 @@
       layout: TXT({ 'text-field': NAME_LOCAL, 'text-font': ['Ink Italic'], 'symbol-placement': 'line', 'symbol-spacing': iz(9, 450, 13, 350), 'text-max-angle': 40, 'text-size': iz(9, 12, 12, 14),
         'text-letter-spacing': iz(9, 0.14, 13, 0.1), 'text-padding': 4, 'text-keep-upright': true }),
       paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(9, 9.6, null, null) } }, 'rivers');
-    L({ id: 'lake-names-ne', type: 'symbol', source: 'lakes', maxzoom: 9.2, filter: ['<=', HZ, ['zoom']],
+    L({ id: 'lake-names-ne', type: 'symbol', source: 'lakes', maxzoom: 9.2, filter: ['all', ['<=', HZ, ['zoom']], ['any', ['<', ['zoom'], 8], ['!', ['in', ['get', 'n'], ['literal', LAKESET]]]]],
       layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'text-size': iz(4, 10, 9, 12.5), 'text-max-width': 6, 'text-letter-spacing': 0.06 }),
       paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': byZoom(z => clamp01(['-', z + 0.7, HZ])) } }, 'rivers');
     // named hills from Wikidata where OpenStreetMap has no peak (zoom 10 and closer)
-    L({ id: 'hills', type: 'symbol', source: 'ink', 'source-layer': 'hills', minzoom: 10,
+    L({ id: 'hills', type: 'symbol', source: 'ink', 'source-layer': 'hills', minzoom: 10, filter: ['<=', HZ, ['+', ['zoom'], 0.7]],   // names not yet visible do not push glyphs aside
       layout: TXT({ 'text-field': ['format', ['get', 'n'], {}, ['case', ['>', ['get', 'e'], 0], ['concat', '\n', ['to-string', ['get', 'e']], ' m'], ''], { 'font-scale': 0.78, 'text-font': ['literal', ['Ink Italic']] }],
         'text-font': ['Ink Roman'], 'text-size': iz(10, 10.5, 13, 12.5), 'icon-image': 's-peak', 'icon-size': iz(10, 0.4, 13, 0.5), 'text-variable-anchor': ['top', 'bottom', 'left', 'right'], 'text-radial-offset': 0.55,
         'text-justify': 'auto', 'symbol-sort-key': HZ, 'icon-overlap': 'never' }),
       paint: { 'text-color': INK.ink, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
     // villages and hamlets of Britain and Ireland that OpenStreetMap's tiles leave out (Wikidata; js/ink-worker.js drops any the tile already names)
     // named beaches (Wikidata), lettered along the shore in small blue italic
-    L({ id: 'xbeaches', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10, filter: ['==', ['get', 'k'], 3],
+    L({ id: 'xbeaches', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10, filter: ['all', ['==', ['get', 'k'], 3], ['<=', HZ, ['+', ['zoom'], 0.7]]],
       layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'text-size': iz(10, 10.5, 14, 13), 'text-max-width': 8, 'text-letter-spacing': 0.04,
         'text-variable-anchor': ['center', 'top', 'bottom'], 'symbol-sort-key': HZ }),
       paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': fadeProp('z') } }, 'names');
-    L({ id: 'xplaces', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10, filter: ['!=', ['get', 'k'], 3],
+    L({ id: 'xplaces', type: 'symbol', source: 'ink', 'source-layer': 'xplaces', minzoom: 10, filter: ['all', ['!=', ['get', 'k'], 3], ['<=', HZ, ['+', ['zoom'], 0.7]]],
       layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Roman'], 'text-size': iz(10, ['case', ['==', ['get', 'k'], 1], 10.5, 10], 13, ['case', ['==', ['get', 'k'], 1], 14, 12.2], 15, ['case', ['==', ['get', 'k'], 1], 14.5, 13]),
         'icon-image': ['case', ['==', ['get', 'k'], 1], 's-village', 's-hamlet'], 'icon-size': iz(10, ['case', ['==', ['get', 'k'], 1], 0.6, 0.8], 13, ['case', ['==', ['get', 'k'], 1], 0.72, 0.9], 15, ['case', ['==', ['get', 'k'], 1], 0.75, 1]),
         'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.75, 'text-justify': 'auto', 'text-max-width': 9, 'text-letter-spacing': 0.04,
@@ -549,9 +652,10 @@
         'text-opacity': fadeProp('z'), 'icon-opacity': fadeProp('z') } }, 'names');
     for (const [id, geom] of [['lake-names', 'Point'], ['lake-names-l', 'LineString']]) {
       L({ id, type: 'symbol', source: 'ofm', 'source-layer': 'water_name', minzoom: 8.8,
-        filter: ['all', ['==', ['get', 'class'], 'lake'], ['==', ['geometry-type'], geom]],
+        filter: ['all', ['in', ['get', 'class'], ['literal', ['lake', 'reservoir']]], ['==', ['geometry-type'], geom], notInkLake],
+        // lake centrelines are often wiggly: lettered along the line wherever the name fits, a straight label otherwise
         layout: TXT({ 'text-field': NAME_LOCAL, 'text-font': ['Ink Italic'], 'text-size': iz(7, 10.5, 12, 14), 'text-max-width': 6, 'text-letter-spacing': 0.06,
-          'symbol-placement': geom === 'Point' ? 'point' : 'line-center', 'text-max-angle': 35 }),
+          'symbol-placement': geom === 'Point' ? 'point' : 'line', 'symbol-spacing': 600, 'text-max-angle': 50, 'text-keep-upright': true, 'text-padding': 3 }),
         paint: { 'text-color': INK.blue, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-opacity': ramp(8.8, 9.4, null, null) } }, 'rivers');
     }
 
@@ -562,9 +666,9 @@
     // and chapels (fewer than about ten Wikipedia articles) are drawn unnamed until zoom 15
     const PLAINCH = ['all', ['==', ['get', 'i'], 'church'], ['>', HZ, 7.5]];
     const HNAME = ['step', ['zoom'], ''].concat(...[...Array(18).keys()].map(z => [z + 1, ['case', ['all', ['<=', HZ, z + 1 - 1.5], ['any', ['!', PLAINCH], z + 1 >= 15]], ['coalesce', ['get', 'l'], ''], '']]));
-    L({ id: 'heritage', type: 'symbol', source: 'ink', 'source-layer': 'heritage', minzoom: 5.4,
+    L({ id: 'heritage', type: 'symbol', source: 'ink', 'source-layer': 'heritage', minzoom: 5.4, filter: ['all', ['<=', HZ, ['+', ['zoom'], 0.7]], notLettered(['get', 'n'])],
       layout: TXT({ 'icon-image': ['concat', 'h-', ['get', 'i']], 'icon-size': iz(6, 0.7, 9, 0.85, 12, 1, 15, 1.2), 'icon-overlap': 'never', 'icon-padding': 1,
-        'symbol-sort-key': HZ, 'text-field': HNAME, 'text-font': ['Ink Italic'], 'text-size': iz(8, 9.5, 13, 11.5), 'text-optional': true,
+        'symbol-sort-key': ['case', ['==', ['get', 'i'], 'lighthouse'], ['-', HZ, 2], HZ], 'text-field': HNAME, 'text-font': ['Ink Italic'], 'text-size': iz(8, 9.5, 13, 11.5), 'text-optional': true,
         'text-variable-anchor': ['top', 'bottom', 'right', 'left'], 'text-radial-offset': 0.9, 'text-max-width': 8, 'text-letter-spacing': 0.02 }),
       paint: { 'icon-opacity': fadeProp('z'), 'text-opacity': fadeProp('z'), 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.2 } }, 'heritage');
     // world-famous monuments, each drawn in its own way, from the world view
@@ -598,6 +702,11 @@
     L({ id: 'wall-names', type: 'symbol', source: 'walls', filter: ['all', ['!=', ['get', 'n'], ''], ['<=', HZ, ['-', ['zoom'], 1]]],
       layout: TXT({ 'text-field': ['get', 'n'], 'text-font': ['Ink Italic'], 'symbol-placement': 'line', 'symbol-spacing': 600, 'text-max-angle': 25, 'text-size': iz(5, 10, 10, 12.5), 'text-letter-spacing': 0.1, 'text-offset': [0, -0.9] }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.3 } }, 'heritage');
+    // quarries and mines (pick and shovel, OpenStreetMap land use) and harbours (an anchor, OpenStreetMap points of interest)
+    L({ id: 'quarries', type: 'symbol', source: 'ofm', 'source-layer': 'landuse', minzoom: 11, filter: ['==', ['get', 'class'], 'quarry'],
+      layout: { 'icon-image': 'quarry', 'icon-size': iz(11, 0.7, 14, 1), 'icon-overlap': 'never', 'icon-padding': 2 }, paint: { 'icon-opacity': iz(11, 0, 11.6, 0.9) } }, 'heritage');
+    L({ id: 'harbours', type: 'symbol', source: 'ofm', 'source-layer': 'poi', minzoom: 12, filter: ['in', ['get', 'class'], ['literal', ['harbor', 'ferry_terminal']]],
+      layout: { 'icon-image': 'anchor', 'icon-size': iz(12, 0.8, 15, 1), 'icon-overlap': 'never', 'icon-padding': 2 }, paint: { 'icon-opacity': iz(12, 0, 12.6, 0.9) } }, 'heritage');
     // airports (OpenMapTiles aerodrome labels): international from zoom 7.5, the rest from 10, names close in
     const AC = ['get', 'class'];
     L({ id: 'airports', type: 'symbol', source: 'ofm', 'source-layer': 'aerodrome_label', minzoom: 7.5, filter: ['any', ['==', AC, 'international'], ['>=', ['zoom'], 10]],
@@ -607,8 +716,9 @@
       paint: { 'icon-opacity': iz(7.5, 0, 8.3, 0.95), 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.2 } }, 'flight');
 
     // placement priority is top-down: reorder so names come in a sensible order (most important on top)
-    const order = ['countries', 'regions-sea', 'regions-world', 'seas', 'landmarks', 'famous-peaks', 'cities', 'regions-land', 'states', 'towns', 'landmark-names', 'landmarks-near',
-      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'xbeaches', 'peaks', 'parks', 'hills', 'wall-names', 'airports', 'heritage'];
+    // capitals before every other name but the countries, so a capital is lettered whenever another city is, and before its sights
+    const order = ['countries', 'nations', 'nations-pt', 'capitals', 'regions-sea', 'regions-world', 'seas', 'bigcities', 'cities', 'landmarks', 'famous-peaks', 'regions-land', 'lake-names-ink', 'states', 'towns', 'landmark-names', 'landmarks-near',
+      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'xbeaches', 'peaks', 'parks', 'park-edge-names', 'hills', 'wall-names', 'airports', 'heritage', 'harbours', 'quarries', 'beasts', 'city-marks'];
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     // walls, towers and star forts go on top of the drawn towns, so the houses never hide a town wall
@@ -628,7 +738,7 @@
       : (Array.isArray(e) && e[0] === 'match') ? e.map((v, i) => (i >= 3 && (i % 2 === 1 || i === e.length - 1)) ? scaleOut(v, k) : v) : e;
     if (o.textScale || o.curvedScale) for (const l of final) {
       if (l.type !== 'symbol' || !l.layout['text-size']) continue;
-      const curved = ['countries', 'regions-sea', 'regions-land', 'regions-world'].includes(l.id);
+      const curved = ['countries', 'nations', 'regions-sea', 'regions-land', 'regions-world', 'lake-names-ink'].includes(l.id);
       const k = curved ? (o.curvedScale || 1) : (o.textScale || 1);
       if (k !== 1) l.layout['text-size'] = scaleOut(l.layout['text-size'], k);
     }
@@ -638,7 +748,7 @@
       glyphs: base + 'fonts/{fontstack}/{range}.pbf',
       sources: {
         ofm: { type: 'vector', url: o.tilejson, attribution: '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">© OpenMapTiles</a> Data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors' },
-        ink: { type: 'vector', tiles: ['ink://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14, attribution: 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank">Terrain Tiles</a>; biomes: <a href="https://ecoregions.appspot.com/" target="_blank">RESOLVE Ecoregions 2017</a> (CC BY 4.0)' },
+        ink: { type: 'vector', tiles: ['ink://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14, tileSize: 512, attribution: 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank">Terrain Tiles</a>; biomes: <a href="https://ecoregions.appspot.com/" target="_blank">RESOLVE Ecoregions 2017</a> (CC BY 4.0)' },
         dem: { type: 'raster-dem', tiles: [o.dem], encoding: 'terrarium', tileSize: 256, maxzoom: 15 },
         labels: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_countries.geojson', attribution: 'Lettering lines: Natural Earth, ONS' },
         regions: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_regions.geojson' },
@@ -649,6 +759,8 @@
         rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
         lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },
+        world: { type: 'geojson', tolerance: 0.6, data: base + 'data/world_ink.geojson?v=20261102', attribution: 'World ink: AWS Terrain Tiles, RESOLVE Ecoregions 2017' },
+        lakesink: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/lakes_lettered.geojson?v=20261102' },
       },
       layers: final,
     };
@@ -656,6 +768,8 @@
 
   // ------------------------------------------------------------------ protocol
   let seq = 0; const pending = new Map();
+  // the relief points each tile kept, so a child tile keeps exactly its parent's mountains (no glyph pops as you zoom in)
+  const KEPT = new Map();
   const STATS = { n: 0, ms: 0, max: 0 }; global.__inkStats = STATS;
   // a small pool of workers; each tile always goes to the same worker (by x) so elevation caches are reused
   let pool = null;
@@ -668,7 +782,12 @@
       const w = new Worker(o.base + 'js/ink-worker.js');
       w.onmessage = (ev) => {
         const m = ev.data, p = pending.get(m.id); if (!p) return; pending.delete(m.id);
-        if (m.err) { console.warn('ink tile', m.err); p.res({ data: new ArrayBuffer(0) }); } else { STATS.n++; STATS.ms += m.ms || 0; STATS.max = Math.max(STATS.max, m.ms || 0); p.res({ data: m.buf }); }
+        if (m.err) { console.warn('ink tile', m.err); p.res({ data: new ArrayBuffer(0) }); }
+        else {
+          STATS.n++; STATS.ms += m.ms || 0; STATS.max = Math.max(STATS.max, m.ms || 0);
+          if (m.kept && p.key) { KEPT.set(p.key, m.kept); if (KEPT.size > 400) KEPT.delete(KEPT.keys().next().value); }
+          p.res({ data: m.buf });
+        }
       };
       w.postMessage(cfg);
       pool.push(w);
@@ -677,10 +796,93 @@
       const mm = params.url.match(/ink:\/\/(\d+)\/(\d+)\/(\d+)/);
       const z = +mm[1], x = +mm[2], y = +mm[3];
       const w = pool[((x >> 1) + (y >> 1)) % pool.length];
-      const id = ++seq; pending.set(id, { res, rej });
-      w.postMessage({ id, z, x, y });
+      const id = ++seq, key = z + '/' + x + '/' + y; pending.set(id, { res, rej, key });
+      w.postMessage({ id, z, x, y, parentKept: z > 0 ? KEPT.get((z - 1) + '/' + (x >> 1) + '/' + (y >> 1)) || null : null });
       ac.signal.addEventListener('abort', () => { w.postMessage({ cancel: id }); if (pending.has(id)) { pending.delete(id); rej(new Error('aborted')); } });
     }));
+  }
+
+  // ------------------------------------------------------------------ OpenFreeMap tiles at the edges of the world
+  // The vector tiles cut polygons (the ocean far out, Antarctic ice) along the antimeridian, so at the left and right edges of
+  // the world the cut runs exactly along the tile's edge, and the coast and ripple lines drawn round the ocean showed it as a
+  // thin grey line down the Pacific. Tiles at those edges are rewritten on the way in: polygon points lying on the world's
+  // edge are moved out into the tile's buffer, where nothing is drawn. Every other tile passes through untouched.
+  function rdV(b, i) { let r = 0, m = 1, c; do { c = b[i++]; r += (c & 127) * m; m *= 128; } while (c & 128); return [r, i]; }
+  function wrV(o, v) { v = Math.floor(v); while (v > 127) { o.push((v & 127) | 128); v = Math.floor(v / 128); } o.push(v); }
+  function fields(b) {   // [field, wire, start, end of value, start of tag]
+    const out = []; let i = 0;
+    while (i < b.length) {
+      const t0 = i; let t; [t, i] = rdV(b, i); const f = Math.floor(t / 8), w = t & 7, s0 = i;
+      if (w === 0) { [, i] = rdV(b, i); out.push([f, w, s0, i, t0]); }
+      else if (w === 1) { i += 8; out.push([f, w, s0, i, t0]); }
+      else if (w === 5) { i += 4; out.push([f, w, s0, i, t0]); }
+      else if (w === 2) { let l; [l, i] = rdV(b, i); out.push([f, w, i, i + l, t0]); i += l; }
+      else throw new Error('wire ' + w);
+    }
+    return out;
+  }
+  const lenField = (o, f, bytes) => { wrV(o, f * 8 + 2); wrV(o, bytes.length); for (const x of bytes) o.push(x); };
+  function patchGeom(g, ext, left) {
+    const ints = []; for (let i = 0; i < g.length;) { let v; [v, i] = rdV(g, i); ints.push(v); }
+    const out = []; let x = 0, y = 0, px = 0, py = 0, changed = false;
+    for (let i = 0; i < ints.length;) {
+      const ci = ints[i++], cmd = ci & 7, cnt = ci >>> 3; out.push(ci);
+      if (cmd === 7) continue;
+      for (let k = 0; k < cnt; k++) {
+        const dx = ints[i++], dy = ints[i++];
+        x += (dx >>> 1) ^ -(dx & 1); y += (dy >>> 1) ^ -(dy & 1);
+        let X = x;
+        if (left && x <= 0) { X = -256; changed = changed || x !== -256; }
+        if (!left && x >= ext) { X = ext + 256; changed = changed || x !== ext + 256; }
+        const ex = X - px, ey = y - py; px = X; py = y;
+        out.push(((ex << 1) ^ (ex >> 31)) >>> 0, ((ey << 1) ^ (ey >> 31)) >>> 0);
+      }
+    }
+    if (!changed) return null;
+    const o = []; for (const v of out) wrV(o, v); return o;
+  }
+  function patchEdgeTile(b, left) {
+    const o = []; let any = false;
+    for (const [f, w, s0, s1, t0] of fields(b)) {
+      if (f !== 3 || w !== 2) { for (let i = t0; i < s1; i++) o.push(b[i]); continue; }
+      const lb = b.subarray(s0, s1), lf = fields(lb);
+      const ef = lf.find(q => q[0] === 5); const ext = ef ? rdV(lb, ef[2])[0] : 4096;
+      const lo = [];
+      for (const [f2, w2, a0, a1, b0] of lf) {
+        if (f2 === 2 && w2 === 2) {
+          const fb = lb.subarray(a0, a1), ff = fields(fb), ty = ff.find(q => q[0] === 3), gf = ff.find(q => q[0] === 4);
+          const ng = ty && gf && rdV(fb, ty[2])[0] === 3 ? patchGeom(fb.subarray(gf[2], gf[3]), ext, left) : null;
+          if (ng) {
+            any = true; const fo = [];
+            for (const q of ff) { if (q[0] === 4) lenField(fo, 4, ng); else for (let i = q[4]; i < q[3]; i++) fo.push(fb[i]); }
+            lenField(lo, 2, fo); continue;
+          }
+        }
+        for (let i = b0; i < a1; i++) lo.push(lb[i]);
+      }
+      lenField(o, 3, lo);
+    }
+    return any ? new Uint8Array(o) : b;
+  }
+  let edgeProtocol = false;
+  function setupEdgeProtocol() {
+    if (edgeProtocol) return; edgeProtocol = true;
+    maplibregl.addProtocol('inkofm', async (params, ac) => {
+      const url = params.url.replace(/^inkofm:\/\//, '');
+      const r = await fetch(url, { signal: ac.signal });
+      if (r.status === 404 || r.status === 204) return { data: new ArrayBuffer(0) };   // no tile here: nothing to draw
+      if (!r.ok) throw new Error('tile ' + r.status + ' ' + url);
+      let b = new Uint8Array(await r.arrayBuffer());
+      if (b[0] === 0x1f && b[1] === 0x8b) b = new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+      const m = url.match(/\/(\d+)\/(\d+)\/(\d+)(\.[a-z]+)?(\?.*)?$/);
+      if (m && b.length) {
+        const z = +m[1], x = +m[2], n = Math.pow(2, z);
+        if (x === 0 || x === n - 1) {
+          try { if (x === 0) b = patchEdgeTile(b, true); if (x === n - 1) b = patchEdgeTile(b, false); } catch (e) { console.warn('edge tile', e); }
+        }
+      }
+      return { data: b.buffer.byteLength === b.length ? b.buffer : b.slice().buffer };
+    });
   }
 
   async function create(container, opts) {
@@ -691,16 +893,21 @@
     const ofmTemplate = tj && tj.tiles ? tj.tiles[0] : null;
     setupProtocol(o, ofmTemplate);
     const style = buildStyle(o);
+    if (ofmTemplate) {
+      setupEdgeProtocol();
+      style.sources.ofm = { type: 'vector', tiles: ['inkofm://' + ofmTemplate], minzoom: tj.minzoom || 0, maxzoom: tj.maxzoom || 14,
+        attribution: style.sources.ofm.attribution };
+    }
     const map = new maplibregl.Map(Object.assign({
       container, style, center: [-3.2, 54.6], zoom: 5.2, minZoom: 0.6, maxZoom: 16, hash: false,
-      attributionControl: { compact: true }, fadeDuration: 250, renderWorldCopies: true, dragRotate: false, pitchWithRotate: false,
+      attributionControl: { compact: true }, fadeDuration: 400, maxTileCacheZoomLevels: 6, renderWorldCopies: true, dragRotate: false, pitchWithRotate: false,
       localIdeographFontFamily: "'Noto Serif', 'Songti SC', serif",
     }, o.mapOptions || {}));
     map.touchZoomRotate.disableRotation();
     map.on('styleimagemissing', () => {});
     addSprites(map);
     map.once('styledata', () => addSprites(map));
-    map.INK = INK;
+    map.INK = INK; map.__inkOpts = Object.assign({}, opts || {}, { mapOptions: undefined });
     if (!map.isStyleLoaded()) await new Promise(res => map.once('style.load', res));
     return map;
   }

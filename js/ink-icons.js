@@ -84,9 +84,12 @@
   // ---------------- bird's-eye houses (one oblique viewpoint for every house: depth runs up and to the right)
   const WALL = '#F3E7C9', WALLSH = '#D9C59A', TILE = '#B4472E', TILESH = '#8C2E1E', TILE2 = '#66809C', TILE2SH = '#475E78';   // red tiles and blue-grey slate, as on the old coloured town plans
   const DV = [0.38, -0.7];   // one unit of depth on paper
+  // further roof colours seen on the coloured plans: ochre tiles, moss-grey stone slates, dark old tiles, brown shingles
+  const ROOFS = [[TILE, TILESH], [TILE2, TILE2SH], ['#B8843E', '#8E6229'], ['#7A8466', '#59624A'], ['#93402E', '#6B2B1F'], ['#8A6A4E', '#664C36']];
   function bhBox(p, x0, gy, w, hw, d, rh, opt) {
     opt = opt || {};
-    const T = opt.brown ? TILE2 : TILE, TS = opt.brown ? TILE2SH : TILESH;
+    const RC = opt.roof !== undefined ? ROOFS[opt.roof] : opt.brown ? ROOFS[1] : ROOFS[0];
+    const T = RC[0], TS = RC[1];
     const dx = DV[0] * d, dy = DV[1] * d, top = gy - hw;
     const A = [x0, gy], B = [x0 + w, gy], At = [x0, top], Bt = [x0 + w, top];
     const Bb = [B[0] + dx, B[1] + dy], Bbt = [Bt[0] + dx, Bt[1] + dy], Abt = [At[0] + dx, At[1] + dy];
@@ -126,7 +129,12 @@
     else if (v === 4) bhBox(p, 5, gy, 15, 5, 14, 3, { brown: true, chimney: true });
     else if (v === 5) { bhBox(p, 4, gy - 2, 10, 4.5, 12, 3); bhBox(p, 13, gy, 7, 5.5, 14, 4, { gable: true }); }
     else if (v === 6) bhBox(p, 6, gy, 12, 7, 12, 3, { chimney: true });
-    else bhBox(p, 4, gy, 17, 4.5, 12, 3, { party: 2, brown: v % 2 === 1 });
+    else if (v === 7) bhBox(p, 4, gy, 17, 4.5, 12, 3, { party: 2, brown: true });
+    // gabled rows in the other roof colours
+    else if (v === 8) { bhBox(p, 2, gy, 8, 6, 14, 4.5, { gable: true, roof: 2 }); bhBox(p, 10, gy, 8, 6.5, 14, 4.5, { gable: true, roof: 4, chimney: true }); bhBox(p, 18, gy, 8, 6, 14, 4.5, { gable: true, roof: 2 }); }
+    else if (v === 9) bhBox(p, 5, gy, 15, 5, 13, 3, { roof: 3, chimney: true, party: 2 });
+    else if (v === 10) { bhBox(p, 3, gy, 9, 6, 14, 4.5, { gable: true, roof: 5 }); bhBox(p, 12, gy, 9, 7, 14, 5, { gable: true, roof: 0, chimney: true }); }
+    else bhBox(p, 4, gy, 16, 5, 12, 3.4, { roof: 4, party: 3, doorAt: 0.3 });
   }
 
   // ---------------- settlements
@@ -165,7 +173,7 @@
     add('s-hamlet', 20, 18, p => { house(p, 4, 14, 10, 6, 5); });
     // townhouses for the drawn towns, all seen from one viewpoint (high in the south, a little to the east), as on the
     // bird's-eye town plans of the sixteenth century: cream walls, red tiled roofs, every house turned the same way
-    for (let v = 0; v < 8; v++) add('th' + v, 32, 30, p => { bhVariant(p, v); }, 3000 + v);
+    for (let v = 0; v < 12; v++) add('th' + v, 32, 30, p => { bhVariant(p, v); }, 3000 + v);
     add('market', 30, 26, p => {
       p.poly([[3, 22], [27, 22], [24, 14], [6, 14]], PAPER, 1.4);   // a cobbled square with a market cross and stalls
       for (let i = 0; i < 4; i++) p.dot(8 + i * 5, 19, 0.7);
@@ -173,6 +181,24 @@
       p.poly([[4, 13], [9, 10], [9, 14]], RED, 0.8);
     });
     add('townchurch', 30, 40, p => { church(p, 12, 36, 1.05, true); });
+    // market stalls with striped awnings, and a village green with its tree and pond
+    for (let v = 0; v < 3; v++) add('stall' + v, 18, 16, p => { const col = ['#A3261B', '#3D6E9E', '#B8862B'][v]; p.rect(3, 8, 12, 6, PAPER, 1.1); p.poly([[1, 9], [17, 9], [15, 4], [3, 4]], col, 1); for (let k = 0; k < 3; k++) p.line([[5 + k * 4, 4], [4.5 + k * 4, 9]], 0.8); p.dot(6, 11.5, 0.8); p.dot(10, 11.5, 0.8, '#B8862B'); }, 6100 + v);
+    add('green', 40, 30, p => { p.ell(20, 18, 18, 9, '#C9D3A0', 1.1); p.ell(29, 20, 5, 2.6, '#9DBBD6', 0.9); p.line([[12, 22], [12, 15]], 1.4); p.ell(12, 11, 5.5, 5, '#B9C98F', 1.3); p.hatch([[12, 6], [17, 11], [12, 16]], 60, 1.6, 0.6); });
+    // a walled city at the middle zooms: a ring wall with gate towers, the cathedral spire and the castle on its rise
+    add('citybig', 96, 78, p => {
+      const cx = 48, gy = 66;
+      p.ell(cx, 52, 42, 17, '#EFE1BC', 1.8);
+      p.ell(cx, 52, 37, 13.5, null, 0.7);
+      for (const [hx, hy, v] of [[22, 54, 0], [31, 58, 2], [58, 58, 0], [66, 53, 4], [40, 61, 3], [53, 62, 2], [27, 47, 4], [70, 46, 0]]) { const c = TILE; bhBox(p, hx - 5, hy, 8 + (v % 3), 3.5, 7, 2.4, { roof: v % 6, door: false }); }
+      p.tower(57, 50, 7, 22, 'spire', { k: 2.5 });                       // cathedral
+      p.rect(42, 41, 15, 9, PAPER, 1.3); p.poly([[41, 41], [49.5, 35], [58, 41]], TILE, 1.2);
+      p.tower(30, 44, 9, 18, 'cren'); p.tower(23, 46, 6, 12, 'cren', { win: false }); p.flag(30, 26 - 1, 1.1);   // castle keep
+      for (const [tx, ty] of [[8, 54], [24, 66], [48, 70], [72, 66], [88, 54], [48, 37]]) p.tower(tx, ty, 7, 11, 'cone', { red: true, win: false });
+      p.rect(44, 62, 8, 8, PAPER, 1.4); p.line([[46, 70], [46, 65], [48, 63.5], [50, 65], [50, 70]], 1);   // the main gate
+    });
+    // pick and shovel for mines and quarries; an anchor for harbours
+    add('quarry', 26, 24, p => { p.line([[5, 20], [19, 6]], 1.8); p.line([[12, 3], [16, 4], [21, 9], [22, 13]], 1.6); p.line([[21, 20], [9, 8]], 1.6); p.poly([[6, 5], [11, 6], [9, 11], [4, 9]], '#9C8656', 1.1); p.ground(1, 25, 22); });
+    add('anchor', 22, 26, p => { p.col(BLUE); p.ell(11, 4, 2.4, 2.4, null, 1.3); p.line([[11, 6.5], [11, 22]], 1.8); p.line([[6, 10], [16, 10]], 1.5); p.line([[3, 15], [5, 21], [11, 23], [17, 21], [19, 15]], 1.6); p.line([[1.5, 16.5], [3, 15], [5, 16]], 1.2); p.line([[17, 16], [19, 15], [20.5, 16.5]], 1.2); p.col(INK); });
     add('wallseg', 24, 14, p => { p.rect(1, 5, 22, 7, PAPER, 1.5); p.crenels(1, 5, 22, 5); p.hatch([[1, 9], [23, 9], [23, 12], [1, 12]], 0, 1.6, 0.6); });
     add('walltower', 16, 22, p => { p.tower(8, 20, 9, 13, 'cone', { red: true, win: false }); });
     // star fort: bastioned trace with a moat, seen from above (map symbol), and the rampart hachure for real outlines
@@ -382,8 +408,18 @@
     if (o.spout) { p.col(BLUE); p.line([[x0 + len * 0.18, gy - ht], [x0 + len * 0.18 - 2, gy - ht - 9]], 1); p.line([[x0 + len * 0.18, gy - ht], [x0 + len * 0.18 + 3, gy - ht - 9]], 1); p.line([[x0 + len * 0.18, gy - ht], [x0 + len * 0.18 + 0.5, gy - ht - 11]], 0.9); p.col(INK); }
     p.col(BLUE).line([[x0 - 4, gy + ht * 0.6], [x0 + len + 10, gy + ht * 0.6]], 0.9).line([[x0 + 4, gy + ht * 0.6 + 3], [x0 + len, gy + ht * 0.6 + 3]], 0.7).col(INK);
   }
+  // bestiary style: each beast is cut out on a pale gold ground with a fine gilt edge, as in the margins of an illuminated manuscript
+  function gild(c) {
+    const P = 4, o = document.createElement('canvas'); o.width = c.width + 2 * P; o.height = c.height + 2 * P;
+    const x = o.getContext('2d'), t = document.createElement('canvas'); t.width = c.width; t.height = c.height;
+    const tx = t.getContext('2d');
+    const ring = (r, col) => { tx.globalCompositeOperation = 'source-over'; tx.clearRect(0, 0, t.width, t.height); tx.drawImage(c, 0, 0); tx.globalCompositeOperation = 'source-in'; tx.fillStyle = col; tx.fillRect(0, 0, t.width, t.height); for (let a = 0; a < 6.28; a += 0.4) x.drawImage(t, P + Math.cos(a) * r, P + Math.sin(a) * r); };
+    ring(2.8, 'rgba(140,100,32,0.85)'); ring(2.0, 'rgba(250,240,210,1)');
+    x.drawImage(c, P, P);
+    return o;
+  }
   function animals(add) {
-    const A = (id, w, h, f) => add('a_' + id, w, h, f, hashStr(id));
+    const A = (id, w, h, f) => add('a_' + id, w, h, null, 0, () => { const p = Pen(w, h, hashStr(id)); f(p); return gild(p.done()); });
     A('elephant', 60, 46, p => quad(p, { bx: 34, by: 24, bl: 30, bh: 18, leg: 12, legW: 3.2, head: 7, headW: 1.0, tailL: 5, tuft: true, feature: (p, hx, hy) => { p.line([[hx - 4, hy + 2], [hx - 7, hy + 10], [hx - 5, hy + 16]], 2.4); p.ell(hx + 4, hy + 1, 4.5, 6, PAPER, 1.3); p.line([[hx - 3, hy + 4], [hx - 7, hy + 6]], 1.1); } }));
     A('lion', 56, 40, p => quad(p, { bx: 32, by: 22, bl: 26, bh: 11, leg: 10, head: 4.5, tailL: 10, tailDy: -2, tuft: true, feature: (p, hx, hy) => { for (let a = 0; a < 6.28; a += 0.45) p.line([[hx + Math.cos(a) * 4.5, hy + Math.sin(a) * 4.5], [hx + Math.cos(a) * 8, hy + Math.sin(a) * 8]], 1.2); p.ell(hx, hy, 5, 4.4, '#E3C46B', 1.4); p.dot(hx - 2, hy - 1, 0.8); } }));
     A('giraffe', 50, 62, p => quad(p, { bx: 30, by: 36, bl: 20, bh: 10, leg: 18, neck: 20, head: 3.2, tailL: 6, tuft: true, fill: '#EBD49A', feature: (p, hx, hy, hr, bx, by) => { for (let i = 0; i < 9; i++) p.dot(bx - 8 + (i % 3) * 7, by - 3 + Math.floor(i / 3) * 3, 1.2, '#8A5A2B'); p.line([[hx + 1, hy - 3], [hx + 1, hy - 6]], 1); p.line([[hx + 3, hy - 3], [hx + 3, hy - 6]], 1); } }));
@@ -438,6 +474,12 @@
     W('minke', { len: 38, ht: 8, fin: 4, fill: '#7E8A96' });
     W('orca', { len: 38, ht: 9, fin: 8, fill: '#2B2119', finFill: '#2B2119' });
     W('sperm', { len: 48, ht: 11, fin: 0, fill: '#5A5F66', headBluff: true });
+    // beasts of the countryside, for the closer zooms
+    A('boar', 52, 34, p => quad(p, { bx: 30, by: 18, bl: 26, bh: 13, leg: 7, legW: 2.4, head: 5, headW: 1.5, tailL: 4, fill: '#6E5845', ear: true, feature: (p, hx, hy) => { p.line([[hx - 5, hy + 2], [hx - 8, hy - 1]], 1.2); p.line([[24, 12], [27, 9], [30, 12], [33, 9], [36, 12]], 1); } }));
+    A('sheep', 44, 32, p => quad(p, { bx: 25, by: 16, bl: 22, bh: 13, leg: 7, legW: 1.6, head: 3.6, headW: 1.3, tailL: 2, fill: '#F4EEDC', shade: false, feature: (p, hx, hy, hr, bx, by) => { for (let i = 0; i < 8; i++) p.ell(bx - 8 + (i % 4) * 5.3, by - 3 + Math.floor(i / 4) * 5, 2.4, 2.2, null, 0.7); p.ell(hx, hy, 3.6 * 1.3, 3.6, '#4A3C30', 1.2); } }));
+    A('cow', 50, 36, p => quad(p, { bx: 28, by: 18, bl: 26, bh: 12, leg: 9, legW: 2, head: 4, headW: 1.4, tailL: 7, tailDy: 7, tuft: true, fill: '#F1E8D6', shade: false, feature: (p, hx, hy, hr, bx, by) => { p.ell(bx - 4, by - 1, 5, 3.6, '#5A4636', 0); p.ell(bx + 7, by + 1, 3.6, 3, '#5A4636', 0); p.line([[hx - 1, hy - 3.5], [hx - 4, hy - 6]], 1.1); p.line([[hx + 2, hy - 3.5], [hx + 4, hy - 6]], 1.1); } }));
+    A('heron', 36, 50, p => bird(p, { bx: 20, by: 22, bl: 14, bh: 8, leg: 16, neck: 10, head: 2.4, beak: 8, fill: '#B8C0C4', tail: 3, feature: (p) => { p.col(BLUE).line([[4, 46], [32, 46]], 0.9).col(INK); } }));
+    A('fish', 40, 22, p => { p.poly([[4, 11], [12, 6], [24, 5], [32, 10], [38, 5], [37, 11], [38, 17], [32, 12], [24, 16], [12, 16]], '#A9BCC6', 1.4); p.dot(10, 10, 0.8); for (let i = 0; i < 4; i++) p.ell(16 + i * 3.6, 11, 1.6, 2.4, null, 0.6); p.col(BLUE).line([[0, 20], [40, 20]], 0.8).col(INK); });
     A('serpent', 72, 40, p => { const seg = [[8, 26], [20, 12], [32, 26], [44, 12], [56, 26]]; for (let i = 0; i < 4; i++) { const a = seg[i], b = seg[i + 1]; const pts = []; for (let k = 0; k <= 10; k++) { const t = k / 10; pts.push([a[0] + (b[0] - a[0]) * t, 26 - Math.sin(t * Math.PI) * 13 * (i % 2 ? 0 : 1) - (i % 2 ? Math.sin(t * Math.PI) * 13 : 0)]); } } for (const cx of [14, 38]) { p.ell(cx, 26, 8, 12, '#5E8A5A', 1.6, Math.PI, Math.PI * 2); p.hatch([[cx, 14], [cx + 8, 26], [cx, 26]], 60, 1.8, 0.7); for (let k = 0; k < 3; k++) p.poly([[cx - 2 + k * 3, 14.5 + k], [cx - 0.5 + k * 3, 11 + k], [cx + 1 + k * 3, 15 + k]], RED, 0.6); } p.ell(58, 22, 6, 4, '#5E8A5A', 1.5); p.poly([[63, 22], [70, 20], [64, 24]], PAPER, 1); p.dot(57, 20.5, 1); p.line([[61, 25], [64, 29]], 0.9); p.col(BLUE); p.line([[0, 27], [72, 27]], 1); p.line([[6, 30], [66, 30]], 0.7); p.col(INK); });
   }
 
@@ -507,6 +549,42 @@
     for (let v = 0; v < 3; v++) add('snowf' + v, 40, 18, p => { p.col(BLUES); for (let k = 0; k < 4; k++) p.line([[4 + k * 9, 14], [10 + k * 9, 4]], 1.1); p.line([[2, 16], [38, 15]], 0.7); if (v === 1) p.line([[8, 9], [30, 8]], 0.7); p.col(INK); }, 7000 + v);
   }
 
+  // ---------------- fill patterns for the countryside and parks, and the ribbon and banner behind city names
+  function patterns(map) {
+    const put = (id, w, h, draw, opts) => { if (map.hasImage(id)) return; const p = Pen(w, h, hashStr(id)); draw(p); const c = p.done(); map.addImage(id, c.getContext('2d').getImageData(0, 0, w, h), Object.assign({ pixelRatio: 2 }, opts || {})); };
+    // ploughed strips: four directions, ochre and green, faint, tiling seamlessly on 64 px
+    const FC = [['rgba(184,149,74,0.10)', 'rgba(150,112,48,0.55)'], ['rgba(125,143,78,0.10)', 'rgba(92,110,52,0.5)']];
+    for (let k = 0; k < 8; k++) put('fld' + k, 64, 64, p => {
+      const [bg, ln] = FC[k % 2], ang = Math.floor(k / 2);
+      p.x.fillStyle = bg; p.x.fillRect(0, 0, 64, 64); p.x.strokeStyle = ln; p.x.lineWidth = 1;
+      for (let d = -64; d < 128; d += 8) { p.x.beginPath();
+        if (ang === 0) { p.x.moveTo(0, d + 4); p.x.lineTo(64, d + 4); } else if (ang === 1) { p.x.moveTo(d + 4, 0); p.x.lineTo(d + 4, 64); }
+        else if (ang === 2) { p.x.moveTo(d, 0); p.x.lineTo(d + 64, 64); } else { p.x.moveTo(d, 64); p.x.lineTo(d + 64, 0); }
+        p.x.stroke(); }
+    });
+    put('vin', 32, 32, p => { p.x.strokeStyle = 'rgba(92,70,50,0.75)'; p.x.lineWidth = 1; for (const y0 of [8, 24]) { p.x.beginPath(); p.x.moveTo(0, y0 + 3); p.x.lineTo(32, y0 + 3); p.x.stroke(); for (const x0 of [4, 12, 20, 28]) { p.x.beginPath(); p.x.moveTo(x0, y0 + 3); p.x.lineTo(x0, y0 - 3); p.x.stroke(); p.x.beginPath(); p.x.arc(x0 + 1.5, y0 - 1, 1.6, 0, 6.3); p.x.strokeStyle = 'rgba(96,120,60,0.8)'; p.x.stroke(); p.x.strokeStyle = 'rgba(92,70,50,0.75)'; } } });
+    put('orc', 32, 32, p => { for (const [cx, cy] of [[8, 8], [24, 24]]) { p.x.beginPath(); p.x.arc(cx, cy, 4, 0, 6.3); p.x.fillStyle = 'rgba(185,201,143,0.9)'; p.x.fill(); p.x.lineWidth = 1; p.x.strokeStyle = 'rgba(43,33,25,0.8)'; p.x.stroke(); p.x.beginPath(); p.x.moveTo(cx, cy + 4); p.x.lineTo(cx, cy + 6.5); p.x.stroke(); p.x.fillStyle = '#A3261B'; p.x.beginPath(); p.x.arc(cx - 1.4, cy - 0.6, 0.8, 0, 6.3); p.x.fill(); } });
+    put('alt', 32, 32, p => { p.x.strokeStyle = 'rgba(110,96,78,0.7)'; p.x.lineWidth = 0.8; p.x.strokeRect(0.5, 0.5, 15, 15); p.x.strokeRect(16.5, 0.5, 15, 15); p.x.strokeRect(0.5, 16.5, 15, 15); p.x.strokeRect(16.5, 16.5, 15, 15); p.x.strokeStyle = 'rgba(96,120,60,0.7)'; for (let k = 0; k < 4; k++) { p.x.beginPath(); p.x.moveTo(2, 3 + k * 3.5); p.x.lineTo(14, 3 + k * 3.5); p.x.stroke(); p.x.beginPath(); p.x.moveTo(19 + k * 3.5, 18); p.x.lineTo(19 + k * 3.5, 30); p.x.stroke(); } });
+    put('mdw', 48, 48, p => { p.x.strokeStyle = 'rgba(92,110,52,0.6)'; p.x.lineWidth = 0.9; for (const [cx, cy] of [[10, 12], [34, 20], [18, 38], [42, 42]]) for (let k = -1; k <= 1; k++) { p.x.beginPath(); p.x.moveTo(cx + k * 1.5, cy); p.x.lineTo(cx + k * 3, cy - 4); p.x.stroke(); } });
+    put('prk', 64, 64, p => { p.x.fillStyle = 'rgba(185,201,143,0.35)'; p.x.fillRect(0, 0, 64, 64); for (const [cx, cy] of [[12, 14], [44, 22], [26, 46], [56, 54]]) { p.x.beginPath(); p.x.arc(cx, cy, 4.2, 0, 6.3); p.x.fillStyle = 'rgba(243,229,191,0.95)'; p.x.fill(); p.x.lineWidth = 1.1; p.x.strokeStyle = '#4F6B3A'; p.x.stroke(); p.x.beginPath(); p.x.moveTo(cx, cy + 4.2); p.x.lineTo(cx, cy + 7); p.x.stroke(); } });
+    put('par', 32, 32, p => { p.x.fillStyle = 'rgba(185,201,143,0.35)'; p.x.fillRect(0, 0, 32, 32); p.x.strokeStyle = 'rgba(79,107,58,0.85)'; p.x.lineWidth = 1; p.x.strokeRect(3.5, 3.5, 25, 25); p.x.beginPath(); p.x.arc(16, 16, 6, 0, 6.3); p.x.stroke(); p.x.beginPath(); p.x.moveTo(3.5, 3.5); p.x.lineTo(28.5, 28.5); p.x.moveTo(28.5, 3.5); p.x.lineTo(3.5, 28.5); p.x.stroke(); p.x.fillStyle = '#A3261B'; p.x.beginPath(); p.x.arc(16, 16, 1.4, 0, 6.3); p.x.fill(); });
+    // a ribbon with a small heraldic shield at its left end, for capitals (stretches to fit the name)
+    put('ribbon', 120, 34, p => {
+      const R = [[16, 7], [114, 7], [108, 17], [114, 27], [16, 27]];
+      p.poly([[6, 12], [16, 9], [16, 25], [6, 30], [10, 21]], '#C9A24A', 1.1);
+      p.poly(R, '#FBF3DC', 1.4); p.line([[19, 10], [111, 10]], 0.6); p.line([[19, 24], [111, 24]], 0.6);
+      p.poly([[3, 4], [17, 4], [17, 15], [10, 22], [3, 15]], '#A3261B', 1.3); p.poly([[7, 7], [13, 7], [13, 13], [10, 16], [7, 13]], '#C9A24A', 0.8);
+    }, { stretchX: [[24, 56], [64, 100]], stretchY: [[12, 22]], content: [22, 8, 104, 26] });
+    put('banner', 104, 30, p => {
+      p.poly([[4, 6], [100, 6], [95, 15], [100, 24], [4, 24], [9, 15]], '#FBF3DC', 1.3); p.line([[10, 9], [94, 9]], 0.5); p.line([[10, 21], [94, 21]], 0.5);
+    }, { stretchX: [[16, 48], [56, 88]], stretchY: [[11, 19]], content: [12, 7, 92, 23] });
+    // a range of little peaks, for the far-out caterpillar ranges (three variants)
+    for (let v = 0; v < 3; v++) put('rng' + v, 34, 22, p => {
+      const pk = [[3 + v, 20, 11 + v * 2, 7 - v, 20 - v * 0.5], [12, 20, 19 + v, 3 + v * 1.5, 26 - v]];
+      for (const [x0, gy, ax, ay, x1] of pk) { p.poly([[x0, gy], [ax, ay], [x1 + 4, gy]], 'rgba(243,229,191,0.97)', 0); p.hatch([[ax, ay], [x1 + 4, gy], [ax + 1.5, gy]], 70, 1.7, 0.7); p.line([[x0, gy], [ax - 1.5, ay + (gy - ay) * 0.3], [ax, ay], [ax + 2, ay + (gy - ay) * 0.35], [x1 + 4, gy]], 1.6); }
+    });
+  }
+
   // ---------------- registration
   function addAll(map, trim, mountainSprite) {
     const out = [];
@@ -518,6 +596,7 @@
       out.push(id);
     };
     settlements(add); heritage(add); landmarks(add); peaks(add); animals(add); vessels(add);
+    if (map.addImage && !map.__fake) patterns(map);
     snowPeaks((id, w, h, draw, seed, raw) => add(id, w, h, draw, seed, raw), mountainSprite);
     return out;
   }
@@ -526,7 +605,7 @@
   function draw(id, mountainSprite) {
     if (!sheet) {
       sheet = new Map();
-      const fake = { hasImage: () => false, addImage: (i, img) => { sheet.set(i, img); } };
+      const fake = { __fake: true, hasImage: () => false, addImage: (i, img) => { sheet.set(i, img); } };
       addAll(fake, c => c, mountainSprite || (() => document.createElement('canvas')));
     }
     const img = sheet.get(id); if (!img) return null;
