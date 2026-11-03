@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"n":"Titanic","y":"1912","q":"Q25173","z":7},"geometry":{"type":"Point","coordinates":[-49.947,41.733]}},{"type":"Feature","properties":{"n":"wreck of the RMS Titanic","y":"1912","q":"Q3018259","z":7},"geometry":{"type":"Point","coordinates":[-49.947,41.733]}}]}
