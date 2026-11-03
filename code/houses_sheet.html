@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><title>Regional Houses Sheet</title>
+<style>
+body{margin:0;background:#F3E5BF;font:12px Georgia,serif;color:#2B2119}
+#s{padding:14px 22px;width:2200px}
+h2{font:600 17px Georgia,serif;color:#A3261B;margin:12px 0 2px;letter-spacing:.04em}
+.row{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap}
+.c{text-align:center;font:9px monospace;color:#6a5a4a}
+canvas{display:block;margin:0 auto}
+</style></head>
+<body><div id="s"></div>
+<script src="../js/ink-palette.js"></script>
+<script src="../js/ink-icons.js"></script>
+<script src="../js/ink-houses.js"></script>
+<script src="../js/ink-map.js"></script>
+<script src="../js/ink-life-art.js"></script>
+<script>
+// Every regional drawing (js/ink-houses.js) and regional traveller (js/ink-life-art.js), shown at SC times map size.
+// ?part=houses|towers|folk  ?snow=1 adds the snowy twins
+const q = new URLSearchParams(location.search), SC = +(q.get('sc') || 2.2), part = q.get('part') || 'houses', snow = q.has('snow');
+const root = document.getElementById('s'), H = window.InkHouses;
+const all = InkIcons.ids();
+function section(title, ids, sc, draw) {
+  const h = document.createElement('h2'); h.textContent = title; root.appendChild(h);
+  const r = document.createElement('div'); r.className = 'row'; root.appendChild(r);
+  for (const id of ids) {
+    let c; try { c = draw ? draw(id) : InkIcons.draw(id, InkMap.sprites.mountainSprite); } catch (e) { console.error(id + ': ' + e.stack.split('\n').slice(0, 3).join(' | ')); continue; } if (!c) continue;
+    const k = draw ? 3 : 1.5;   // life art at 3 device px per logical px, icons at 1.5
+    const d = document.createElement('canvas'); d.width = c.width / k * (sc || SC); d.height = c.height / k * (sc || SC);
+    const g = d.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(c, 0, 0, d.width, d.height);
+    const w = document.createElement('div'); w.className = 'c'; w.appendChild(d); w.appendChild(document.createTextNode(id)); r.appendChild(w);
+  }
+}
+const NAMES = { nl: 'Low Countries (added to the round 4 set)', de: 'Germany, Poland, Czechia, Hungary, Denmark, the Baltic', al: 'Switzerland and Austria', sc: 'Scandinavia and Finland', ru: 'Russia, Belarus, Ukraine', med: 'Iberia, Italy, Croatia', gr: 'Greece', cyc: 'The Cyclades', bk: 'The Balkans, Turkey, the Caucasus', mn: 'North Africa and the Middle East', ca: 'Central Asia', sh: 'The Sahel', ha: 'Hausa lands', wa: 'West and Central Africa', sw: 'The Swahili coast', et: 'Ethiopia and Eritrea', eaf: 'East and southern Africa', za: 'South Africa, Lesotho, Eswatini', zw: 'Zimbabwe', in: 'India', np: 'Nepal and Bhutan', pk: 'Pakistan and Bangladesh', lk: 'Sri Lanka', cn: 'China and Taiwan', kr: 'Korea', jp: 'Japan', se: 'Southeast Asia', la: 'Mexico, Central and South America, the Andes' };
+if (part === 'houses') {
+  for (const set of Object.keys(H.sets)) { const ids = H.sets[set].map((_, i) => 'r' + set + '-' + i); section(NAMES[set] || set, snow ? ids.flatMap(i => all.includes(i + '-s') ? [i, i + '-s'] : [i]) : ids); }
+  section('Churches, mosques and temples', H.temples.concat(['market2']));
+} else if (part === 'towers') {
+  for (const f of H.towers) section('Tall houses: ' + f, [1, 2, 3, 4].map(b => 'tw-' + f + '-' + b).concat(['h-tw-' + f]), 1.6);
+} else if (part === 'folk') {
+  const A = window.InkLifeArt, ids = A.ids().filter(i => /^lr-/.test(i) && !/-l$/.test(i));
+  const fams = {}; for (const id of ids) { const m = id.match(/^lr-([a-z]{2})-/); const f = m ? m[1] : 'eu'; (fams[f] = fams[f] || []).push(id); }
+  for (const f of Object.keys(fams)) section('Travellers: ' + f, fams[f], +(q.get('fsc') || 3), id => A.draw(id));
+}
+window.__ready = true;
+</script></body></html>

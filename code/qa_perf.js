@@ -1,6 +1,7 @@
 // Load time and panning frame rate on the offline tiles (software renderer), three runs per view, medians reported.
 // node code/qa_perf.js <label> [runs] [views,comma,separated]
-//   env: SCR (scratch folder holding tj12.json), MAPLIBRE_DIST, BASE (http server serving / on 127.0.0.1:8791), ROOT (checkout)
+//   env: SCR (scratch folder holding tj12.json), MAPLIBRE_DIST, BASE (http server serving / on 127.0.0.1:8791), ROOT (checkout),
+//        EXTRA (more page parameters, such as noclouds=1)
 // First meaningful paint (fmp): the base map (OpenFreeMap) and ink tiles for the view are loaded and a frame has been drawn.
 // First idle: MapLibre's first 'idle' event (every source loaded, every fade done).
 const fs = require('fs'), path = require('path');
@@ -36,6 +37,7 @@ const med = a => { const s = a.filter(v => v != null).sort((x, y) => x - y); ret
       const q = new URLSearchParams({ tj: `${BASE}${SCR}/tj12.json`, dem: `${BASE}/home/claude/newdata/raw9/terrarium/{z}/{x}/{y}.png`, demmax: '12', maponly: '1' });
       if (at) q.set('at', at);
       if (process.env.SEAOFF) q.set('seaoff', process.env.SEAOFF);
+      if (process.env.EXTRA) for (const [k, v] of new URLSearchParams(process.env.EXTRA)) q.set(k, v);   // e.g. EXTRA=noclouds=1
       await page.goto(`${BASE}${ROOT}/index.html?${q}`, { waitUntil: 'load' });
       await page.waitForFunction(() => window.__map, null, { timeout: 120000 });
       const tMap = await page.evaluate(() => performance.now());

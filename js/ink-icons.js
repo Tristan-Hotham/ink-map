@@ -836,6 +836,7 @@
       out.push(id);
     };
     settlements(add); heritage(add); landmarks(add); peaks(add); animals(add); vessels(add);
+    if (global.InkHouses) global.InkHouses.register(add, Pen);   // regional townhouses, temples and tall houses (js/ink-houses.js)
     if (map.addImage && !map.__fake) patterns(map);
     snowPeaks((id, w, h, draw, seed, raw) => add(id, w, h, draw, seed, raw), mountainSprite);
     return out;

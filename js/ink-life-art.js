@@ -431,6 +431,182 @@
     return out;
   }
 
+  // ================= regional travellers (round 5)
+  // The road life of each world region, chosen in js/ink-worker.js from the same region grid as the houses
+  // (data/house_regions.json): skin tones, dress, loads and beasts as they are in each place. Europe keeps the drawings
+  // above. Drawn only when a tile first asks for one (LAZY), so a view of Europe never pays for them.
+  const LAZY = new Map();
+  const ldef = (id, w, h, draw) => LAZY.set(id, [w, h, draw]);
+  const SK = { mn: ['#C99A70', '#B98A62', '#D6AE86'], ca: ['#D9B48E', '#C8A07A', '#CDA27C'], af: ['#5C3A26', '#6E4630', '#4A2E1E', '#7A5036'], sh: ['#5A3A28', '#6A4430', '#4E3222'],
+    sa: ['#9C6A46', '#8A5A3A', '#B07C56'], pk: ['#B58660', '#A07250', '#C49470'], ea: ['#EBCBA6', '#E0BC94', '#E6C49E'], se: ['#C4946A', '#B48258', '#BC8C62'], ml: ['#B88858', '#A87650', '#C29462'],
+    am: ['#C8946A', '#A8754F', '#DDB28C', '#8A5A3A'], an: ['#A87450', '#9A6844', '#B07C56'], na: ['#F0D5BC', '#7A4E33', '#C8946A', '#E0BC94'] };
+  // a regional figure: dress (robe, wrap, sari, dhoti, kurta, poncho, pollera, tunic), headwear, a load
+  function figure(p, x, y, s, o) {
+    o = o || {}; const k = s || 1, X = v => x + v * k, Y = v => y - v * k, skin = o.skin || PAL.skin, col = o.col || PAL.red;
+    const step = o.walk === false ? 0.5 : 1.1, dress = o.dress || 'tunic';
+    const legs = () => { p.line([[X(-0.2), Y(3.2)], [X(-step), Y(0)]], 0.75, o.legCol); p.line([[X(0.4), Y(3.2)], [X(step + 0.2), Y(0)]], 0.75, o.legCol); };
+    if (dress === 'robe') { p.poly([[X(-1.8), Y(0.3)], [X(-1.3), Y(7.4)], [X(0), Y(8.4)], [X(1.4), Y(7.4)], [X(2.1), Y(0.3)]], col, 0.7); p.line([[X(-1), Y(0)], [X(-1.2), Y(0.4)]], 0.6); p.line([[X(1.2), Y(0)], [X(1.4), Y(0.4)]], 0.6); if (o.trim) p.line([[X(0.1), Y(8.2)], [X(0.2), Y(0.6)]], 0.35, o.trim); }
+    else if (dress === 'wrap') { p.poly([[X(-1.7), Y(0.5)], [X(-1.5), Y(4.6)], [X(1.8), Y(4.6)], [X(2), Y(0.5)]], o.col2 || PAL.ochre, 0.65); p.line([[X(-1.4), Y(2.2)], [X(1.8), Y(2.8)]], 0.35, o.col3 || PAL.paper); p.poly([[X(-1.4), Y(4.6)], [X(-1.2), Y(7.4)], [X(0), Y(8.4)], [X(1.3), Y(7.4)], [X(1.7), Y(4.6)]], col, 0.65); p.line([[X(-0.6), Y(0)], [X(-0.6), Y(0.5)]], 0.6); p.line([[X(0.9), Y(0)], [X(0.9), Y(0.5)]], 0.6); }
+    else if (dress === 'sari') { p.poly([[X(-1.8), Y(0.3)], [X(-1.3), Y(7.4)], [X(0), Y(8.4)], [X(1.4), Y(7.4)], [X(2.1), Y(0.3)]], col, 0.7); p.poly([[X(-1.3), Y(7.6)], [X(1.4), Y(3)], [X(2.1), Y(3.4)], [X(0.4), Y(8.6)]], o.col2 || PAL.ochre, 0.4); p.line([[X(-1.7), Y(1)], [X(2), Y(1)]], 0.45, o.col2 || PAL.ochre); }
+    else if (dress === 'dhoti') { legs(); p.poly([[X(-1.5), Y(1.4)], [X(-1.4), Y(4.4)], [X(1.7), Y(4.4)], [X(1.8), Y(1.4)]], PAL.wool, 0.6); p.poly([[X(-1.5), Y(3.6)], [X(-1.2), Y(7.4)], [X(0), Y(8.4)], [X(1.3), Y(7.4)], [X(1.8), Y(3.6)]], col, 0.65); }
+    else if (dress === 'kurta') { legs(); p.poly([[X(-1.7), Y(2.4)], [X(-1.2), Y(7.4)], [X(0), Y(8.4)], [X(1.3), Y(7.4)], [X(2), Y(2.4)]], col, 0.7); }
+    else if (dress === 'poncho') { legs(); p.poly([[X(-2.4), Y(4)], [X(0), Y(8.4)], [X(2.6), Y(4)], [X(0.1), Y(3.4)]], col, 0.7); p.line([[X(-1.8), Y(4.9)], [X(2), Y(4.9)]], 0.4, o.col2 || PAL.ochre); p.line([[X(-1.3), Y(5.8)], [X(1.5), Y(5.8)]], 0.35, o.col3 || PAL.paper); }
+    else if (dress === 'pollera') { p.poly([[X(-2.6), Y(0.6)], [X(-1.2), Y(5)], [X(1.6), Y(5)], [X(3), Y(0.6)]], col, 0.7); p.line([[X(-2.2), Y(1.6)], [X(2.6), Y(1.6)]], 0.4, o.col3 || PAL.paper); p.poly([[X(-1.4), Y(4.6)], [X(-1.3), Y(7.6)], [X(0), Y(8.4)], [X(1.4), Y(7.6)], [X(1.8), Y(4.6)]], o.col2 || PAL.blue, 0.6); }
+    else { legs(); p.poly([[X(-1.6), Y(2.4)], [X(-1.2), Y(7.4)], [X(0), Y(8.4)], [X(1.3), Y(7.4)], [X(1.9), Y(2.4)]], col, 0.7); }
+    if (o.belt) p.line([[X(-1.3), Y(5)], [X(1.5), Y(5)]], 0.5, o.belt === true ? PAL.ink : o.belt);
+    // head
+    const hat = o.hat;
+    if (hat === 'scarf' || hat === 'abaya') { p.poly([[X(-1.5), Y(8.2)], [X(-1.4), Y(10.2)], [X(0.1), Y(11)], [X(1.4), Y(10.2)], [X(1.5), Y(8.4)], [X(0.4), Y(7.8)]], o.hatCol || PAL.blue, 0.6); p.ell(X(0.35), Y(9.4), 0.85 * k, 0.95 * k, skin, 0.45); return; }
+    if (hat === 'veil') { p.ell(X(0.1), Y(9.5), 1.2 * k, 1.25 * k, o.hatCol || '#2E3E6E', 0.6); p.rect(X(-0.1), Y(9.9), 1.1 * k, 0.5 * k, skin, 0); p.poly([[X(-1.2), Y(9.8)], [X(0), Y(11.2)], [X(1.3), Y(10)]], o.hatCol || '#2E3E6E', 0.5); return; }
+    p.ell(X(0.1), Y(9.5), 1.15 * k, 1.2 * k, skin, 0.6);
+    const hc = o.hatCol || PAL.wool;
+    if (hat === 'turban') p.ell(X(0.1), Y(10.5), 1.35 * k, 0.75 * k, hc, 0.5);
+    else if (hat === 'keffiyeh') { p.poly([[X(-1.4), Y(7.6)], [X(-1.4), Y(10.2)], [X(0.1), Y(11)], [X(1.4), Y(10.4)], [X(0.6), Y(10)], [X(-0.6), Y(10)], [X(-0.8), Y(8)]], hc, 0.5); p.line([[X(-1.3), Y(10.4)], [X(1.3), Y(10.6)]], 0.45, PAL.ink); }
+    else if (hat === 'conical') p.poly([[X(-2.6), Y(10)], [X(0.1), Y(12.2)], [X(2.8), Y(10)]], hc || PAL.straw, 0.5);
+    else if (hat === 'straw') { p.ell(X(0.1), Y(10.4), 2.2 * k, 0.5 * k, hc || PAL.straw, 0.45); p.ell(X(0.1), Y(10.8), 0.9 * k, 0.6 * k, hc || PAL.straw, 0.4); }
+    else if (hat === 'wide') { p.ell(X(0.1), Y(10.4), 2.5 * k, 0.55 * k, hc, 0.5); p.poly([[X(-0.9), Y(10.4)], [X(-0.6), Y(11.8)], [X(0.8), Y(11.8)], [X(1.1), Y(10.4)]], hc, 0.45); }
+    else if (hat === 'bowler') { p.ell(X(0.1), Y(10.5), 1.5 * k, 0.35 * k, hc || PAL.ink, 0.35); p.ell(X(0.1), Y(10.9), 0.9 * k, 0.8 * k, hc || PAL.ink, 0.35, Math.PI, Math.PI * 2); }
+    else if (hat === 'cap' || hat === 'doppa' || hat === 'songkok' || hat === 'topi' || hat === 'kufi') p.rect(X(-1), Y(11.2), 2.2 * k, 1 * k, hc, 0.4);
+    else if (hat === 'chullo') { p.ell(X(0.1), Y(10.4), 1.25 * k, 1 * k, hc, 0.45, Math.PI, Math.PI * 2); p.line([[X(-1), Y(10.2)], [X(-1.1), Y(9)]], 0.5, hc); p.line([[X(1.2), Y(10.2)], [X(1.3), Y(9)]], 0.5, hc); }
+    else if (hat === 'hood') p.poly([[X(-1.3), Y(9.2)], [X(-0.6), Y(11.2)], [X(0.9), Y(11)], [X(1.2), Y(9.6)], [X(0.4), Y(10.4)]], hc, 0.6);
+    // loads
+    if (o.load === 'head') { p.line([[X(1.2), Y(7.4)], [X(1.6), Y(11)]], 0.45, PAL.ink); p.poly([[X(-2.2), Y(10.8)], [X(-1.8), Y(12.2)], [X(2), Y(12.2)], [X(2.4), Y(10.8)]], o.loadCol || PAL.straw, 0.5); p.ell(X(0.1), Y(12.5), 1.4 * k, 0.55 * k, o.loadCol2 || PAL.ochre, 0.4); }
+    else if (o.load === 'pot') { p.line([[X(1.2), Y(7.4)], [X(1.6), Y(11)]], 0.45, PAL.ink); const pc = o.loadCol || '#C9A040'; p.ell(X(0.1), Y(11.8), 1.6 * k, 0.95 * k, pc, 0.5); p.rect(X(-0.5), Y(13.2), 1.2 * k, 0.6 * k, pc, 0.35); p.line([[X(-1.3), Y(11.6)], [X(1.5), Y(11.6)]], 0.3, PAL.ink); }
+    else if (o.load === 'pole') { p.line([[X(-4.6), Y(8.6)], [X(4.8), Y(8.2)]], 0.6, PAL.brown); for (const bx of [-4.4, 4.6]) { p.line([[X(bx), Y(8.4)], [X(bx - 0.8), Y(5)]], 0.3); p.line([[X(bx), Y(8.4)], [X(bx + 0.8), Y(5)]], 0.3); p.ell(X(bx), Y(4.4), 1.3 * k, 1 * k, o.loadCol || PAL.straw, 0.45); } }
+    else if (o.load === 'back') p.ell(X(-1.8), Y(6.4), 1.4 * k, 1.8 * k, o.loadCol || PAL.red, 0.5);
+    else if (o.load === 'baby') { p.ell(X(-1.7), Y(6.6), 1.2 * k, 1.5 * k, o.loadCol || PAL.ochre, 0.45); p.ell(X(-1.6), Y(8.4), 0.6 * k, 0.65 * k, skin, 0.35); }
+    if (o.staff) p.line([[X(2.4), Y(-0.2)], [X(2.2), Y(11.6)]], 0.7, PAL.brown);
+  }
+  // a seated rider: (x, y) = the seat
+  function seated(p, x, y, k, o) {
+    const X = v => x + v * k, Y = v => y - v * k, skin = o.skin || PAL.skin;
+    p.line([[X(0.6), Y(0)], [X(1.4), Y(-3)]], 0.75, o.legCol || PAL.ink);
+    if (o.dress === 'robe') p.poly([[X(-1.4), Y(-1.6)], [X(-1), Y(4)], [X(0.4), Y(4.8)], [X(1.6), Y(4)], [X(2), Y(-1.6)]], o.col || PAL.wool, 0.65);
+    else if (o.dress === 'poncho') p.poly([[X(-1.8), Y(1)], [X(0.4), Y(4.8)], [X(2.4), Y(1)], [X(0.4), Y(0.4)]], o.col || PAL.red, 0.65);
+    else p.poly([[X(-1), Y(0)], [X(-0.8), Y(4)], [X(0.4), Y(4.8)], [X(1.6), Y(4)], [X(1.6), Y(0)]], o.col || PAL.blue, 0.65);
+    figureHead(p, X(0.4), Y(6), k, o, skin);
+    p.line([[X(1.4), Y(2.8)], [X(4.6), Y(2.4)]], 0.4);
+  }
+  function figureHead(p, cx, cy, k, o, skin) {
+    const hat = o.hat, hc = o.hatCol || PAL.wool;
+    if (hat === 'veil') { p.ell(cx, cy, 1.15 * k, 1.2 * k, hc, 0.55); p.rect(cx - 0.2, cy - 0.5, 1.1 * k, 0.5 * k, skin, 0); return; }
+    if (hat === 'scarf') { p.ell(cx, cy, 1.3 * k, 1.35 * k, hc, 0.55); p.ell(cx + 0.25, cy + 0.1, 0.8 * k, 0.9 * k, skin, 0.4); return; }
+    p.ell(cx, cy, 1.1 * k, 1.15 * k, skin, 0.55);
+    if (hat === 'turban') p.ell(cx, cy - 1, 1.3 * k, 0.7 * k, hc, 0.45);
+    else if (hat === 'keffiyeh') { p.poly([[cx - 1.4, cy + 1.8], [cx - 1.4, cy - 0.7], [cx, cy - 1.5], [cx + 1.3, cy - 0.9], [cx + 0.5, cy - 0.5], [cx - 0.7, cy - 0.5], [cx - 0.8, cy + 1.6]], hc, 0.45); p.line([[cx - 1.3, cy - 0.9], [cx + 1.2, cy - 1.1]], 0.4); }
+    else if (hat === 'wide') { p.ell(cx, cy - 0.9, 2.5 * k, 0.5 * k, hc, 0.45); p.poly([[cx - 0.9, cy - 0.9], [cx - 0.6, cy - 2.2], [cx + 0.8, cy - 2.2], [cx + 1.1, cy - 0.9]], hc, 0.4); }
+    else if (hat === 'conical') p.poly([[cx - 2.4, cy - 0.5], [cx, cy - 2.6], [cx + 2.6, cy - 0.5]], hc, 0.45);
+    else if (hat === 'chullo') p.ell(cx, cy - 0.8, 1.2 * k, 0.9 * k, hc, 0.4, Math.PI, Math.PI * 2);
+    else if (hat && hat !== 'none') p.rect(cx - 1, cy - 2, 2.1 * k, 1 * k, hc, 0.4);
+  }
+  // beasts, facing right; (x, y) = hind hoof on the ground
+  function camel(p, x, y, k, o) {
+    o = o || {}; const col = o.col || '#C8A06A', X = v => x + v * k, Y = v => y - v * k;
+    for (const [a, b] of [[[1.6, 6], [1.2, 0]], [[3, 6], [3.4, 0]], [[9.4, 6], [9.6, 0]], [[10.6, 6], [11.2, 0]]]) p.line([[X(a[0]), Y(a[1])], [X(b[0]), Y(b[1])]], 0.7 * Math.max(0.8, k));
+    const hump = o.two ? [[X(2.2), Y(9.6)], [X(3.8), Y(11.4)], [X(5.2), Y(9.8)], [X(6.6), Y(11.4)], [X(8.2), Y(9.6)]] : [[X(2.4), Y(9.6)], [X(3.6), Y(12)], [X(5.4), Y(13.2)], [X(7.2), Y(12)], [X(8.4), Y(9.6)]];
+    p.poly([[X(0.6), Y(6.2)], [X(1), Y(9)]].concat(hump, [[X(10.2), Y(9.4)], [X(12), Y(11.6)], [X(12.6), Y(13.4)], [X(14.4), Y(13.2)], [X(14.6), Y(12.2)], [X(13.4), Y(12)], [X(12.2), Y(9)], [X(11), Y(6.2)]]), col, 0.7);
+    p.line([[X(0.7), Y(8.6)], [X(-0.4), Y(6)]], 0.6, PAL.horseDark); p.dot(X(13.6), Y(12.8), 0.25 * k);
+    p.hatch([[X(1), Y(6.4)], [X(10.6), Y(6.4)], [X(10.4), Y(7.6)], [X(1), Y(7.6)]], 0, 0.9 * k, 0.3);
+    if (o.load) { p.rect(X(1.6), Y(10.2), 2.4 * k, 3 * k, o.load, 0.45); p.rect(X(7), Y(10.2), 2.4 * k, 3 * k, o.load, 0.45); p.line([[X(2.8), Y(10.4)], [X(5.4), Y(12.6)], [X(8.2), Y(10.4)]], 0.35); }
+    if (o.saddle) p.poly([[X(3.6), Y(11.8)], [X(4.4), Y(13)], [X(7), Y(13)], [X(7.4), Y(11.6)]], o.saddle, 0.45);
+  }
+  function zebu(p, x, y, k, col, o) {
+    o = o || {}; const X = v => x + v * k, Y = v => y - v * k;
+    for (const lx of [0.8, 1.8, 5, 6]) p.line([[X(lx), Y(0)], [X(lx), Y(2.2)]], 0.55);
+    p.poly([[X(0), Y(2.2)], [X(0.2), Y(4.6)], [X(4.4), Y(4.8)], [X(4.9), Y(6)], [X(5.9), Y(5.9)], [X(6.4), Y(4.8)], [X(7.2), Y(4.4)], [X(8.8), Y(4.4)], [X(9), Y(3)], [X(7.4), Y(2.8)], [X(6.8), Y(1.6)], [X(6.4), Y(2.2)]], col || '#D8CDB8', 0.6);
+    p.line([[X(6.2), Y(2.6)], [X(6.6), Y(1.4)]], 0.4);   // dewlap
+    if (o.long) { p.line([[X(7.6), Y(4.6)], [X(6.6), Y(6)], [X(6.8), Y(7.4)], [X(7.4), Y(8)]], 0.7, '#8A7454'); p.line([[X(8.2), Y(4.6)], [X(9.4), Y(6)], [X(9.4), Y(7.4)], [X(8.9), Y(8)]], 0.7, '#8A7454'); }
+    else { p.line([[X(7.6), Y(4.6)], [X(7.2), Y(5.8)]], 0.5); p.line([[X(8.4), Y(4.6)], [X(8.8), Y(5.8)]], 0.5); }
+    p.line([[X(0), Y(4.2)], [X(-0.7), Y(2)]], 0.45);
+  }
+  function buffalo(p, x, y, k) {
+    const X = v => x + v * k, Y = v => y - v * k;
+    for (const lx of [0.8, 1.8, 5.4, 6.4]) p.line([[X(lx), Y(0)], [X(lx), Y(2)]], 0.65);
+    p.poly([[X(0), Y(2)], [X(0.2), Y(4.8)], [X(6.8), Y(5.2)], [X(7.4), Y(4.6)], [X(9.2), Y(4.2)], [X(9.4), Y(2.8)], [X(7.4), Y(2.4)], [X(7), Y(2)]], '#5E5A58', 0.6);
+    p.line([[X(7.2), Y(5)], [X(5.8), Y(6.2)], [X(4.8), Y(5.8)]], 0.7); p.line([[X(8.2), Y(5)], [X(9.6), Y(6.4)], [X(10.6), Y(6)]], 0.7);
+    p.line([[X(0), Y(4.4)], [X(-0.6), Y(2.2)]], 0.45);
+  }
+  function llama(p, x, y, k, col, load) {
+    const X = v => x + v * k, Y = v => y - v * k;
+    for (const lx of [0.6, 1.4, 4.4, 5.2]) p.line([[X(lx), Y(0)], [X(lx), Y(3)]], 0.5);
+    p.poly([[X(0), Y(3)], [X(0.2), Y(5.4)], [X(5), Y(5.4)], [X(5.2), Y(9.4)], [X(5.6), Y(10.4)], [X(7.2), Y(10)], [X(7.2), Y(9.4)], [X(6.2), Y(9.2)], [X(6), Y(4.8)], [X(5.6), Y(3)]], col || '#E6DCC6', 0.55);
+    p.line([[X(5.6), Y(10.3)], [X(5.4), Y(11.3)]], 0.4); p.line([[X(6), Y(10.3)], [X(6.1), Y(11.3)]], 0.4);
+    if (load) { p.rect(X(1), Y(6.8), 3.4 * k, 1.6 * k, load, 0.4); p.line([[X(1), Y(6)], [X(4.4), Y(6)]], 0.35, PAL.red); }
+    else p.dot(X(5.8), Y(10.6), 0.35, PAL.red);
+  }
+  function goat(p, x, y, k, col) { const X = v => x + v * k, Y = v => y - v * k; for (const lx of [0.6, 1.4, 3.6, 4.4]) p.line([[X(lx), Y(0)], [X(lx), Y(1.6)]], 0.45); p.poly([[X(0), Y(1.6)], [X(0.2), Y(3.2)], [X(4.4), Y(3.4)], [X(5.6), Y(4.6)], [X(6.4), Y(4)], [X(5.2), Y(2.8)], [X(4.6), Y(1.6)]], col || '#5A4636', 0.5); p.line([[X(5.4), Y(4.4)], [X(5), Y(5.4)]], 0.4); }
+  function donkey(p, x, y, k, o) { o = o || {}; horse(p, x, y, k, { col: o.col || '#9C9182' }); const X = v => x + v * k, Y = v => y - v * k; p.line([[X(12.4), Y(11.4)], [X(12.2), Y(13.6)]], 0.5); p.line([[X(12.9), Y(11.4)], [X(13.2), Y(13.4)]], 0.5); if (o.load) { p.rect(X(2.4), Y(10.6), 5 * k, 3 * k, o.load, 0.5); p.line([[X(2.4), Y(9.2)], [X(7.4), Y(9.2)]], 0.3); } }
+  const sk = (f, i) => SK[f][i % SK[f].length];
+
+  // ---- North Africa and the Middle East: thobe, jalabiya, keffiyeh and turban; abaya and headscarf; camels, donkeys, goats
+  ldef('lr-mn-camels', 46, 18, p => { p.shadow(23, 17.4, 21); for (let i = 0; i < 2; i++) camel(p, 3 + i * 16, 17, 0.95, { load: [PAL.red, PAL.ochre][i] }); figure(p, 41, 17, 0.9, { dress: 'robe', col: '#EDE6D4', hat: 'keffiyeh', hatCol: '#E8E0D0', skin: sk('mn', 0), staff: true }); });
+  ldef('lr-mn-camelrider', 22, 22, p => { p.shadow(10, 21.4, 9); camel(p, 2, 21, 1, { saddle: PAL.red }); seated(p, 7.2, 12.6, 1, { dress: 'robe', col: '#D8CDB8', hat: 'turban', hatCol: '#F2EEE2', skin: sk('mn', 1) }); });
+  ldef('lr-mn-donkey', 26, 16, p => { p.shadow(12, 15.4, 11); figure(p, 3.4, 15, 1, { dress: 'robe', col: '#6E8AA0', hat: 'turban', hatCol: '#F2EEE2', skin: sk('mn', 2), staff: true }); donkey(p, 8, 15, 0.72, { load: PAL.ochre }); });
+  ldef('lr-mn-women', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'robe', col: '#2E2A30', hat: 'abaya', hatCol: '#2E2A30', skin: sk('mn', 0), load: 'head', loadCol: PAL.straw }); figure(p, 10.4, 14, 0.95, { dress: 'robe', col: '#7A4A5A', hat: 'scarf', hatCol: '#E9DFC6', skin: sk('mn', 2) }); });
+  ldef('lr-mn-rider', 22, 20, p => { p.shadow(7, 19.3, 7); horse(p, 2, 19, 1, { col: '#E6DCC4' }); seated(p, 7.6, 11.6, 1, { dress: 'robe', col: '#F2EEE2', hat: 'keffiyeh', hatCol: '#C8483A', skin: sk('mn', 1) }); });
+  ldef('lr-mn-walker', 10, 15, p => { p.shadow(5, 14.4, 3.5); figure(p, 4.6, 14, 1, { dress: 'robe', col: '#B8A07A', hat: 'turban', hatCol: '#F2EEE2', skin: sk('mn', 1), staff: true }); });
+  ldef('lr-mn-goats', 30, 15, p => { p.shadow(15, 14.4, 13); for (const [gx, gy, c] of [[10, 14, '#5A4636'], [15, 12.6, '#E6DCC4'], [19, 14.2, '#3A2E26'], [23.4, 12.8, '#8A6A4E']]) goat(p, gx, gy, 1.1, c); figure(p, 4, 14, 1, { dress: 'robe', col: '#8A7A5A', hat: 'keffiyeh', hatCol: '#F2EEE2', skin: sk('mn', 0), staff: true }); });
+  // ---- Central Asia: chapan and doppa; Bactrian camels, horses, fat-tailed sheep; women in long dresses and headscarves
+  ldef('lr-ca-rider', 22, 20, p => { p.shadow(7, 19.3, 7); horse(p, 2, 19, 1, { col: PAL.horse }); seated(p, 7.6, 11.6, 1, { dress: 'robe', col: '#3E5A8A', hat: 'doppa', hatCol: '#2B2119', skin: sk('ca', 0) }); p.line([[9, 10.4], [9, 6]], 0.5, '#C8A040'); });
+  ldef('lr-ca-camel', 22, 22, p => { p.shadow(10, 21.4, 9); camel(p, 2, 21, 1, { two: true, col: '#A87E52' }); seated(p, 7.6, 12.4, 1, { dress: 'robe', col: '#8A2E3A', hat: 'doppa', hatCol: '#2B2119', skin: sk('ca', 1) }); });
+  ldef('lr-ca-donkey', 26, 16, p => { p.shadow(12, 15.4, 11); figure(p, 3.4, 15, 1, { dress: 'robe', col: '#4E6A4A', hat: 'doppa', hatCol: '#2B2119', skin: sk('ca', 2), staff: true }); donkey(p, 8, 15, 0.72, { load: PAL.red }); });
+  ldef('lr-ca-women', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'robe', col: '#B4362A', trim: '#E3B23C', hat: 'scarf', hatCol: '#E3B23C', skin: sk('ca', 0) }); figure(p, 10.4, 14, 0.95, { dress: 'robe', col: '#3F6FB0', trim: '#F2EEE2', hat: 'scarf', hatCol: '#F2EEE2', skin: sk('ca', 1), load: 'pot' }); });
+  ldef('lr-ca-sheep', 34, 15, p => { p.shadow(17, 14.4, 15); for (const [sx, sy] of [[12, 14], [17, 12.4], [21.4, 14.2], [26, 12.6], [15, 11]]) { sheep(p, sx, sy, 1.15); p.ell(sx - 0.2, sy - 2.2, 0.9, 1, '#C8B898', 0.4); } figure(p, 4, 14, 1, { dress: 'robe', col: '#5A4A3A', hat: 'doppa', hatCol: '#2B2119', skin: sk('ca', 1), staff: true }); });
+  // ---- sub-Saharan Africa: wrappers and head-loads, zebu with long horns, donkeys, ox carts, goats
+  ldef('lr-af-headload', 16, 17, p => { p.shadow(8, 16.4, 6.5); figure(p, 4, 16, 1, { dress: 'wrap', col: '#C8642E', col2: '#3F6FB0', col3: '#E3B23C', hat: 'scarf', hatCol: '#E3B23C', skin: sk('af', 0), load: 'head', loadCol: PAL.straw, loadCol2: '#4E8A52' }); figure(p, 10.6, 16, 0.95, { dress: 'wrap', col: '#E3B23C', col2: '#8A2E3A', hat: 'scarf', hatCol: '#8A2E3A', skin: sk('af', 1), load: 'baby', loadCol: '#3F6FB0' }); });
+  ldef('lr-af-zebu', 40, 16, p => { p.shadow(18, 15.4, 16); zebu(p, 10, 15, 1.3, '#C8A07A', { long: true }); zebu(p, 21, 13.6, 1.2, '#E6DCC6', { long: true }); zebu(p, 25, 15.4, 1.3, '#6A4A36', { long: true }); figure(p, 4, 15, 1, { dress: 'robe', col: '#B4362A', skin: sk('af', 2), staff: true, hat: 'none' }); });
+  ldef('lr-af-donkey', 26, 16, p => { p.shadow(12, 15.4, 11); figure(p, 3.4, 15, 1, { col: '#E6DCC6', legCol: PAL.ink, skin: sk('af', 3), staff: true, hat: 'kufi', hatCol: '#3F6FB0' }); donkey(p, 8, 15, 0.72, { load: '#D8B860' }); });
+  ldef('lr-af-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { col: '#4E8A52', skin: sk('af', 1), staff: true }); figure(p, 10.4, 14, 0.95, { dress: 'wrap', col: '#B4362A', col2: '#E3B23C', hat: 'scarf', hatCol: '#B4362A', skin: sk('af', 0), load: 'pot' }); });
+  ldef('lr-af-oxcart', 38, 16, p => { p.shadow(17, 15.4, 15); cart(p, 2, 15, 11, { load: 'sacks', shaft: 3.4 }); zebu(p, 16.4, 15, 1.2, '#C8A07A', { long: true }); zebu(p, 19, 14, 1.1, '#6A4A36', { long: true }); figure(p, 33.6, 15, 0.9, { col: '#3F6FB0', skin: sk('af', 3), staff: true }); });
+  ldef('lr-af-goats', 30, 15, p => { p.shadow(15, 14.4, 13); for (const [gx, gy, c] of [[10, 14, '#5A4636'], [15, 12.6, '#F2EEE2'], [19, 14.2, '#3A2E26'], [23.4, 12.8, '#A07A4F']]) goat(p, gx, gy, 1.1, c); figure(p, 4, 14, 0.9, { col: '#E3B23C', skin: sk('af', 2), staff: true }); });
+  // ---- the Sahel: boubou and turban, the indigo tagelmust of the Tuareg, Fulani herders with zebu, wrappers and head-loads
+  ldef('lr-sh-camels', 46, 22, p => { p.shadow(23, 21.4, 21); camel(p, 3, 21, 0.95, { load: '#8A2E3A' }); camel(p, 19, 21, 1, { saddle: PAL.red }); seated(p, 24, 12.6, 1, { dress: 'robe', col: '#2E3E6E', hat: 'veil', hatCol: '#2E3E6E', skin: sk('sh', 0) }); });
+  ldef('lr-sh-rider', 22, 20, p => { p.shadow(7, 19.3, 7); horse(p, 2, 19, 1, { col: '#E6DCC4' }); seated(p, 7.6, 11.6, 1, { dress: 'robe', col: '#3F6FB0', hat: 'turban', hatCol: '#F2EEE2', skin: sk('sh', 1) }); });
+  ldef('lr-sh-donkey', 26, 16, p => { p.shadow(12, 15.4, 11); figure(p, 3.4, 15, 1, { dress: 'robe', col: '#E6DCC6', hat: 'kufi', hatCol: '#F2EEE2', skin: sk('sh', 2), staff: true }); donkey(p, 8, 15, 0.72, { load: '#B4362A' }); });
+  ldef('lr-sh-women', 16, 17, p => { p.shadow(8, 16.4, 6.5); figure(p, 4, 16, 1, { dress: 'wrap', col: '#3F6FB0', col2: '#E3B23C', hat: 'scarf', hatCol: '#E3B23C', skin: sk('sh', 0), load: 'head', loadCol: '#C8A06A' }); figure(p, 10.6, 16, 0.95, { dress: 'robe', col: '#8A2E3A', hat: 'scarf', hatCol: '#E6DCC6', skin: sk('sh', 1), load: 'pot' }); });
+  ldef('lr-sh-zebu', 40, 16, p => { p.shadow(18, 15.4, 16); zebu(p, 10, 15, 1.3, '#B86A3A', { long: true }); zebu(p, 21, 13.6, 1.2, '#E6DCC6', { long: true }); zebu(p, 25, 15.4, 1.3, '#8A4A2A', { long: true }); figure(p, 4, 15, 1, { col: '#E6DCC6', hat: 'conical', hatCol: '#C8A060', skin: sk('sh', 2), staff: true }); });
+  // ---- South Asia: dhoti, kurta and turban, saris, bullock carts and zebu
+  ldef('lr-sa-bullock', 38, 18, p => { p.shadow(17, 17.4, 15); cart(p, 2, 17, 11, { load: 'hay', shaft: 3.4 }); zebu(p, 16.4, 17, 1.25, '#E6DCC6'); zebu(p, 19.4, 16, 1.15, '#D8CDB8'); seated(p, 10.6, 11.6, 0.9, { col: '#F2EEE2', hat: 'turban', hatCol: '#D9701E', skin: sk('sa', 0) }); });
+  ldef('lr-sa-zebu', 36, 15, p => { p.shadow(17, 14.4, 15); zebu(p, 10, 14, 1.25, '#E6DCC6'); zebu(p, 20, 12.8, 1.15, '#B8A890'); zebu(p, 23.4, 14.4, 1.2, '#D8CDB8'); figure(p, 4, 14, 1, { dress: 'dhoti', col: '#F2EEE2', hat: 'turban', hatCol: '#B4362A', skin: sk('sa', 1), staff: true }); });
+  ldef('lr-sa-sari', 16, 17, p => { p.shadow(8, 16.4, 6.5); figure(p, 4, 16, 1, { dress: 'sari', col: '#C8326A', col2: '#E3B23C', hat: 'none', skin: sk('sa', 0), load: 'pot' }); figure(p, 10.6, 16, 0.95, { dress: 'sari', col: '#3F8A6A', col2: '#D9701E', hat: 'none', skin: sk('sa', 2), load: 'head', loadCol: PAL.straw }); });
+  ldef('lr-sa-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'dhoti', col: '#F2EEE2', hat: 'turban', hatCol: '#E3B23C', skin: sk('sa', 1), staff: true }); figure(p, 10.4, 14, 0.95, { dress: 'kurta', col: '#3F6FB0', legCol: PAL.ink, hat: 'none', skin: sk('sa', 0) }); });
+  ldef('lr-sa-pots', 16, 17, p => { p.shadow(8, 16.4, 6.5); figure(p, 4, 16, 1, { dress: 'sari', col: '#D9701E', col2: '#B4362A', skin: sk('sa', 2), load: 'pot' }); figure(p, 10.6, 16, 0.95, { dress: 'sari', col: '#5A4AA0', col2: '#E3B23C', skin: sk('sa', 1), load: 'pot', loadCol: '#B8B8B0' }); });
+  // ---- Pakistan and Bangladesh: shalwar kameez with topi or turban, dupatta, bullock carts, donkeys
+  ldef('lr-pk-bullock', 38, 18, p => { p.shadow(17, 17.4, 15); cart(p, 2, 17, 11, { load: 'sacks', shaft: 3.4 }); zebu(p, 16.4, 17, 1.25, '#D8CDB8'); zebu(p, 19.4, 16, 1.15, '#B8A890'); seated(p, 10.6, 11.6, 0.9, { col: '#E6DCC6', hat: 'topi', hatCol: '#F2EEE2', skin: sk('pk', 0) }); });
+  ldef('lr-pk-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'kurta', col: '#E6DCC6', legCol: '#C8BBA0', hat: 'turban', hatCol: '#F2EEE2', skin: sk('pk', 1), staff: true }); figure(p, 10.4, 14, 0.95, { dress: 'kurta', col: '#5A7A9A', legCol: '#5A7A9A', hat: 'topi', hatCol: '#F2EEE2', skin: sk('pk', 2) }); });
+  ldef('lr-pk-women', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'robe', col: '#3F8A6A', hat: 'scarf', hatCol: '#E3B23C', skin: sk('pk', 0) }); figure(p, 10.4, 14, 0.95, { dress: 'robe', col: '#B4362A', hat: 'scarf', hatCol: '#F2EEE2', skin: sk('pk', 2), load: 'pot', loadCol: '#B8B8B0' }); });
+  ldef('lr-pk-donkey', 26, 16, p => { p.shadow(12, 15.4, 11); figure(p, 3.4, 15, 1, { dress: 'kurta', col: '#8A7A5A', legCol: '#8A7A5A', hat: 'turban', hatCol: '#F2EEE2', skin: sk('pk', 1), staff: true }); donkey(p, 8, 15, 0.72, { load: '#D8B860' }); });
+  // ---- East Asia: carrying poles and straw hats, robes, ox carts, wheelbarrows, riders
+  ldef('lr-ea-pole', 16, 15, p => { p.shadow(8, 14.4, 6); figure(p, 8, 14, 1, { col: '#5A6E86', legCol: PAL.ink, hat: 'conical', hatCol: PAL.straw, skin: sk('ea', 0), load: 'pole' }); });
+  ldef('lr-ea-rider', 22, 20, p => { p.shadow(7, 19.3, 7); horse(p, 2, 19, 1, { col: PAL.horseDark }); seated(p, 7.6, 11.6, 1, { dress: 'robe', col: '#3E5A7A', hat: 'cap', hatCol: '#2B2119', skin: sk('ea', 1) }); });
+  ldef('lr-ea-oxcart', 36, 16, p => { p.shadow(17, 15.4, 15); cart(p, 2, 15, 11, { load: 'sacks', shaft: 3.4 }); ox(p, 16.4, 15, 1.25); figure(p, 31.6, 15, 0.9, { col: '#8A7A5A', legCol: PAL.ink, hat: 'straw', hatCol: PAL.straw, skin: sk('ea', 2), staff: true }); });
+  ldef('lr-ea-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'robe', col: '#5A6E86', hat: 'cap', hatCol: '#2B2119', skin: sk('ea', 0), staff: true }); figure(p, 10.4, 14, 0.95, { dress: 'robe', col: '#B4473A', trim: '#E3B23C', hat: 'none', skin: sk('ea', 1) }); });
+  ldef('lr-ea-barrow', 18, 13, p => { p.shadow(9, 12.4, 7.5); p.ell(4, 10.8, 1.8, 1.8, PAL.paperFill, 0.6); p.poly([[1.6, 9], [9, 8.4], [9.4, 6.4], [2.2, 6.4]], PAL.brownSoft, 0.55); p.ell(5, 5.6, 2.6, 1.4, PAL.wool, 0.45); p.line([[9, 8.6], [12, 9.2]], 0.5); figure(p, 13.4, 12.6, 0.85, { col: '#5A6E86', legCol: PAL.ink, hat: 'straw', hatCol: PAL.straw, skin: sk('ea', 2) }); });
+  // ---- Southeast Asia: water buffalo, conical hats, carrying poles, buffalo carts
+  ldef('lr-se-buffalo', 22, 16, p => { p.shadow(9, 15.4, 9); buffalo(p, 3, 15, 1.4); seated(p, 7, 8.4, 0.85, { col: '#3E4A5A', hat: 'conical', hatCol: PAL.straw, skin: sk('se', 0) }); });
+  ldef('lr-se-pole', 16, 15, p => { p.shadow(8, 14.4, 6); figure(p, 8, 14, 1, { col: '#3E4A5A', legCol: PAL.ink, hat: 'conical', hatCol: '#E0CC90', skin: sk('se', 1), load: 'pole', loadCol: '#6E8A4A' }); });
+  ldef('lr-se-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { col: '#6A4A7A', legCol: PAL.ink, hat: 'conical', hatCol: '#E0CC90', skin: sk('se', 0), load: 'back', loadCol: PAL.straw }); figure(p, 10.4, 14, 0.95, { dress: 'wrap', col: '#F2EEE2', col2: '#8A2E3A', hat: 'conical', hatCol: '#E0CC90', skin: sk('se', 2) }); });
+  ldef('lr-se-buffcart', 38, 16, p => { p.shadow(17, 15.4, 15); cart(p, 2, 15, 11, { load: 'hay', shaft: 3.4 }); buffalo(p, 16.4, 15, 1.3); figure(p, 33.4, 15, 0.9, { col: '#3E4A5A', legCol: PAL.ink, hat: 'conical', hatCol: '#E0CC90', skin: sk('se', 1), staff: true }); });
+  // ---- Malaysia, Indonesia, Brunei: baju Melayu with songkok, baju kurung and headscarf
+  ldef('lr-ml-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'kurta', col: '#3E7A8A', legCol: '#3E7A8A', belt: '#C9982E', hat: 'songkok', hatCol: '#2B2119', skin: sk('ml', 0) }); figure(p, 10.4, 14, 0.95, { dress: 'robe', col: '#C8642E', hat: 'scarf', hatCol: '#F2EEE2', skin: sk('ml', 1), load: 'head', loadCol: PAL.straw }); });
+  ldef('lr-ml-buffalo', 22, 16, p => { p.shadow(9, 15.4, 9); buffalo(p, 3, 15, 1.4); seated(p, 7, 8.4, 0.85, { col: '#4E7A52', hat: 'songkok', hatCol: '#2B2119', skin: sk('ml', 2) }); });
+  // ---- the Americas: ponchos and wide hats, pack mules, ox carts, vaqueros and cattle
+  ldef('lr-am-rider', 22, 20, p => { p.shadow(7, 19.3, 7); horse(p, 2, 19, 1, { col: PAL.horse }); seated(p, 7.6, 11.6, 1, { dress: 'poncho', col: '#B4362A', col2: '#E3B23C', hat: 'wide', hatCol: '#D8C08A', skin: sk('am', 0) }); });
+  ldef('lr-am-mules', 44, 18, p => { p.shadow(22, 17.4, 20); for (let i = 0; i < 3; i++) { const x0 = 3 + i * 12.5; donkey(p, x0, 17, 0.8, { col: ['#6A4A36', '#9C8466', '#4E3423'][i], load: [PAL.ochre, PAL.wool, PAL.red][i] }); } figure(p, 41, 17, 0.9, { dress: 'poncho', col: '#3F6FB0', col2: '#B4362A', hat: 'wide', hatCol: '#D8C08A', skin: sk('am', 1), staff: true }); });
+  ldef('lr-am-oxcart', 38, 16, p => { p.shadow(17, 15.4, 15); cart(p, 2, 15, 11, { load: 'sacks', shaft: 3.4 }); ox(p, 16.4, 15, 1.3); ox(p, 19.4, 14, 1.2); figure(p, 33.6, 15, 0.9, { col: '#F2EEE2', legCol: PAL.ink, hat: 'wide', hatCol: '#D8C08A', skin: sk('am', 3), staff: true }); });
+  ldef('lr-am-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'robe', col: '#8A2E3A', hat: 'scarf', hatCol: '#3F6FB0', skin: sk('am', 1), load: 'head', loadCol: PAL.straw, loadCol2: '#D9701E' }); figure(p, 10.4, 14, 0.95, { col: '#F2EEE2', legCol: PAL.ink, hat: 'wide', hatCol: '#D8C08A', skin: sk('am', 2) }); });
+  ldef('lr-am-cattle', 40, 20, p => { p.shadow(18, 19.4, 16); cow(p, 12, 19, 1.3, PAL.brownSoft); cow(p, 23, 17.8, 1.2, '#E6DCC4'); cow(p, 26.4, 19.6, 1.3, '#6F4E37'); horse(p, 1, 19, 0.8, { col: PAL.horseDark }); seated(p, 5.4, 13, 0.85, { col: '#5A7A9A', hat: 'wide', hatCol: '#D8C08A', skin: sk('am', 3) }); });
+  // ---- the Andes: llama trains, women in polleras with bowler hats and woven carrying cloths, herders in ponchos and chullos
+  ldef('lr-an-llamas', 40, 15, p => { p.shadow(20, 14.4, 18); for (const [lx, ly, c, l] of [[11, 14, '#E6DCC6', '#B4362A'], [18.4, 12.8, '#8A6A4E', '#3F6FB0'], [24.6, 14.2, '#F2EEE2', '#E3B23C'], [30.6, 13, '#4E3A2A', '#4E8A52']]) llama(p, lx, ly, 1.1, c, l); figure(p, 4, 14, 1, { dress: 'poncho', col: '#B4362A', col2: '#3F6FB0', col3: '#E3B23C', hat: 'chullo', hatCol: '#E6DCC6', skin: sk('an', 0), staff: true }); });
+  ldef('lr-an-women', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { dress: 'pollera', col: '#C8326A', col2: '#3F6FB0', hat: 'bowler', hatCol: '#3A2E26', skin: sk('an', 1), load: 'back', loadCol: '#D9701E' }); figure(p, 10.6, 14, 0.95, { dress: 'pollera', col: '#3F8A6A', col2: '#8A2E3A', hat: 'bowler', hatCol: '#5A4A3A', skin: sk('an', 2) }); });
+  // ---- North America, Australia, New Zealand: a mix of riders and walkers of every background
+  ldef('lr-na-rider', 22, 20, p => { p.shadow(7, 19.3, 7); horse(p, 2, 19, 1, { col: PAL.horse }); seated(p, 7.6, 11.6, 1, { col: '#5A7A9A', hat: 'wide', hatCol: '#8A6A4E', skin: sk('na', 2) }); });
+  ldef('lr-na-walkers', 16, 15, p => { p.shadow(8, 14.4, 6.5); figure(p, 4, 14, 1, { col: '#6A4A36', legCol: PAL.ink, hat: 'wide', hatCol: '#5A4A3A', skin: sk('na', 1), staff: true }); figure(p, 10.4, 14, 0.95, { dress: 'robe', col: '#3F6FB0', hat: 'scarf', hatCol: '#F2EEE2', skin: sk('na', 3) }); });
+  // names for the popups (js/ink-life.js)
+  const LAZY_NAMES = { camels: 'Camel caravan', camelrider: 'Rider on a camel', camel: 'Rider on a camel', donkey: 'Traveller with a donkey', women: 'Women on the road', rider: 'Rider', walker: 'Traveller on foot', goats: 'Goatherd',
+    sheep: 'Shepherd and flock', headload: 'Women carrying loads', zebu: 'Herder with zebu cattle', walkers: 'Travellers on foot', oxcart: 'Ox cart', bullock: 'Bullock cart', sari: 'Women in saris', pots: 'Women carrying water',
+    pole: 'Porter with a carrying pole', barrow: 'Wheelbarrow', buffalo: 'Water buffalo and rider', buffcart: 'Buffalo cart', mules: 'Muleteer and pack mules', cattle: 'Vaquero with cattle', llamas: 'Herder with a llama train' };
+
   // ---------------- public API
   const SMOKE_AT = {};   // sprite id -> [x, y] of its chimney top, in logical px from the trimmed sprite's bottom-centre
   let cache = null;
@@ -470,12 +646,20 @@
     }
     return new ImageData(d, W, H);
   }
+  // a regional traveller (LAZY) is drawn, trimmed and mirrored the first time it is asked for
+  function lazyGet(id) {
+    const C = build(); if (C.has(id)) return C.get(id);
+    const base = id.replace(/-l$/, ''), L = LAZY.get(base); if (!L) return null;
+    const p = Pen(L[0], L[1], hashStr(base)); L[2](p); const c = trim(p.c);
+    C.set(base, c); C.set(base + '-l', mirror(c));
+    return C.get(id);
+  }
   function addOne(map, id) {
-    const C = build(), win = /-s$/.test(id), c = C.get(win ? id.slice(0, -2) : id);
+    const win = /-s$/.test(id), c = lazyGet(win ? id.slice(0, -2) : id);
     if (!c || map.hasImage(id)) return !!c;
     map.addImage(id, win ? snowy(imgOf(c)) : imgOf(c), { pixelRatio: SC });
     return true;
   }
-  function draw(id) { const c = build().get(id); if (!c) return null; const o = document.createElement('canvas'); o.width = c.width; o.height = c.height; o.getContext('2d').drawImage(c, 0, 0); o.style.width = (c.width / SC * 1.4) + 'px'; return o; }
-  global.InkLifeArt = { addAll, addOne, draw, smokeFrames, SMOKE_AT, PAL, SC, ids: () => [...build().keys()] };
+  function draw(id) { const c = lazyGet(id); if (!c) return null; const o = document.createElement('canvas'); o.width = c.width; o.height = c.height; o.getContext('2d').drawImage(c, 0, 0); o.style.width = (c.width / SC * 1.4) + 'px'; return o; }
+  global.InkLifeArt = { addAll, addOne, draw, smokeFrames, SMOKE_AT, PAL, SC, ids: () => [...new Set([...build().keys()].concat([...LAZY.keys()].flatMap(i => [i, i + '-l'])))], NAMES: id => { const m = /^lr-[a-z]{2}-([a-z]+)/.exec(id); return m ? LAZY_NAMES[m[1]] : null; } };
 })(window);

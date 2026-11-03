@@ -400,7 +400,7 @@
       if (!fs.length) return;
       const f = fs[0], p = f.properties, id = f.layer.id; let h = '';
       const t = String(p.t || '').replace(/-l$/, '').replace(/^lf-reed\d$/, 'lf-reed');
-      if (id === 'life-road') h = `<b class="t">${esc(ROADT[t] || 'Traveller')}</b>On a road mapped in OpenStreetMap; busier roads carry more traffic. A picture, not a census.`;
+      if (id === 'life-road') h = `<b class="t">${esc(ROADT[t] || (A() && A().NAMES && A().NAMES(t)) || 'Traveller')}</b>On a road mapped in OpenStreetMap; busier roads carry more traffic. A picture, not a census.`;
       else if (id === 'life-battles') h = `<b class="t">${esc(p.n)}</b>Battle, ${esc(p.y)} (Wikidata).${p.q ? `<br><a href="https://www.wikidata.org/wiki/${esc(p.q)}" target="_blank" rel="noopener">Wikidata ${esc(p.q)}</a>` : ''}`;
       else if (id === 'life-dmv') h = `<b class="t">${esc(p.n)}</b>Lost or deserted village (Wikidata).${p.q ? `<br><a href="https://www.wikidata.org/wiki/${esc(p.q)}" target="_blank" rel="noopener">Wikidata ${esc(p.q)}</a>` : ''}`;
       else if (id === 'life-wrecks') h = `<b class="t">${esc(p.n)}</b>Shipwreck${p.y ? ', ' + esc(p.y) : ''} (Wikidata).${p.q ? `<br><a href="https://www.wikidata.org/wiki/${esc(p.q)}" target="_blank" rel="noopener">Wikidata ${esc(p.q)}</a>` : ''}`;

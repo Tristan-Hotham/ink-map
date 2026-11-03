@@ -569,6 +569,9 @@ async function heritagePoints(z, x, y) {
   }
   out.sort((a, b) => a.z - b.z);
   const kept = out.slice(0, CFG.HMAX);
+  // tall buildings are drawn as the region's own tall house (js/ink-houses.js), the famous ones keep their own drawings
+  if (kept.some(p => p.i === 'skyscraper')) { const R = await houseRegions(); for (const p of kept) p.w = p.i === 'skyscraper' ? styleAt(R, p.nx, p.ny).tw : ''; }
+  else for (const p of kept) p.w = '';
   // names: at most one per cell of about 140 x 90 screen pixels, the best known first (lowest first zoom = most Wikipedia
   // articles); ordinary churches and chapels (fewer than about ten articles) stay unnamed until zoom 15 (see the style)
   const used = new Set();
@@ -681,9 +684,97 @@ function realWalls() {
   return wallBoxes;
 }
 const TH_N = 16;   // townhouse drawings th0 to th15 (js/ink-icons.js)
+// ---------------- regional architecture (round 5): js/ink-houses.js draws, data/house_regions.json (code/02p_house_regions.py) says where
+let houseReg = null;
+function houseRegions() {
+  if (!houseReg) houseReg = (async () => {
+    if (!CFG.houseRegions) return null;
+    try {
+      const j = await (await fetch(CFG.houseRegions)).json(), g = new Uint8Array(j.w * j.h); let i = 0;
+      for (const r of j.rows) { const a = r.split(','); for (let k = 0; k < a.length; k += 2) { const n = +a[k + 1]; g.fill(+a[k], i, i + n); i += n; } }
+      return { g, w: j.w, h: j.h, res: j.res, keys: j.keys };
+    } catch (e) { return null; }
+  })();
+  return houseReg;
+}
+function regionAt(R, nx, ny) {
+  if (CFG.houseStyle) return CFG.houseStyle;   // QA only: draw every town in one region's style
+  if (!R) return 'w';
+  const lon = nx * 360 - 180, lat = latOfY(ny);
+  const i = Math.max(0, Math.min(R.w - 1, Math.floor((lon + 180) / R.res))), j = Math.max(0, Math.min(R.h - 1, Math.floor((90 - lat) / R.res)));
+  return R.keys[R.g[j * R.w + i]] || 'w';
+}
+const RANGE = (s, n) => Array.from({ length: n }, (_, i) => 'r' + s + '-' + i);
+const PICK = (s, ...k) => k.map(i => 'r' + s + '-' + i);
+const TH16 = Array.from({ length: TH_N }, (_, i) => 'th' + i);
+// per region: h town houses, r village and outskirt houses (else h), c church, mosque or temple, g village green,
+// tw family of tall houses, f travellers on the roads (js/ink-life-art.js); the market is a market cross in Europe and
+// the lands settled from it, a well under a little roof elsewhere
+const HSTYLE = {
+  w: { h: TH16, c: 'townchurch', g: 1, tw: 'wt', f: 'eu' },
+  nl: { h: TH16.concat(RANGE('nl', 4), RANGE('nl', 4)), c: 'townchurch', g: 1, tw: 'wt', f: 'eu' },
+  na: { h: TH16, c: 'townchurch', g: 1, tw: 'us', f: 'na' },
+  de: { h: RANGE('de', 10), r: PICK('de', 1, 2, 5, 8, 9, 5, 0), c: 'townchurch', g: 1, tw: 'de', f: 'eu' },
+  al: { h: PICK('al', 0, 1, 2).concat(PICK('de', 0, 4, 2)), r: PICK('al', 0, 1, 3, 0, 2), c: 'tc-baroque', g: 1, tw: 'de', f: 'eu' },
+  sc: { h: PICK('sc', 0, 1, 2, 5, 6, 7), r: PICK('sc', 0, 3, 4, 8, 6, 1), c: 'tc-nordic', g: 1, tw: 'sc', f: 'eu' },
+  no: { h: PICK('sc', 0, 1, 2, 5, 7, 3), r: PICK('sc', 3, 4, 8, 0, 3), c: ['tc-stave', 'tc-nordic', 'tc-stave'], g: 1, tw: 'sc', f: 'eu' },
+  ru: { h: PICK('ru', 0, 1, 2, 3, 4, 0, 1), r: PICK('ru', 0, 1, 4, 5), c: 'tc-onion', tw: 'ru', f: 'eu' },
+  ua: { h: PICK('ru', 6, 7, 3, 2, 0, 6), r: PICK('ru', 6, 7, 6, 5), c: 'tc-onion', tw: 'ru', f: 'eu' },
+  med: { h: RANGE('med', 10), r: PICK('med', 0, 8, 3, 7), c: 'tc-campanile', tw: 'med', f: 'eu' },
+  gr: { h: RANGE('gr', 4).concat(PICK('med', 0, 3)), r: PICK('gr', 0, 2, 3), c: 'tc-byz', tw: 'med', f: 'eu' },
+  cyc: { h: RANGE('cyc', 4), c: 'tc-cyc', tw: 'med', f: 'eu' },
+  bk: { h: PICK('bk', 1, 2, 3, 4, 5).concat(PICK('med', 0)), r: PICK('bk', 0, 3, 4, 5), c: 'tc-byz', tw: 'med', f: 'eu' },
+  bkm: { h: PICK('bk', 0, 1, 2, 3, 4), r: PICK('bk', 0, 3, 4), c: 'tc-mosque', tw: 'med', f: 'eu' },
+  tr: { h: PICK('bk', 1, 2, 5, 4, 1, 2), r: PICK('bk', 3, 4).concat(PICK('mn', 0)), c: 'tc-mosque', tw: 'med', f: 'mn' },
+  cau: { h: PICK('bk', 6, 3, 4, 6).concat(PICK('mn', 3)), r: PICK('bk', 3, 4), c: 'tc-arm', tw: 'med', f: 'eu' },
+  mn: { h: PICK('mn', 0, 1, 2, 3, 4, 8, 9, 1, 2), r: PICK('mn', 0, 2, 3, 9), c: 'tc-mosque-a', tw: 'mn', f: 'mn' },
+  il: { h: PICK('mn', 1, 2, 3, 0, 8), c: 'tc-dome', tw: 'mn', f: 'mn' },
+  mg: { h: PICK('mn', 6, 7, 2, 7, 1), r: PICK('mn', 6, 0, 7), c: 'tc-mosque-m', tw: 'mn', f: 'mn' },
+  ca: { h: PICK('ca', 0, 1, 2).concat(PICK('mn', 0, 2)), r: PICK('ca', 0, 3, 3).concat(PICK('mn', 0)), c: 'tc-mosque-ca', tw: 'mn', f: 'ca' },
+  sh: { h: PICK('sh', 0, 1, 2, 5, 6, 0), r: PICK('sh', 3, 4, 2, 3), c: 'tc-sahel', tw: 'sh', f: 'sh' },
+  ha: { h: PICK('ha', 0, 1, 2, 0).concat(PICK('sh', 2)), r: PICK('sh', 3, 4, 2), c: 'tc-sahel', tw: 'sh', f: 'sh' },
+  wa: { h: PICK('wa', 0, 3, 1, 5, 0, 3), r: PICK('wa', 1, 2, 4, 6, 4), c: 'tc-afchurch', tw: 'af', f: 'af' },
+  sw: { h: PICK('sw', 0, 1, 3, 0, 1), r: PICK('sw', 2).concat(PICK('eaf', 0, 2)), c: 'tc-swmosque', tw: 'af', f: 'af' },
+  et: { h: PICK('et', 1, 2, 0, 2), r: PICK('et', 0, 0, 2), c: 'tc-ethround', tw: 'af', f: 'af' },
+  eaf: { h: PICK('eaf', 3, 2, 4, 0, 3), r: PICK('eaf', 0, 1, 2, 0), c: 'tc-afchurch', tw: 'af', f: 'af' },
+  za: { h: PICK('za', 3, 1, 2, 3).concat(PICK('eaf', 3)), r: PICK('za', 0, 1, 2, 4), c: 'tc-afchurch', tw: 'af', f: 'af' },
+  zw: { h: PICK('zw', 0, 1).concat(PICK('eaf', 3, 0)), r: PICK('zw', 1).concat(PICK('eaf', 0, 1)), c: 'tc-afchurch', tw: 'af', f: 'af' },
+  in: { h: PICK('in', 0, 1, 2, 6, 7, 3, 5), r: PICK('in', 8, 4, 3, 8), c: 'tc-shikhara', tw: 'in', f: 'sa' },
+  np: { h: PICK('np', 0, 1, 2, 0), r: PICK('np', 2).concat(PICK('in', 8)), c: 'tc-pagoda', tw: 'in', f: 'sa' },
+  pk: { h: PICK('pk', 0, 1).concat(PICK('in', 1, 7)), r: PICK('in', 8, 4, 4), c: 'tc-mughal', tw: 'in', f: 'pk' },
+  lk: { h: PICK('lk', 0).concat(PICK('in', 3, 5)), r: PICK('in', 3, 8), c: 'tc-stupa', tw: 'in', f: 'sa' },
+  cn: { h: PICK('cn', 0, 1, 2, 3, 4, 5), r: PICK('cn', 0, 1, 6, 7), c: 'tc-pagoda', tw: 'ea', f: 'ea' },
+  kr: { h: PICK('kr', 0, 1, 0, 1).concat(PICK('cn', 1)), r: PICK('kr', 2, 0), c: 'tc-pagoda', tw: 'ea', f: 'ea' },
+  jp: { h: PICK('jp', 0, 1, 3, 4, 6, 0), r: PICK('jp', 2, 5, 3), c: 'tc-pagoda', tw: 'jp', f: 'ea' },
+  vn: { h: PICK('se', 3, 2, 3).concat(PICK('cn', 2, 5)), r: PICK('se', 0, 6), c: 'tc-pagoda', tw: 'se', f: 'se' },
+  th: { h: PICK('se', 1, 2, 8, 1, 3), r: PICK('se', 1, 6, 0), c: 'tc-wat', tw: 'se', f: 'se' },
+  mm: { h: PICK('se', 1, 2, 8, 0), r: PICK('se', 0, 6), c: 'tc-stupa', tw: 'se', f: 'se' },
+  ml: { h: PICK('se', 4, 2, 5, 4, 2), r: PICK('se', 4, 6, 0), c: 'tc-jmosque', tw: 'se', f: 'ml' },
+  ph: { h: PICK('se', 7, 2, 7, 4), r: PICK('se', 0, 6), c: 'tc-colonial', tw: 'se', f: 'se' },
+  pc: { h: PICK('se', 0, 6), c: 'tc-afchurch', tw: 'se', f: 'se' },
+  mx: { h: PICK('la', 0, 1, 2, 9, 10, 2, 5), r: PICK('la', 0, 2, 6), c: 'tc-colonial', tw: 'la', f: 'am' },
+  sa: { h: PICK('la', 3, 4, 5, 8, 1, 0), r: PICK('la', 0, 6, 5), c: 'tc-colonial', tw: 'la', f: 'am' },
+  an: { h: PICK('la', 6, 0, 1, 6), r: PICK('la', 6, 7), c: 'tc-colonial', tw: 'la', f: 'an' },
+};
+for (const k of Object.keys(HSTYLE)) { const st = HSTYLE[k]; st.m = st.f === 'eu' || st.f === 'na' ? 'market' : 'market2'; st.r = st.r || st.h; }
+const styleAt = (R, nx, ny) => HSTYLE[regionAt(R, nx, ny)] || HSTYLE.w;
+// high-rise districts (centre lat, lon, radius km, height band 1 to 4), used where the tile carries no building heights
+const CBD = [[40.758, -73.985, 3.2, 4], [40.708, -74.011, 1.1, 4], [41.881, -87.632, 1.6, 4], [43.648, -79.381, 1.3, 4], [25.198, 55.272, 2.2, 4], [25.08, 55.14, 1.8, 4],
+  [31.236, 121.505, 2.4, 4], [31.230, 121.470, 4, 3], [22.282, 114.158, 1.5, 4], [22.305, 114.172, 2.5, 3], [22.54, 114.06, 3, 4], [1.283, 103.851, 1.5, 4], [3.155, 101.712, 1.5, 4],
+  [35.690, 139.695, 1.2, 4], [35.680, 139.765, 1.6, 3], [35.68, 139.74, 8, 2], [34.70, 135.50, 2, 3], [37.55, 126.98, 6, 3], [37.51, 127.06, 2, 3], [25.033, 121.565, 1.5, 3], [39.91, 116.46, 1.5, 3],
+  [23.12, 113.32, 2.5, 3], [29.56, 106.55, 2.5, 4], [13.74, 100.54, 3, 3], [-6.20, 106.82, 3, 3], [14.555, 121.025, 1.5, 3], [10.776, 106.70, 1.5, 3], [19.02, 72.83, 5, 3],
+  [51.514, -0.083, 1.0, 3], [51.505, -0.019, 0.7, 4], [48.892, 2.236, 0.8, 3], [50.112, 8.672, 0.9, 3], [52.23, 21.00, 1, 3], [55.749, 37.538, 0.8, 4], [45.484, 9.19, 0.7, 3], [40.477, -3.688, 0.5, 3],
+  [51.92, 4.48, 0.8, 2], [41.08, 29.01, 1.5, 3], [25.32, 51.53, 1.5, 3], [24.71, 46.67, 1.2, 3], [24.48, 54.36, 2, 3], [29.375, 47.98, 1, 3], [32.08, 34.79, 1.5, 3],
+  [-23.56, -46.65, 6, 3], [-22.905, -43.18, 1.5, 2], [-34.60, -58.38, 2.5, 2], [-33.415, -70.60, 1.5, 3], [4.65, -74.06, 2, 2], [19.43, -99.17, 1.5, 3], [8.98, -79.52, 1.5, 3],
+  [34.05, -118.255, 1.0, 3], [37.79, -122.40, 1.2, 3], [47.61, -122.335, 1.0, 3], [29.76, -95.37, 1.2, 3], [32.78, -96.80, 1.0, 3], [25.77, -80.19, 1.5, 3], [33.76, -84.39, 1.2, 3],
+  [39.953, -75.165, 1.0, 3], [42.355, -71.06, 0.9, 3], [38.90, -77.03, 1.2, 2], [49.283, -123.12, 1.2, 3], [51.045, -114.065, 0.9, 3], [45.50, -73.57, 1.0, 3],
+  [-33.867, 151.207, 1.0, 3], [-37.815, 144.963, 1.0, 3], [-27.47, 153.025, 0.9, 3], [-31.952, 115.858, 0.8, 3], [-36.848, 174.763, 0.8, 2],
+  [-26.20, 28.045, 1.2, 3], [-1.285, 36.82, 0.9, 2], [6.45, 3.42, 1.2, 2], [30.045, 31.235, 2, 2], [-33.92, 18.42, 0.8, 2]];
+const TALLP = [0, 0.3, 0.5, 0.65, 0.75];   // share of house sites drawn as tall houses, by height band
+const hBand = h => h >= 150 ? 4 : h >= 70 ? 3 : h >= 35 ? 2 : h >= 24 ? 1 : 0;
 async function townPoints(z, x, y, avoid) {
   if (z < 12 || !CFG.ofm || z > CFG.ofmMax) return [];
-  const [buf, pbuf] = await Promise.all([fetchOfm(z, x, y), fetchOfm(z - 2, x >> 2, y >> 2)]);
+  const [buf, pbuf, REG] = await Promise.all([fetchOfm(z, x, y), fetchOfm(z - 2, x >> 2, y >> 2), houseRegions()]);
   if (!buf || !pbuf) return [];
   const n = Math.pow(2, z), Ls = decodeLayers(buf, new Set(['transportation', 'landuse', 'building', 'water']));
   // places from the parent tile two zooms up, so a town just over the tile's edge still sets the density here
@@ -707,6 +798,40 @@ async function townPoints(z, x, y, avoid) {
     places.push({ nx, ny, kind: cl, R: TOWN_R[cl], rank: F.props.rank || 12 });
   }
   if (!places.length) return [];
+  for (const P of places) { P.st = styleAt(REG, P.nx, P.ny); const c = P.st.c; P.church = Array.isArray(c) ? c[Math.floor(hash3(Math.round(P.nx * 1e7), Math.round(P.ny * 1e7), 61) * c.length)] : c; }
+  // building heights (OpenStreetMap render_height, in tiles from zoom 13) on the mask grid, for the tall houses
+  let hgt = null;
+  if (z >= 13 && Ls.building) {
+    const B = Ls.building;
+    for (const span of B.feats) {
+      const F = featureOf(buf, B, span), hh = +(F.props.render_height || F.props.height || 0);
+      if (hh < 24) continue;
+      const part = lineParts(buf, F.geom)[0]; if (!part || !part.length) continue;
+      let sx = 0, sy = 0; for (const q of part) { sx += q[0]; sy += q[1]; }
+      const i = Math.floor(sx / part.length / B.extent * MS), j = Math.floor(sy / part.length / B.extent * MS);
+      if (i < 0 || j < 0 || i >= MS || j >= MS) continue;
+      if (!hgt) hgt = new Float32Array(MS * MS);
+      for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) { const ii = i + di, jj = j + dj; if (ii >= 0 && jj >= 0 && ii < MS && jj < MS && hgt[jj * MS + ii] < hh) hgt[jj * MS + ii] = hh; }
+    }
+  }
+  const tileLat = latOfY((y + 0.5) / n), tileLon = (x + 0.5) / n * 360 - 180;
+  const cbds = CBD.filter(c => Math.abs(c[0] - tileLat) < 0.6 && Math.abs(c[1] - tileLon) < 0.8);
+  // the height band at a house site: OpenStreetMap heights where the tile has them, else the known high-rise districts,
+  // else a little height towards the old core of a capital or a big city (city centres read as built up)
+  const band = (P, dr, tx, ty, gnx, gny) => {
+    if (hgt) return hBand(hgt[Math.min(MS - 1, Math.floor(ty * MS)) * MS + Math.min(MS - 1, Math.floor(tx * MS))]);
+    let b = 0;
+    if (cbds.length) { const lat = latOfY(gny), lon = gnx * 360 - 180; for (const c of cbds) { const dk = Math.hypot((lat - c[0]) * 111, (lon - c[1]) * 111 * Math.cos(c[0] * DEG)) / c[2]; b = Math.max(b, dk < 0.5 ? c[3] : dk < 1 ? c[3] - 1 : dk < 1.6 ? c[3] - 2 : 0); } }
+    if (CFG.houseBand && dr < 0.5) b = Math.max(b, dr < 0.2 ? CFG.houseBand : CFG.houseBand - 1);   // QA only: a high-rise core in any town
+    if (P.kind === 'capital') b = Math.max(b, dr < 0.1 ? 2 : dr < 0.22 ? 1 : 0); else if (P.kind === 'city' && P.rank <= 3) b = Math.max(b, dr < 0.12 ? 1 : 0);
+    return b;
+  };
+  const pickHouse = (P, dr, hh, tx, ty, gnx, gny) => {
+    const b = band(P, dr, tx, ty, gnx, gny);
+    if (b > 0 && hash3(Math.round(gnx * 4e7), 13, Math.round(gny * 4e7)) < TALLP[b] * (hgt || cbds.length || CFG.houseBand ? 1 : 0.6)) return { t: 'tw-' + P.st.tw + '-' + b, big: 1 };
+    const L = (P.kind === 'village' || P.kind === 'hamlet' || dr > 0.75) ? P.st.r : P.st.h;
+    return { t: L[Math.floor(hh * L.length)] };
+  };
   const kmPerN = 40075 * Math.cos(latOfY((y + 0.5) / n) * DEG);   // km per unit of normalised x at this latitude
   // built-up land: residential, commercial and retail land use and the buildings themselves
   const built = Ls.landuse ? polyMask(buf, Ls.landuse, p => ['residential', 'commercial', 'retail', 'suburb', 'neighbourhood', 'quarter'].includes(p.class)) : null;
@@ -729,12 +854,12 @@ async function townPoints(z, x, y, avoid) {
     const px = (P.nx * n - x) * 512, py = (P.ny * n - y) * 512;
     if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind !== 'village' && P.kind !== 'hamlet') {
       // set just below the name, which sits on the place point
-      out.push({ nx: P.nx - 8 / 512 / n, ny: P.ny + 20 / 512 / n, t: 'market', a: 0, o: 0 }); take(px - 8, py + 20, 2);
-      out.push({ nx: P.nx + 14 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 14, py + 16, 2);
+      out.push({ nx: P.nx - 8 / 512 / n, ny: P.ny + 20 / 512 / n, t: P.st.m, a: 0, o: 0 }); take(px - 8, py + 20, 2);
+      out.push({ nx: P.nx + 14 / 512 / n, ny: P.ny + 16 / 512 / n, t: P.church, a: 0, o: 0 }); take(px + 14, py + 16, 2);
       // market stalls round the square
       for (const [dx, dy, k] of [[-22, 24, 0], [-14, 32, 1], [2, 30, 2]]) { if (free(px + dx, py + dy, 0)) { out.push({ nx: P.nx + dx / 512 / n, ny: P.ny + dy / 512 / n, t: 'stall' + k, a: 0, o: 0 }); take(px + dx, py + dy, 0); } }
-    } else if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind === 'village') { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: 'townchurch', a: 0, o: 0 }); take(px + 10, py + 16, 2);
-      if (free(px - 16, py + 22, 1)) { out.push({ nx: P.nx - 16 / 512 / n, ny: P.ny + 22 / 512 / n, t: 'green', a: 0, o: 0 }); take(px - 16, py + 22, 1); } }
+    } else if (px >= 0 && px < 512 && py >= 0 && py < 512 && P.kind === 'village') { out.push({ nx: P.nx + 10 / 512 / n, ny: P.ny + 16 / 512 / n, t: P.church, a: 0, o: 0 }); take(px + 10, py + 16, 2);
+      if (P.st.g && free(px - 16, py + 22, 1)) { out.push({ nx: P.nx - 16 / 512 / n, ny: P.ny + 22 / 512 / n, t: 'green', a: 0, o: 0 }); take(px - 16, py + 22, 1); } }
     const W0 = await realWalls(), rk0 = P.R * 0.4 / kmPerN;
     const hasWall = W0.some(b => b[0] < P.nx + rk0 && b[2] > P.nx - rk0 && b[1] < P.ny + rk0 && b[3] > P.ny - rk0 && (b[2] - b[0]) < rk0 * 6);
     if (!hasWall && (P.kind === 'capital' || (P.kind === 'city' && P.rank <= 3))) {
@@ -783,7 +908,8 @@ async function townPoints(z, x, y, avoid) {
               const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
               if (h >= keep) continue;
-              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * TH_N), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
+              const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)), tx, ty, gnx, gny);
+              cand.push({ hx, hy, dr, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
             }
           }
           carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
@@ -806,14 +932,27 @@ async function townPoints(z, x, y, avoid) {
     const small = P.kind === 'village' || P.kind === 'hamlet';
     const keep = dr < 0.18 ? 0.95 : small && dr < 0.6 ? 0.8 - 0.6 * dr : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
-    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * TH_N), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+    const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)), tx, ty, gnx, gny);
+    cand.push({ hx, hy, dr: dr + 0.001, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+  }
+  // the old cores of cities and capitals packed tighter still (a finer grid, offset from the one above), so a city centre reads as built up
+  for (const P of places) {
+    if (P.kind !== 'capital' && P.kind !== 'city') continue;
+    const cx = (P.nx * n - x) * 512, cy = (P.ny * n - y) * 512, rp = 0.3 * P.R / kmPerN * n * 512, G2 = 7;
+    for (let gy = Math.max(G2 / 2, cy - rp); gy < Math.min(512, cy + rp); gy += G2) for (let gx = Math.max(G2 / 2, cx - rp); gx < Math.min(512, cx + rp); gx += G2) {
+      const tx = (gx + 2.6) / 512, ty = (gy + 3.1) / 512; if (tx >= 1 || ty >= 1 || at(wet, tx, ty)) continue;
+      const gnx = (x + tx) / n, gny = (y + ty) / n, dr = Math.hypot((gnx - P.nx) * kmPerN, (gny - P.ny) * kmPerN) / P.R;
+      if (dr > 0.3 || hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 49) > 0.85 - dr) continue;
+      const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 5, Math.round(gny * 4e7)), tx, ty, gnx, gny);
+      cand.push({ hx: tx * 512, hy: ty * 512, dr: dr + 0.002, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: 0, o: 0 } });
+    }
   }
   // place from the centre outwards, so the cap on drawings per tile thins the edges, never the old core
   cand.sort((a, b) => a.dr - b.dr);
   for (const c of cand) {
     if (out.length >= CFG.TMAX) break;
-    if (!free(c.hx, c.hy, 0)) continue;
-    take(c.hx, c.hy, 0); out.push(c.it);
+    if (!free(c.hx, c.hy, c.big ? 1 : 0)) continue;
+    take(c.hx, c.hy, c.big ? 1 : 0); out.push(c.it);
   }
   return out;
 }
@@ -833,6 +972,22 @@ const ROADFOLK = [
   ['lr-sheepdrove', 'lr-cattledrove', 'lr-oxcart', 'lr-walker', 'lr-timber', 'lr-handcart', 'lr-geese'],
   ['lr-walker', 'lr-pilgrims', 'lr-friars', 'lr-rider2', 'lr-walker'],
 ];
+// travellers outside Europe (round 5, js/ink-life-art.js): [main roads, lanes] for each family of the region grid (HSTYLE.f)
+const F_ = (f, ...k) => k.map(i => i.includes('-') ? 'lr-' + i : 'lr-' + f + '-' + i);
+const FOLK = {
+  mn: [F_('mn', 'camels', 'rider', 'donkey', 'camelrider', 'walker', 'camels', 'women'), F_('mn', 'donkey', 'women', 'walker', 'goats', 'camelrider', 'women')],
+  ca: [F_('ca', 'rider', 'camel', 'donkey', 'rider', 'women'), F_('ca', 'sheep', 'women', 'donkey', 'rider')],
+  af: [F_('af', 'oxcart', 'walkers', 'headload', 'zebu', 'donkey'), F_('af', 'headload', 'goats', 'zebu', 'walkers', 'donkey', 'headload')],
+  sh: [F_('sh', 'camels', 'rider', 'donkey', 'zebu', 'women'), F_('sh', 'women', 'zebu', 'donkey', 'camels', 'women')],
+  sa: [F_('sa', 'bullock', 'walkers', 'zebu', 'bullock', 'sari'), F_('sa', 'sari', 'zebu', 'pots', 'walkers', 'bullock')],
+  pk: [F_('pk', 'bullock', 'walkers', 'donkey', 'sa-zebu', 'women'), F_('pk', 'women', 'donkey', 'walkers', 'sa-zebu')],
+  ea: [F_('ea', 'oxcart', 'rider', 'pole', 'walkers'), F_('ea', 'pole', 'walkers', 'barrow', 'oxcart')],
+  se: [F_('se', 'buffcart', 'pole', 'walkers', 'buffalo'), F_('se', 'buffalo', 'pole', 'walkers')],
+  ml: [F_('ml', 'se-buffcart', 'walkers', 'se-pole', 'buffalo'), F_('ml', 'buffalo', 'walkers', 'se-pole')],
+  am: [F_('am', 'oxcart', 'rider', 'mules', 'cattle', 'walkers'), F_('am', 'walkers', 'mules', 'rider', 'cattle')],
+  an: [F_('an', 'llamas', 'am-mules', 'women', 'am-rider'), F_('an', 'llamas', 'women', 'llamas')],
+  na: [['lr-wagon', 'lr-na-rider', 'lr-cart', 'lr-cattledrove', 'lr-na-walkers', 'lr-coach', 'lr-wagon'], ['lr-na-walkers', 'lr-oxcart', 'lr-na-rider', 'lr-sheepdrove', 'lr-handcart', 'lr-walker']],
+};
 const ROADKEEP = [0.95, 0.75, 0.42, 0.22, 0.13], ROADZ = [9, 10, 12, 12.5, 13];
 // the modern world turned medieval: OpenMapTiles poi class/subclass to a drawing (and its priority: lower is placed first)
 const POIMED = {
@@ -863,6 +1018,7 @@ async function lifeTile(z, x, y, cover, her) {
   const n = Math.pow(2, z), elev = await elevSampler(z, x, y);
   const lonOf = nx => nx * 360 - 180, latOfN = ny => latOfY(ny);
   const cLon = lonOf((x + 0.5) / n), cLat = latOfN((y + 0.5) / n);
+  const famOf = styleAt(await houseRegions(), (x + 0.5) / n, (y + 0.5) / n).f, FAM = FOLK[famOf] ? famOf : 'eu';   // the region's travellers
   const mPerPx = 40075016 * Math.cos(cLat * DEG) / (512 * n);
   const inBox = (lo0, la0, lo1, la1) => cLon >= lo0 && cLon <= lo1 && cLat >= la0 && cLat <= la1;
   const britain = inBox(-10.7, 49.8, 2, 61), lowCountries = inBox(3.2, 51.2, 7.3, 53.7), fens = inBox(-0.6, 52.0, 1.9, 53.2);
@@ -1056,9 +1212,9 @@ async function lifeTile(z, x, y, cover, her) {
       if (!best) continue;
       const cg = best.s[4];
       if (q.h > ROADKEEP[cg] || q.r < ROADZ[cg] || at(water, best.cx, best.cy)) continue;
-      const list = ROADFOLK[cg];
+      const list = FAM === 'eu' ? ROADFOLK[cg] : FOLK[FAM][cg <= 1 ? 0 : 1];
       let t = list[Math.floor(hash3(Math.round(q.nx * 1e7), Math.round(q.ny * 1e7), 93) * list.length)];
-      if (cLat > 50 && cg >= 2 && q.h < 0.04) t = 'lr-sledge';
+      if (cLat > 50 && cg >= 2 && q.h < 0.04 && (FAM === 'eu' || FAM === 'na')) t = 'lr-sledge';
       const dir = q.h * 1000 % 1 < 0.5 ? 1 : -1, goingLeft = (best.s[2] - best.s[0]) * dir < 0;
       if (put(best.cx, best.cy, goingLeft ? t + '-l' : t, q.r, 'road')) nTrav++;
     }
@@ -1066,7 +1222,7 @@ async function lifeTile(z, x, y, cover, her) {
     longs.sort((a, b) => b.len - a.len);
     for (let i = 0; i < Math.min(2, longs.length); i++) {
       const L = longs[i], hh = hash3(Math.round(L.pp[0][0] * 10), Math.round(L.pp[0][1] * 10), z * 17 + x + y);
-      const list = ROADFOLK[L.cg];
+      const list = FAM === 'eu' ? ROADFOLK[L.cg] : FOLK[FAM][L.cg <= 1 ? 0 : 1];
       out.tracks.push({ t: list[Math.floor(hh * list.length)], v: Math.round((0.6 + hh * 0.8) * 100) / 100, parts: [L.pp] });
     }
     // little steam trains on the railways, turned along the line (zoom 11 and closer)
@@ -1164,7 +1320,7 @@ async function buildTile(z, x, y, parentKept, alive) {
   const quiet = p => p && p.catch(() => null);
   const herP = quiet(heritagePoints(z, x, y));
   const hillP = z >= 10 ? quiet(hillPoints(z, x, y)) : null, placeP = z >= 10 ? quiet(placePoints(z, x, y)) : null;
-  if (z >= 12 && CFG.ofm && z <= CFG.ofmMax) { quiet(fetchOfm(z - 2, x >> 2, y >> 2)); quiet(realWalls()); }
+  if (z >= 12 && CFG.ofm && z <= CFG.ofmMax) { quiet(fetchOfm(z - 2, x >> 2, y >> 2)); quiet(realWalls()); quiet(houseRegions()); }
   const [relief0, water] = await Promise.all([reliefPoints(z, x, y), z <= CFG.ofmMax && CFG.ofm ? waterMask(z, x, y) : null]);
   mark('relief+water'); check();
   const n = Math.pow(2, z);
@@ -1301,7 +1457,7 @@ async function buildTile(z, x, y, parentKept, alive) {
   mark('beasts'); check();
   // heritage drawings and, close in, the drawn towns
   const her = (await herP) || [];
-  if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q', 'l'], z, x, y));
+  if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q', 'l', 'w'], z, x, y));
   mark('heritage');
   if (z >= 10) {
     const hills = (await hillP) || [];

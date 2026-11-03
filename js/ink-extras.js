@@ -294,6 +294,8 @@
         try { const im = map.style.getImage(e.id); if (im) pm.addImage(e.id, { width: im.data.width, height: im.data.height, data: im.data.data }, { pixelRatio: im.pixelRatio, sdf: im.sdf }); } catch (err) {}
       });
       for (const l of ms.layers) { try { pm.setLayoutProperty(l.id, 'visibility', map.getLayoutProperty(l.id, 'visibility') || 'visible'); } catch (e) {} }
+      // the drifting cloud shadows are for the live map only: on the poster the clouds keep to the edges (js/ink-clouds.js)
+      try { if (pm.getLayer('cloud-shadows')) pm.setLayoutProperty('cloud-shadows', 'visibility', 'none'); } catch (e) {}
       // (and until the history cells round the view have arrived: js/ink-map.js gridSource)
       const busy = () => InkMap.gridBusy && InkMap.gridBusy(pm);
       await new Promise(res => { let done = false; const fin = () => { if (!done) { done = true; res(); } }; const chk = () => { if (pm.loaded() && pm.areTilesLoaded() && !busy()) setTimeout(() => { if (busy()) pm.once('idle', chk); else fin(); }, 600); else if (busy()) setTimeout(chk, 200); else pm.once('idle', chk); }; pm.once('idle', chk); setTimeout(fin, 90000); });
@@ -306,6 +308,8 @@
       x.drawImage(src, m, m);
       // the chimney smoke and the travellers on the move, as they are this moment (js/ink-life.js overlay)
       for (const sel of ['canvas.ink-life-overlay', 'canvas.ink-sea-overlay']) { const ov = host.querySelector(sel); if (ov && ov.width && ov.style.display !== 'none') { try { x.drawImage(ov, m, m, Wp, Hp); } catch (e) {} } }
+      // clouds tucked into the corners and along the edges, under the frame (js/ink-clouds.js)
+      if (opt.clouds && global.InkClouds) { try { InkClouds.drawPosterClouds(x, m, m, Wp, Hp, s); } catch (e) {} }
       // frame
       if (opt.border !== false) { const cc = map.getCenter(); drawFrame(x, m - 24 * s, m - 24 * s, Wp + 48 * s, Hp + 24 * s + 36 * s, s, { lon: cc.lng, lat: cc.lat }); }
       else { x.strokeStyle = INK; x.lineWidth = 1.6 * s; x.strokeRect(m, m, Wp, Hp); }

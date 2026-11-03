@@ -18,6 +18,7 @@ const views = process.argv.slice(3).map(a => { const [n, v] = a.split('='); cons
     await page.route(/fonts\.(googleapis|gstatic)\.com|wikipedia|wikidata/, r => r.abort());
     const q = new URLSearchParams({ tj: `${BASE}${SCR}/tj12.json`, dem: `${BASE}/home/claude/newdata/raw9/terrarium/{z}/{x}/{y}.png`, demmax: '12', maponly: '1', at: `${v.lat},${v.lon},${v.z}` });
     if (process.env.CLEAN) q.set('clean', '1');
+    if (process.env.WK) q.set('wk', process.env.WK);   // worker settings, e.g. {"houseStyle":"jp"} to draw a town in one region's style
     const t0 = Date.now();
     await page.goto(`${BASE}${ROOT}/index.html?${q}`);
     await page.waitForFunction(() => window.__map, null, { timeout: 120000 });

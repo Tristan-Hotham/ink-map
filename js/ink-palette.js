@@ -6,7 +6,8 @@
  *   paper    the parchment ground; paperDeep for sand and shaded paper; paperFill is the near-opaque paper used to
  *            "knock out" what lies behind a glyph (a mountain hides the peaks behind it).
  *   red      vermilion lettering and accents (names, flags); redDeep for capitals and hamlets.
- *   blue     water lines and water names; blueSoft and wash for the sea; ice for frozen water.
+ *   blue     water lines and water names; blueSoft and wash for the sea; seaWash, a paler greyer blue, is the watercolour
+ *            laid over the whole ocean (the paper grain shows through it); ice for frozen water.
  *   pigments the watercolour tints laid on sprites (roofs, banners, beasts): madder, ochre, woad, sage, verdigris, umber,
  *            as on a hand-coloured sixteenth-century plan. Keep them muted: they must never fight the ink.
  *   snow     snow white and its cool shadow, for the deep-winter look.
@@ -19,7 +20,7 @@
   const P = {
     ink: '#2B2119', inkSoft: 'rgba(43,33,25,0.55)', inkHatch: 'rgba(43,33,25,0.72)', inkFaint: 'rgba(43,33,25,0.32)',
     paper: '#F3E5BF', paperDeep: '#E7D2A0', paperFill: 'rgba(243,229,191,0.97)', paperLight: '#FBF3DC', halo: 'rgba(243,229,191,0.92)',
-    red: '#A3261B', redDeep: '#8A1F16', blue: '#3D6E9E', blueSoft: '#6F9DC6', wash: '#7FA9CF', ice: '#DCE8F0', iceLine: '#8FB0CC',
+    red: '#A3261B', redDeep: '#8A1F16', blue: '#3D6E9E', blueSoft: '#6F9DC6', wash: '#7FA9CF', seaWash: '#6C9FD6', ice: '#DCE8F0', iceLine: '#8FB0CC',
     pigments: {
       madder: '#B4472E', madderDeep: '#8C2E1E', ochre: '#C9A24A', ochreDeep: '#9C7A2E', woad: '#66809C', woadDeep: '#475E78',
       sage: '#9DAF7A', sageDeep: '#6E8250', verdigris: '#7FA593', umber: '#8A6A4E', umberDeep: '#664C36', wool: '#E9DDBF',

@@ -8,7 +8,7 @@
   const PAL = global.InkPalette || {};
   const INK = {
     paper: PAL.paper || '#F3E5BF', paperDeep: PAL.paperDeep || '#E7D2A0', ink: PAL.ink || '#2B2119', inkSoft: PAL.inkSoft || 'rgba(43,33,25,0.55)',
-    red: PAL.red || '#A3261B', redDeep: PAL.redDeep || '#8A1F16', blue: PAL.blue || '#3D6E9E', blueSoft: PAL.blueSoft || '#6F9DC6', wash: PAL.wash || '#7FA9CF',
+    red: PAL.red || '#A3261B', redDeep: PAL.redDeep || '#8A1F16', blue: PAL.blue || '#3D6E9E', blueSoft: PAL.blueSoft || '#6F9DC6', wash: PAL.wash || '#7FA9CF', seaWash: PAL.seaWash || '#6C9FD6',
     ice: PAL.ice || '#DCE8F0', iceLine: PAL.iceLine || '#8FB0CC', snow: PAL.snow || '#FBFAF4',
   };
   const DEFAULTS = {
@@ -545,7 +545,13 @@
       paint: { 'fill-color': INK.ice, 'fill-opacity': iz(6, 0, 7, 0.55), 'fill-antialias': false } }), 'rivers');
     L(water({ id: 'sea-mask', type: 'fill', filter: OCEAN, paint: { 'fill-pattern': 'paper', 'fill-antialias': false } }), 'paper');
     // ---- sea shading
-    L(water({ id: 'sea-tint', type: 'fill', paint: { 'fill-color': INK.wash, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 0, ['case', OCEAN, 0.07, 0.10], 6, ['case', OCEAN, 0.05, 0.10], 12, ['case', OCEAN, 0.04, 0.10]], 'fill-antialias': false } }), 'sea');
+    // the whole sea takes a pale watercolour blue (a soft blue laid thin, so on the yellow paper it reads as a pale grey-blue and the
+    // paper grain shows through), a little deeper far out at the world zooms; lakes keep their own lighter wash. Near the coast a band of
+    // paper lifts it again, so the ripple lines and the coastal wash sit on lighter water, as where an old map's colourist
+    // left the shallows pale. (The band stays within 7 px of the coast: the tiles' clipped edges lie 8 px outside each tile.)
+    const SEA_OP = ['interpolate', ['linear'], ['zoom'], 0, ['case', OCEAN, 0.40, 0.10], 4, ['case', OCEAN, 0.38, 0.10], 8, ['case', OCEAN, 0.35, 0.10], 12, ['case', OCEAN, 0.32, 0.10], 16, ['case', OCEAN, 0.30, 0.10]];
+    L(water({ id: 'sea-tint', type: 'fill', metadata: { seaOp: SEA_OP }, paint: { 'fill-color': ['case', OCEAN, INK.seaWash, INK.wash], 'fill-opacity': SEA_OP, 'fill-antialias': false } }), 'sea');
+    L(water({ id: 'sea-shallow', type: 'line', filter: OCEAN, paint: { 'line-color': INK.paper, 'line-width': 6, 'line-offset': 3.4, 'line-blur': 3.5, 'line-opacity': iz(0, 0.55, 8, 0.6, 14, 0.5) } }), 'sea');
     [[2.2, 4, 0.055], [4.4, 4, 0.035], [6.4, 3, 0.022]].forEach(([off, w, op], i) => {
       L(water({ id: 'sea-wash-' + i, type: 'line', filter: OCEAN, paint: { 'line-color': INK.wash, 'line-width': w, 'line-offset': off, 'line-blur': w * 0.8, 'line-opacity': iz(0, op * 1.2, 6, op, 12, op * 0.8) } }), 'sea');
     });
@@ -682,7 +688,8 @@
     wsplit({ id: 'town', type: 'symbol', source: 'ink', 'source-layer': 'town', minzoom: 11.6,
       layout: { 'icon-image': ['get', 't'], 'icon-rotate': ['match', ['get', 't'], 'wallseg', ['get', 'a'], 0], 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport',   // every house seen from the same side, as on a bird's-eye town plan
         'icon-size': iz(12, 1.15, 13, 1.3, 14, 1.5, 16, 2.0), 'icon-overlap': 'always', 'icon-ignore-placement': true, 'icon-padding': 0, 'symbol-z-order': 'viewport-y',
-        'symbol-sort-key': ['match', ['get', 't'], 'market', 0, 'townchurch', 1, 'walltower', 2, 'wallseg', 3, 5] },
+        'icon-anchor': ['case', ['==', ['index-of', 'tw-', ['get', 't']], 0], 'bottom', 'center'],   // tall houses stand on their site
+        'symbol-sort-key': ['case', ['==', ['index-of', 'tc-', ['get', 't']], 0], 1, ['match', ['get', 't'], ['market', 'market2'], 0, 'townchurch', 1, 'walltower', 2, 'wallseg', 3, 5]] },
       paint: { 'icon-opacity': iz(11.6, 0, 12.4, 1) } }, 'towns', { layout: { 'icon-image': TSNOW.length ? ['match', ['get', 't'], TSNOW, ['concat', ['get', 't'], '-s'], ['get', 't']] : ['get', 't'] } });
     // animals in their native ranges, whales where they gather, and a few decorative serpents far out
     const DK = ['get', 'k'];
@@ -903,7 +910,7 @@
     const PLAINCH = ['all', ['==', ['get', 'i'], 'church'], ['>', HZ, 7.5]];
     const HNAME = ['step', ['zoom'], ''].concat(...[...Array(18).keys()].map(z => [z + 1, ['case', ['all', ['<=', HZ, z + 1 - 1.5], ['any', ['!', PLAINCH], z + 1 >= 15]], ['coalesce', ['get', 'l'], ''], '']]));
     L({ id: 'heritage', type: 'symbol', source: 'ink', 'source-layer': 'heritage', minzoom: 5.4, filter: ['all', ['<=', HZ, ['+', ['zoom'], 0.7]], notLettered(['get', 'n'])],
-      layout: TXT({ 'icon-image': ['concat', 'h-', ['get', 'i']], 'icon-size': iz(6, 0.7, 9, 0.85, 12, 1, 15, 1.2), 'icon-overlap': 'never', 'icon-padding': 1,
+      layout: TXT({ 'icon-image': ['case', ['!=', ['coalesce', ['get', 'w'], ''], ''], ['concat', 'h-tw-', ['get', 'w']], ['concat', 'h-', ['get', 'i']]], 'icon-size': iz(6, 0.7, 9, 0.85, 12, 1, 15, 1.2), 'icon-overlap': 'never', 'icon-padding': 1,
         'symbol-sort-key': ['case', ['==', ['get', 'i'], 'lighthouse'], ['-', HZ, 2], HZ], 'text-field': HNAME, 'text-font': ['Ink Italic'], 'text-size': iz(8, 9.5, 13, 11.5), 'text-optional': true,
         'text-variable-anchor': ['top', 'bottom', 'right', 'left'], 'text-radial-offset': 0.9, 'text-max-width': 8, 'text-letter-spacing': 0.02 }),
       paint: { 'icon-opacity': fadeProp('z'), 'text-opacity': fadeProp('z'), 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.2 } }, 'heritage');
@@ -1044,12 +1051,12 @@
   // a small pool of workers; each tile always goes to the same worker (by x) so elevation caches are reused
   let pool = null;
   function setupProtocol(o, ofmTemplate) {
-    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls_boxes.json?v=20261103', snowZone: o.snowZone || null }, o.workerConfig || {}) };
+    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls_boxes.json?v=20261103', houseRegions: o.base + 'data/house_regions.json?v=20261103', snowZone: o.snowZone || null }, o.workerConfig || {}) };
     if (pool) { pool.forEach(w => w.postMessage(cfg)); return; }
     const n = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
     pool = [];
     for (let i = 0; i < n; i++) {
-      const w = new Worker(o.base + 'js/ink-worker.js?v=20261103r4');
+      const w = new Worker(o.base + 'js/ink-worker.js?v=20261103r6');
       w.onmessage = (ev) => {
         const m = ev.data, p = pending.get(m.id); if (!p) return; pending.delete(m.id);
         if (m.err) { console.warn('ink tile', m.err); p.res({ data: new ArrayBuffer(0) }); }
@@ -1304,5 +1311,15 @@
     syncRasters(map);
     map.fire('inkwinter', { on });
   }
-  global.InkMap = { create, gridSource, gridBusy, setGroup, setWinter, isWinter, INK, buildStyle, sprites: { mountainSprite, hillSprite, treeSprite, bareTreeSprite, snowConiferSprite, rangeSprite, tuftSprite, settleSprite, paperTexture, duneSprite, grassSprite, rainSprite, taigaSprite, iceSprite } };
+  // dark mode: the page round the map goes dark but the map stays parchment; the sea is laid a little deeper so it holds its
+  // own against the dark surround (index.html calls this when the theme changes)
+  function setSeaTone(map, dark) {
+    if (!map || !map.getLayer('sea-tint')) return;
+    const l = map.getStyle().layers.find(x => x.id === 'sea-tint'), base = l && l.metadata && l.metadata.seaOp;
+    if (!base) return;
+    const e = JSON.parse(JSON.stringify(base));
+    if (dark) for (let i = 4; i < e.length; i += 2) if (Array.isArray(e[i]) && e[i][0] === 'case') e[i][2] = +(e[i][2] + 0.05).toFixed(3);
+    map.setPaintProperty('sea-tint', 'fill-opacity', e);
+  }
+  global.InkMap = { create, setSeaTone, gridSource, gridBusy, setGroup, setWinter, isWinter, INK, buildStyle, sprites: { mountainSprite, hillSprite, treeSprite, bareTreeSprite, snowConiferSprite, rangeSprite, tuftSprite, settleSprite, paperTexture, duneSprite, grassSprite, rainSprite, taigaSprite, iceSprite } };
 })(window);

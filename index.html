@@ -88,6 +88,7 @@ footer p{margin:0 0 10px}
 .rose svg{display:block;filter:drop-shadow(0 1px 2px rgba(60,40,10,.2))}
 .scalebar canvas{display:block}
 .ov-bl .zbadge{position:static}
+.zbadge .alt{display:block;margin-top:3px;font:italic 400 12px/1.2 var(--body);color:#6E604E;white-space:nowrap}
 .cue{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;font:500 12px/1 var(--mono);color:#2B2119;background:rgba(251,245,228,.92);border:1px solid #9C8656;border-radius:999px;padding:8px 12px;text-decoration:none;box-shadow:0 1px 4px rgba(60,40,10,.18)}
 .ink-frame{position:absolute;inset:0;z-index:3;pointer-events:none}
 .chip.ink{background:#A3261B;color:#fff;border-color:#A3261B}
@@ -100,7 +101,9 @@ footer p{margin:0 0 10px}
 .pbtns{display:flex;gap:8px;margin-top:10px}
 .pstat{margin:8px 0 0;color:#6E604E;min-height:1.2em}
 #map::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
-  box-shadow:inset 0 0 90px rgba(120,84,30,.22), inset 0 0 18px rgba(120,84,30,.18)}
+  box-shadow:inset 0 0 90px rgba(120,84,30,.22), inset 0 0 18px rgba(120,84,30,.18);
+  /* the far haze (js/ink-clouds.js sets --haze by the zoom: 0.9 at the world zooms, gone by zoom 6.5) */
+  background:radial-gradient(ellipse 75% 72% at 50% 50%, rgba(236,242,248,0) 55%, rgba(232,240,248,calc(var(--haze,0)*.3)) 82%, rgba(226,236,246,calc(var(--haze,0)*.5)) 100%)}
 .ov{position:absolute;z-index:5;font:400 13px/1.3 var(--mono);color:#2B2119}
 .ov-top{right:54px;top:10px;left:auto;max-width:calc(100% - 470px);display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
 .ov-top>*{pointer-events:auto}
@@ -229,6 +232,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       <h5>Style</h5>
       <label><input type="checkbox" id="winterBox" checked> Winter: deep snow, frozen lakes</label>
       <label><input type="checkbox" data-g="tint" checked> Watercolour tints</label>
+      <label><input type="checkbox" id="cloudBox" checked> Clouds: flying through, drifting at the edges, haze</label>
       <label><input type="checkbox" id="compassBox" checked> Compass rose</label>
       <label><input type="checkbox" id="frameBox"> Decorative border</label>
       <label><input type="checkbox" id="modern"> Plain modern map</label>
@@ -241,6 +245,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       <label>Title <input type="text" id="pTitle" maxlength="60" placeholder="My corner of the world"></label>
       <label>Sharpness <select id="pScale"><option value="2">2 × screen</option><option value="3" selected>3 × screen</option></select></label>
       <label class="row"><input type="checkbox" id="pBorder" checked> Decorative border</label>
+      <label class="row"><input type="checkbox" id="pClouds" checked> Clouds at the edges</label>
       <div class="pbtns"><button class="chip lyr" id="pGo">Make the poster</button><button class="chip" id="pCancel">Close</button></div>
       <p class="pstat" id="pStat" aria-live="polite"></p>
     </div>
@@ -328,13 +333,15 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="js/curated.js?v=20261103r4"></script>
-<script src="js/ink-palette.js?v=20261103r4"></script>
-<script src="js/ink-icons.js?v=20261103r4"></script>
-<script src="js/ink-map.js?v=20261103r4"></script>
-<script src="js/ink-extras.js?v=20261103r4"></script>
-<script src="js/ink-life-art.js?v=20261103r4"></script>
-<script src="js/ink-life.js?v=20261103r4"></script>
+<script src="js/curated.js?v=20261103r6"></script>
+<script src="js/ink-palette.js?v=20261103r6"></script>
+<script src="js/ink-icons.js?v=20261103r6"></script>
+<script src="js/ink-houses.js?v=20261103r6"></script>
+<script src="js/ink-map.js?v=20261103r6"></script>
+<script src="js/ink-extras.js?v=20261103r6"></script>
+<script src="js/ink-clouds.js?v=20261103r6"></script>
+<script src="js/ink-life-art.js?v=20261103r6"></script>
+<script src="js/ink-life.js?v=20261103r6"></script>
 <!-- folk and sea: the hidden folk game, the lively sea and the traveller (js/ink-folk-art.js, js/ink-sea-art.js, js/ink-folk.js, js/ink-sea.js, js/ink-traveller.js) load after the map's first view -->
 <script>
 (function () {
@@ -373,12 +380,21 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     InkExtras.scaleBar(map, document.getElementById('scalebar'));
     document.getElementById('rose').innerHTML = InkExtras.compassSVG(58);
     const zb = document.getElementById('zbadge');
-    const upd = () => { zb.textContent = 'zoom ' + map.getZoom().toFixed(1); };
+    // the zoom, and how high the eye is (js/ink-clouds.js: about 1.5 view heights above the ground)
+    const upd = () => { zb.textContent = 'zoom ' + map.getZoom().toFixed(1); if (window.InkClouds && (!map.__clouds || map.__clouds.isOn())) { const s = document.createElement('span'); s.className = 'alt'; s.textContent = InkClouds.altitudeText(InkClouds.altitude(map)); zb.appendChild(s); } };
+    // the clouds wait for the map's first full view, so they never hold up its first frame
+    const clouds = () => { if (window.InkClouds) { try { InkClouds.attach(map, { off: qs.has('noclouds'), dbg: qs.get('cloudsdbg'), onAlt: upd }); upd(); } catch (e) { console.warn('clouds', e); } } };
+    if (map.loaded()) setTimeout(clouds, 200); else map.once('idle', () => setTimeout(clouds, 200));
+    // dark mode: the map stays parchment, its sea a little deeper (js/ink-map.js setSeaTone)
+    const isDark = () => { const r = document.documentElement; return r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; };
+    const tone = () => InkMap.setSeaTone && InkMap.setSeaTone(map, isDark());
+    tone(); new MutationObserver(tone).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', tone); } catch (e) {}
     map.on('zoom', upd); upd();
     setupLayers(map); setupSearch(map); setupPopups(map); setupPoster(map);
     // folk: the hidden folk game and the traveller, loaded once the map has drawn its first view
     // the sea (js/ink-sea-art.js, js/ink-sea.js) comes with them: its layers, data and animation all wait for this moment
-    const game = () => loadScripts(['js/ink-folk-art.js?v=20261103r4', 'js/ink-sea-art.js?v=20261103r4', 'js/ink-folk.js?v=20261103r4', 'js/ink-sea.js?v=20261103r4', 'js/ink-traveller.js?v=20261103r4'])
+    const game = () => loadScripts(['js/ink-folk-art.js?v=20261103r6', 'js/ink-sea-art.js?v=20261103r6', 'js/ink-folk.js?v=20261103r6', 'js/ink-sea.js?v=20261103r6', 'js/ink-traveller.js?v=20261103r6'])
       .then(() => { if (window.InkSea) InkSea.attach(map); if (window.InkFolk) InkFolk.init(map); setupGame(map); }).catch(e => console.warn('folk', e));
     if (map.loaded()) setTimeout(game, 500); else map.once('idle', () => setTimeout(game, 500));
   }).catch(e => { console.error(e); const n = document.getElementById('nojs'); if (n) n.textContent = 'The map could not load: ' + e.message; });
@@ -463,6 +479,10 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     boxes.forEach(b => b.addEventListener('change', apply)); modern.addEventListener('change', apply);
     const rose = document.getElementById('rose'), cb = document.getElementById('compassBox'), fb = document.getElementById('frameBox');
     cb.addEventListener('change', () => { rose.style.display = cb.checked ? '' : 'none'; });
+    const clb = document.getElementById('cloudBox');   // the clouds (js/ink-clouds.js), remembered
+    try { clb.checked = !(localStorage.getItem('ink-clouds') === '0' || qs.has('noclouds')); } catch (e) {}
+    if (!window.InkClouds) clb.closest('label').style.display = 'none';
+    clb.addEventListener('change', () => map.__clouds && map.__clouds.setOn(clb.checked));
     let frame = null;
     fb.addEventListener('change', () => { if (fb.checked && !frame) frame = InkExtras.frameOverlay(document.getElementById('map'), map); if (frame) frame.style.display = fb.checked ? '' : 'none'; });
   }
@@ -540,7 +560,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       go.disabled = true;
       try {
         const t = title.value.trim() || window.__lastPlace || 'My corner of the world';
-        const r = await InkExtras.poster(map, { title: t, scale: +document.getElementById('pScale').value, border: document.getElementById('pBorder').checked, onStatus: m => { st.textContent = m; } });
+        const r = await InkExtras.poster(map, { title: t, scale: +document.getElementById('pScale').value, border: document.getElementById('pBorder').checked, clouds: document.getElementById('pClouds').checked, onStatus: m => { st.textContent = m; } });
         const slug = t.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'home';
         InkExtras.download(r.blob, 'inked-' + slug + '.png');
         window.__lastPoster = { width: r.width, height: r.height, pixelRatio: r.pixelRatio, bytes: r.blob.size };
