@@ -1005,7 +1005,7 @@
     const SRC = {
         labels: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_countries.geojson', attribution: 'Lettering lines: Natural Earth, ONS' },
         regions: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_regions.geojson' },
-        landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
+        landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson?v=20261103r4', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
         peaks: { type: 'geojson', data: base + 'data/peaks_famous.geojson' },
         walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson?v=20261101c' },
         forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson?v=20261101c' },
@@ -1049,7 +1049,7 @@
     const n = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
     pool = [];
     for (let i = 0; i < n; i++) {
-      const w = new Worker(o.base + 'js/ink-worker.js');
+      const w = new Worker(o.base + 'js/ink-worker.js?v=20261103r4');
       w.onmessage = (ev) => {
         const m = ev.data, p = pending.get(m.id); if (!p) return; pending.delete(m.id);
         if (m.err) { console.warn('ink tile', m.err); p.res({ data: new ArrayBuffer(0) }); }

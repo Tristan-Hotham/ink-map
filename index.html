@@ -328,13 +328,13 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="js/curated.js?v=20261102"></script>
-<script src="js/ink-palette.js?v=20261104"></script>
-<script src="js/ink-icons.js?v=20261102"></script>
-<script src="js/ink-map.js?v=20261102"></script>
-<script src="js/ink-extras.js?v=20261104"></script>
-<script src="js/ink-life-art.js?v=20261102"></script>
-<script src="js/ink-life.js?v=20261104"></script>
+<script src="js/curated.js?v=20261103r4"></script>
+<script src="js/ink-palette.js?v=20261103r4"></script>
+<script src="js/ink-icons.js?v=20261103r4"></script>
+<script src="js/ink-map.js?v=20261103r4"></script>
+<script src="js/ink-extras.js?v=20261103r4"></script>
+<script src="js/ink-life-art.js?v=20261103r4"></script>
+<script src="js/ink-life.js?v=20261103r4"></script>
 <!-- folk and sea: the hidden folk game, the lively sea and the traveller (js/ink-folk-art.js, js/ink-sea-art.js, js/ink-folk.js, js/ink-sea.js, js/ink-traveller.js) load after the map's first view -->
 <script>
 (function () {
@@ -378,7 +378,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     setupLayers(map); setupSearch(map); setupPopups(map); setupPoster(map);
     // folk: the hidden folk game and the traveller, loaded once the map has drawn its first view
     // the sea (js/ink-sea-art.js, js/ink-sea.js) comes with them: its layers, data and animation all wait for this moment
-    const game = () => loadScripts(['js/ink-folk-art.js?v=20261104', 'js/ink-sea-art.js?v=20261104', 'js/ink-folk.js?v=20261104', 'js/ink-sea.js?v=20261104', 'js/ink-traveller.js?v=20261104'])
+    const game = () => loadScripts(['js/ink-folk-art.js?v=20261103r4', 'js/ink-sea-art.js?v=20261103r4', 'js/ink-folk.js?v=20261103r4', 'js/ink-sea.js?v=20261103r4', 'js/ink-traveller.js?v=20261103r4'])
       .then(() => { if (window.InkSea) InkSea.attach(map); if (window.InkFolk) InkFolk.init(map); setupGame(map); }).catch(e => console.warn('folk', e));
     if (map.loaded()) setTimeout(game, 500); else map.once('idle', () => setTimeout(game, 500));
   }).catch(e => { console.error(e); const n = document.getElementById('nojs'); if (n) n.textContent = 'The map could not load: ' + e.message; });
