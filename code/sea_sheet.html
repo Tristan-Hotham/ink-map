@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>Sea sprites</title>
+<style>body{background:#F3E5BF;font:12px monospace;margin:10px}div{display:inline-block;margin:6px;text-align:center;vertical-align:bottom;background:#efe0b6}canvas{display:block}</style>
+<body><script src="../js/ink-folk-art.js"></script><script src="../js/ink-sea-art.js"></script>
+<script>
+const K = +(new URLSearchParams(location.search).get('k') || 2.5);
+function show(c, label){ const d=document.createElement('div'); c.style.width=(c.width/3*K)+'px'; d.appendChild(c); d.appendChild(document.createTextNode(label)); document.body.appendChild(d); }
+for (const id of InkSeaArt.ids()) { const c = InkSeaArt.draw(id); if (c) show(c, id); }
+const look = { cloak: 'woad', hood: 'madder', her: { d: 'chevron', c1: 'madder', c2: 'ochreLt' }, skin: 'fair', hair: 'brown' };
+for (const k of ['rowing','longship','cog','caravel','galleon']) for (const f of [0,1]) show(InkSeaArt.boat(k, look, f, f? -1:1), k+f);
+window.__done = true;
+</script>

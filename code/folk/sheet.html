@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8"><title>Folk sprite sheet</title>
+<style>body{margin:0;background:#F3E5BF;font:11px monospace;color:#2B2119}
+.g{display:flex;flex-wrap:wrap;gap:6px;padding:8px}.c{display:flex;flex-direction:column;align-items:center;border:1px dashed #d8c590;padding:3px}
+.c span{max-width:120px;overflow:hidden;white-space:nowrap}</style>
+<div id="g" class="g"></div>
+<script src="../../js/ink-folk-art.js"></script>
+<script>
+// ?zoom=4 renders each sprite enlarged (nearest-neighbour off) for inspection; zoom=1 is the true map size
+const qs = new URLSearchParams(location.search), Z = +(qs.get('zoom') || 1), SRC = qs.get('src') || 'sheet_specs.js';
+const s = document.createElement('script'); s.src = SRC + '?' + Date.now(); s.onload = () => {
+  const g = document.getElementById('g');
+  for (const [name, spec] of window.SPECS) {
+    const RS = Math.max(3, Z); const c = InkFolkArt.render(spec, RS);
+    c.style.width = (c.width / RS * Z) + 'px'; c.style.height = (c.height / RS * Z) + 'px';
+    const d = document.createElement('div'); d.className = 'c'; d.appendChild(c);
+    if (Z > 1) { const sp = document.createElement('span'); sp.textContent = name; d.appendChild(sp); }
+    g.appendChild(d);
+  }
+  window.__done = true;
+}; document.body.appendChild(s);
+</script>

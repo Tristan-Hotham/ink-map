@@ -322,18 +322,27 @@ function tracePolygon(buf, g, ctx, sc) {
     }
   }
 }
-async function fetchOfm(z, x, y) {
-  if (!CFG.ofm) return null;
-  try {
-    const r = await fetch(CFG.ofm.replace('{z}', z).replace('{x}', x).replace('{y}', y));
-    if (!r.ok) return null;
-    let b = new Uint8Array(await r.arrayBuffer());
-    if (b[0] === 0x1f && b[1] === 0x8b) {
-      const ds = new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip')));
-      b = new Uint8Array(await ds.arrayBuffer());
-    }
-    return b;
-  } catch (e) { return null; }
+// each OpenFreeMap tile is read by several passes (water, land cover, towns, life): keep the last few decoded buffers
+const ofmCache = new Map();
+function fetchOfm(z, x, y) {
+  if (!CFG.ofm) return Promise.resolve(null);
+  const k = z + '/' + x + '/' + y;
+  let p = ofmCache.get(k);
+  if (p) { ofmCache.delete(k); ofmCache.set(k, p); return p; }
+  p = (async () => {
+    try {
+      const r = await fetch(CFG.ofm.replace('{z}', z).replace('{x}', x).replace('{y}', y));
+      if (!r.ok) return null;
+      let b = new Uint8Array(await r.arrayBuffer());
+      if (b[0] === 0x1f && b[1] === 0x8b) {
+        const ds = new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip')));
+        b = new Uint8Array(await ds.arrayBuffer());
+      }
+      return b;
+    } catch (e) { return null; }
+  })();
+  ofmCache.set(k, p); if (ofmCache.size > 48) ofmCache.delete(ofmCache.keys().next().value);
+  return p;
 }
 const MS = 256;
 // Rasterise one layer's polygons (all, or those passing `keep`) into a MS x MS 0/1 mask.
@@ -658,6 +667,7 @@ function realWalls() {
     if (!CFG.walls) return [];
     try {
       const j = await (await fetch(CFG.walls)).json(), out = [];
+      if (Array.isArray(j)) return j;   // data/walls_boxes.json: the boxes, precomputed (code/02k_lazy_split.py)
       for (const f of j.features) {
         if (f.properties.k !== 'wall') continue;
         const g = f.geometry, ls = g.type === 'LineString' ? [g.coordinates] : g.coordinates;
@@ -804,9 +814,344 @@ async function townPoints(z, x, y, avoid) {
   return out;
 }
 
-async function buildTile(z, x, y, parentKept) {
+// ---------------- countryside and town life (zoom 9 and closer) ----------------
+// Everything here is decoration generated from the OpenStreetMap tile itself (OpenFreeMap / OpenMapTiles schema):
+//   life      points: t = sprite (js/ink-life-art.js), r = rank (first zoom, for the fade), g = group, a = map angle (trains)
+//   lifeline  field boundaries as lines: k = h (hedgerow), w (drystone wall), d (ditch)
+//   lifetrack a few road lines per tile along which js/ink-life.js moves a traveller
+// Points come from the same nested grid as the trees, so they stay put as you zoom, and a small occupancy grid keeps
+// them from drawing over one another.
+const ROADCLS = { motorway: 0, trunk: 0, primary: 0, secondary: 1, tertiary: 1, minor: 2, service: 3, track: 3, path: 4 };
+const ROADFOLK = [
+  ['lr-wagon', 'lr-coach', 'lr-rider', 'lr-messenger', 'lr-knight', 'lr-packtrain', 'lr-cart', 'lr-cattledrove', 'lr-pilgrims', 'lr-rider2', 'lr-timber', 'lr-wagon'],
+  ['lr-cart', 'lr-rider', 'lr-oxcart', 'lr-walker', 'lr-pedlar', 'lr-packtrain', 'lr-sheepdrove', 'lr-timber', 'lr-friars', 'lr-pilgrims', 'lr-rider2', 'lr-wagon'],
+  ['lr-walker', 'lr-handcart', 'lr-geese', 'lr-sheepdrove', 'lr-oxcart', 'lr-rider2', 'lr-friars', 'lr-pedlar', 'lr-cart'],
+  ['lr-sheepdrove', 'lr-cattledrove', 'lr-oxcart', 'lr-walker', 'lr-timber', 'lr-handcart', 'lr-geese'],
+  ['lr-walker', 'lr-pilgrims', 'lr-friars', 'lr-rider2', 'lr-walker'],
+];
+const ROADKEEP = [0.95, 0.75, 0.42, 0.22, 0.13], ROADZ = [9, 10, 12, 12.5, 13];
+// the modern world turned medieval: OpenMapTiles poi class/subclass to a drawing (and its priority: lower is placed first)
+const POIMED = {
+  'stadium/*': ['lm-tourney', 0], 'railway/station': ['lm-coachinginn', 1], 'railway/halt': ['lm-coachinginn', 1], 'hospital/hospital': ['lm-infirmary', 2],
+  'college/university': ['lm-college', 2], 'college/college': ['lm-college', 3], 'grocery/supermarket': ['lm-market', 3], 'grocery/marketplace': ['lm-market', 3],
+  'grocery/department_store': ['lm-market', 4], 'shop/mall': ['lm-market', 4], 'bus/bus_station': ['lm-carriers', 3], 'school/school': ['lm-school', 4],
+  'car/car': ['lm-cartwright', 4], 'fuel/fuel': ['lm-stable', 4], 'cinema/cinema': ['lm-stage', 4], 'theatre/theatre': ['lm-stage', 4], 'bank/bank': ['lm-counting', 5],
+  'post/post_office': ['lm-messenger', 5], 'police/police': ['lm-watchhouse', 5], 'fire_station/fire_station': ['lm-firewatch', 5], 'library/library': ['lm-scriptorium', 6],
+  'museum/museum': ['lm-cabinet', 6], 'lodging/hotel': ['lm-hostelry', 6], 'sports_centre/sports_centre': ['lm-butts', 6], 'car/car_repair': ['lm-cartwright', 7],
+  'beer/pub': ['lm-innsign', 7], 'parking/parking': ['lm-wagonyard', 8], 'harbor/marina': ['harbour', 2], 'harbor/harbor': ['harbour', 2], 'harbor/dock': ['harbour', 3],
+};
+const LANDMED = { stadium: 'lm-tourney', hospital: 'lm-infirmary', university: 'lm-college', college: 'lm-college', school: 'lm-school' };
+// footprint radius of a drawing in occupancy cells (12 px)
+const FOOT = t => /tourney|college|coachinginn|infirmary|quay|works|brickworks|wagon|packtrain|drove|oxcart|coach$|timber/.test(t) ? 2 : /innsign|stocks|butt|hag|cairn|reed|pots|htree|rick|stooks|scarecrow|beehive|walker|heron/.test(t) ? 0 : 1;
+async function elevSampler(z, x, y) {
+  const dz = Math.min(z, CFG.demMax || 12, 12), d = z - dz;
+  const sm = await demSampler(dz, x >> d, y >> d);
+  if (!sm) return () => 0;
+  const s = 1 << d, ox = (x - ((x >> d) << d)) * 256 / s, oy = (y - ((y >> d) << d)) * 256 / s;
+  return (px, py) => { const i = Math.max(0, Math.min(255, Math.floor(ox + px / 512 * 256 / s))), j = Math.max(0, Math.min(255, Math.floor(oy + py / 512 * 256 / s))); return sm(i, j) * CFG.demScale; };
+}
+function ringArea(r) { let a = 0; for (let i = 0, j = r.length - 1; i < r.length; j = i++) a += (r[j][0] + r[i][0]) * (r[j][1] - r[i][1]); return Math.abs(a / 2); }
+async function lifeTile(z, x, y, cover, her) {
+  const out = { pts: [], lines: [], tracks: [] };
+  const buf = await fetchOfm(z, x, y);
+  if (!buf) return out;
+  const Ls = decodeLayers(buf, new Set(['transportation', 'landcover', 'landuse', 'water', 'waterway', 'poi']));
+  const n = Math.pow(2, z), elev = await elevSampler(z, x, y);
+  const lonOf = nx => nx * 360 - 180, latOfN = ny => latOfY(ny);
+  const cLon = lonOf((x + 0.5) / n), cLat = latOfN((y + 0.5) / n);
+  const mPerPx = 40075016 * Math.cos(cLat * DEG) / (512 * n);
+  const inBox = (lo0, la0, lo1, la1) => cLon >= lo0 && cLon <= lo1 && cLat >= la0 && cLat <= la1;
+  const britain = inBox(-10.7, 49.8, 2, 61), lowCountries = inBox(3.2, 51.2, 7.3, 53.7), fens = inBox(-0.6, 52.0, 1.9, 53.2);
+  const scotIre = inBox(-8, 55.3, -1.6, 59) || inBox(-10.6, 51.3, -5.4, 55.4);
+  const water = Ls.water ? polyMask(buf, Ls.water, null) : null;
+  const at = (m, px, py) => m && m[Math.max(0, Math.min(MS - 1, Math.floor(py / 512 * MS))) * MS + Math.max(0, Math.min(MS - 1, Math.floor(px / 512 * MS)))] === 1;
+  const nearLand = (px, py) => { if (!water) return true; for (const [dx, dy] of [[-10, 0], [10, 0], [0, -10], [0, 10]]) if (!at(water, px + dx, py + dy)) return true; return false; };
+  const nearW = (px, py, r) => { if (!water) return false; for (let dj = -r; dj <= r; dj += r) for (let di = -r; di <= r; di += r) if (at(water, px + di, py + dj)) return true; return false; };
+  // occupancy (12 px cells): heritage drawings first, then the drawings here in order of importance
+  const OC = 12, occ = new Set();
+  const free = (px, py, r) => { const i0 = Math.floor(px / OC), j0 = Math.floor(py / OC); for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) if (occ.has((i0 + di) + ',' + (j0 + dj))) return false; return true; };
+  const take = (px, py, r) => { const i0 = Math.floor(px / OC), j0 = Math.floor(py / OC); for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) occ.add((i0 + di) + ',' + (j0 + dj)); };
+  for (const p of her || []) take((p.nx * n - x) * 512, (p.ny * n - y) * 512, 0);
+  const put = (px, py, t, r, g, a) => {
+    if (px < 0 || py < 0 || px >= 512 || py >= 512) return false;
+    const f = FOOT(t); if (!free(px, py, f)) return false; take(px, py, f);
+    out.pts.push({ nx: (x + px / 512) / n, ny: (y + py / 512) / n, t, r: Math.round(r * 10) / 10, g, a: a || 0 }); return true;
+  };
+  const toPx = p => [(p.nx * n - x) * 512, (p.ny * n - y) * 512];
+  const hpt = (px, py, s) => hash3(Math.round(((x + px / 512) / n) * 4e7), Math.round(((y + py / 512) / n) * 4e7), s);
+
+  // ---- 1. the modern world turned medieval (points of interest; land use further out)
+  if (Ls.poi && z >= 12) {
+    const P = Ls.poi, sc = 512 / P.extent, cand = [];
+    for (const span of P.feats) {
+      const F = featureOf(buf, P, span); if (F.type !== 1) continue;
+      const cl = F.props.class, sub = F.props.subclass;
+      const m = POIMED[cl + '/' + sub] || POIMED[cl + '/*']; if (!m) continue;
+      const [qx, qy] = pointOf(buf, F.geom); const px = qx * sc, py = qy * sc;
+      if (px < 0 || py < 0 || px >= 512 || py >= 512) continue;
+      cand.push({ px, py, t: m[0], pri: m[1] + (F.props.rank ? F.props.rank / 100 : 0.5) });
+    }
+    cand.sort((a, b) => a.pri - b.pri);
+    let nPub = 0, nPark = 0;
+    for (const c of cand) {
+      let t = c.t;
+      if (t === 'lm-innsign') { if (++nPub > 14) continue; const h = hpt(c.px, c.py, 3); t = h < 0.4 ? 'lm-innsign' : h < 0.7 ? 'lm-innsign2' : 'lm-innsign3'; }
+      if (t === 'lm-wagonyard' && (z < 14 || ++nPark > 4 || hpt(c.px, c.py, 5) > 0.35)) continue;
+      if (t === 'lm-watchhouse' && hpt(c.px, c.py, 7) < 0.5) t = 'lm-stocks';
+      if (t === 'harbour') {
+        // fishing boats drawn up, nets and lobster pots round a harbour
+        put(c.px + 8, c.py + 6, 'lr-coble', z, 'life'); put(c.px - 10, c.py + 10, 'lr-pots', z, 'life'); put(c.px + 4, c.py - 12, 'lr-boat', z, 'life');
+        continue;
+      }
+      put(c.px, c.py, t, Math.max(12, z - 0.5), 'life');
+    }
+  }
+  if (Ls.landuse && z >= 12 && z <= 13) {
+    // further out than the points of interest reach: the big institutions from their land use polygons
+    const U = Ls.landuse, sc = 512 / U.extent; let nLand = 0;
+    for (const span of U.feats) {
+      const F = featureOf(buf, U, span); if (F.type !== 3) continue;
+      const t = LANDMED[F.props.class]; if (!t) continue;
+      const parts = lineParts(buf, F.geom); if (!parts.length) continue;
+      const ring = parts[0].map(q => [q[0] * sc, q[1] * sc]), A = ringArea(ring);
+      if (A < 500 || ++nLand > 5) continue;   // only the big ones carry a drawing this far out
+      let cx = 0, cy = 0; for (const q of ring) { cx += q[0]; cy += q[1]; } cx /= ring.length; cy /= ring.length;
+      put(cx, cy, t, z, 'life');
+    }
+  }
+  // ---- 2. early industry on industrial land: brickworks, kilns, forges, mills, breweries, distilleries, tanneries, glassworks
+  const indM = Ls.landuse ? polyMask(buf, Ls.landuse, p => p.class === 'industrial') : null;
+  if (indM && z >= 10) {
+    const pot = inBox(-2.3, 52.95, -2.05, 53.1), burton = inBox(-1.72, 52.76, -1.56, 52.85);
+    for (const q of nestedPoints(z, x, y, 95, 9, z + 1, 71)) {
+      const [px, py] = toPx(q); if (!at(indM, px, py) || q.h > 0.8) continue;
+      const h = hpt(px, py, 73), e = elev(px, py);
+      let t;
+      if (pot && h < 0.7) t = 'li-bottlekiln';
+      else if (burton && h < 0.7) t = 'li-brewery';
+      else if (scotIre && h < 0.28) t = 'li-distillery';
+      else if (nearW(px, py, 10) && h < 0.4) t = h < 0.22 ? 'li-watermill' : 'li-quay';
+      else if (e > 180 && h < 0.5) t = 'li-mine';
+      else t = ['li-brickworks', 'li-works', 'li-forge', 'li-bottlekiln', 'li-tannery', 'li-glassworks', 'li-brewery', 'li-works', 'li-brickworks', 'li-forge'][Math.floor(hpt(px, py, 75) * 10)];
+      put(px, py, t, q.r, 'ind');
+    }
+  }
+  // ---- 3. the countryside: masks by land cover (with the wetland kinds), and the elevation for uplands
+  const LC = Ls.landcover;
+  const lcM = LC ? {
+    farm: polyMask(buf, LC, p => p.class === 'farmland'),
+    meadow: polyMask(buf, LC, p => p.class === 'grass' && (p.subclass === 'meadow' || p.subclass === 'grassland')),
+    heath: polyMask(buf, LC, p => p.class === 'grass' && (p.subclass === 'heath' || p.subclass === 'moor' || p.subclass === 'fell')),
+    reed: polyMask(buf, LC, p => p.class === 'wetland' && p.subclass !== 'bog' && p.subclass !== 'tidalflat' && p.subclass !== 'mangrove'),
+  } : {};
+  if (z >= 10 && LC) {
+    for (const q of nestedPoints(z, x, y, 64, 9, z + 1, 81)) {
+      const [px, py] = toPx(q);
+      if (q.h > 0.5 || at(water, px, py)) continue;
+      const e = elev(px, py), h = hpt(px, py, 83);
+      if (lcM.heath && at(lcM.heath, px, py)) {
+        if (q.h < 0.07 && e > 380) put(px, py, 'lf-hag', q.r, 'land');
+        else if (q.h >= 0.07 && q.h < 0.12 && e > 230 && e < 600 && britain && q.r >= 12) {
+          // a short line of grouse butts across the moor
+          for (let k = 0; k < 4; k++) put(px + k * 13, py + k * 2.5, 'lf-butt', q.r, 'land');
+        } else if (q.h >= 0.12 && q.h < 0.18 && e > 300) put(px, py, h < 0.5 ? 'lf-cairn' : 'lf-fold', q.r, 'land');
+        else if (q.h >= 0.18 && q.h < 0.23) put(px, py, 'lf-shepherd', q.r, 'land');
+      } else if (lcM.meadow && at(lcM.meadow, px, py)) {
+        if (q.h < 0.2) put(px, py, e > 200 ? (h < 0.5 ? 'lf-fold' : 'lf-shepherd') : (h < 0.6 ? 'lf-rick' : 'lf-shepherd'), q.r, 'land');
+      } else if (lcM.farm && at(lcM.farm, px, py)) {
+        if (q.h < 0.15) put(px, py, h < 0.42 ? 'lf-rick' : h < 0.76 ? 'lf-stooks' : h < 0.88 ? 'lf-scarecrow' : 'lf-beehives', q.r, 'land');
+      }
+    }
+    // reed beds, marsh and salt marsh: reeds; herons and wildfowl at the water's edge
+    if (lcM.reed) for (const q of nestedPoints(z, x, y, 24, 10, z + 1, 87)) {
+      const [px, py] = toPx(q); if (q.h > 0.62 || !at(lcM.reed, px, py)) continue;
+      // salt marsh often lies seaward of the mapped coast: reeds there too, a little thinner, and wildfowl on the pools
+      // and further out, where the wetland lies in the sea, the tidal mudflats: short strokes of mud with pools between
+      if (at(water, px, py)) {
+        if (q.h < 0.04) put(px, py, 'lf-wildfowl', q.r, 'land');
+        else if (q.h < 0.6) out.pts.push({ nx: q.nx, ny: q.ny, t: !nearLand(px, py) ? 'lf-mud' + Math.floor(q.h * 4.9) : 'lf-reed' + Math.floor(q.h * 4.9), r: q.r, g: 'land', a: 0 });
+        continue;
+      }
+      if (q.h < 0.03 && nearW(px, py, 8)) { put(px, py, 'lf-heron', q.r, 'land'); continue; }
+      out.pts.push({ nx: q.nx, ny: q.ny, t: 'lf-reed' + Math.floor(q.h * 4.8), r: q.r, g: 'land', a: 0 });
+    }
+    // windmills on flat farmland, and drainage windpumps in the fens and polders
+    for (const q of nestedPoints(z, x, y, 230, 9, z + 1, 89)) {
+      const [px, py] = toPx(q); if (q.h > 0.32 || at(water, px, py)) continue;
+      const e = elev(px, py), wet = lcM.reed && at(lcM.reed, px, py), farm = (lcM.farm && at(lcM.farm, px, py)) || (lcM.meadow && at(lcM.meadow, px, py));
+      if ((fens || lowCountries) && e < 6 && (wet || farm)) put(px, py, lowCountries && q.h < 0.2 ? 'li-windmill' : 'lf-windpump', q.r, 'land');
+      else if (farm && e < 120 && q.h < 0.14) put(px, py, 'li-windmill', q.r, 'land');
+    }
+  }
+  // ---- 4. field boundaries: hedgerows in the lowlands, drystone walls in the uplands, ditches in the polders
+  if (z >= 11 && LC) {
+    const sc = 512 / LC.extent, seen = new Set(), haPerPx2 = mPerPx * mPerPx / 1e4;
+    const kinds = { h: [], w: [], d: [] };
+    for (const span of LC.feats) {
+      const F = featureOf(buf, LC, span); if (F.type !== 3) continue;
+      const cl = F.props.class, sub = F.props.subclass;
+      if (!(cl === 'farmland' || (cl === 'grass' && (sub === 'meadow' || sub === 'grassland')))) continue;
+      for (const part of lineParts(buf, F.geom)) {
+        if (part.length < 3) continue;
+        const ring = part.map(q => [q[0] * sc, q[1] * sc]); ring.push(ring[0]);
+        const ha = ringArea(ring) * haPerPx2; if (ha < 0.15 || ha > 45) continue;   // fields, not whole open plains
+        const e = elev(Math.max(0, Math.min(511, ring[0][0])), Math.max(0, Math.min(511, ring[0][1])));
+        let k = null;
+        if (lowCountries && e < 8) k = 'd';
+        else if (cLat < 44) k = e > 250 ? 'w' : null;
+        else if (cLat > 56.5 && cLon > 4) k = null;
+        else if (e >= 230 && (britain || e > 900)) k = 'w';
+        else if (e < 600) k = 'h';
+        if (!k) continue;
+        let cur = null;
+        for (let i = 1; i < ring.length; i++) {
+          const a = ring[i - 1], b = ring[i];
+          const edge = (a[0] < 1 && b[0] < 1) || (a[0] > 511 && b[0] > 511) || (a[1] < 1 && b[1] < 1) || (a[1] > 511 && b[1] > 511);
+          const ka = Math.round(a[0] * 2) + ':' + Math.round(a[1] * 2), kb = Math.round(b[0] * 2) + ':' + Math.round(b[1] * 2), key = ka < kb ? ka + '|' + kb : kb + '|' + ka;
+          if (edge || seen.has(key)) { cur = null; continue; }
+          seen.add(key);
+          if (!cur) { cur = [a]; kinds[k].push(cur); }
+          cur.push(b);
+        }
+      }
+    }
+    for (const k of ['h', 'w', 'd']) if (kinds[k].length) out.lines.push({ k, parts: kinds[k] });
+  }
+  // ---- 5. travellers on the roads, snapped from the nested grid to the nearest road (so they stay put as you zoom)
+  const TR = Ls.transportation;
+  if (TR && z >= 9) {
+    const sc = 512 / TR.extent, G = 32, grid = new Map(), longs = [];
+    for (const span of TR.feats) {
+      const F = featureOf(buf, TR, span); if (F.type !== 2) continue;
+      const cg = ROADCLS[F.props.class]; if (cg === undefined || F.props.brunnel === 'tunnel') continue;
+      if (cg === 4 && !['bridleway', 'path', 'footway'].includes(F.props.subclass)) continue;
+      for (const part of lineParts(buf, F.geom)) {
+        let len = 0; const pp = part.map(q => [q[0] * sc, q[1] * sc]);
+        for (let i = 1; i < pp.length; i++) {
+          const a = pp[i - 1], b = pp[i], L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 0.5) continue; len += L;
+          const seg = [a[0], a[1], b[0], b[1], cg];
+          const i0 = Math.floor(Math.min(a[0], b[0]) / G), i1 = Math.floor(Math.max(a[0], b[0]) / G), j0 = Math.floor(Math.min(a[1], b[1]) / G), j1 = Math.floor(Math.max(a[1], b[1]) / G);
+          for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) { const kk = i + ',' + j; (grid.get(kk) || grid.set(kk, []).get(kk)).push(seg); }
+        }
+        if (cg <= 1 && len > 140 && z >= 11) longs.push({ pp, len, cg });
+      }
+    }
+    let nTrav = 0;
+    for (const q of nestedPoints(z, x, y, 96, 9, z + 1, 91)) {
+      if (nTrav >= 36) break;
+      const [px, py] = toPx(q), R = Math.min(300, 96 * 0.45 * Math.pow(2, z - q.r));
+      let best = null, bd = R * R;
+      const gi0 = Math.floor((px - R) / G), gi1 = Math.floor((px + R) / G), gj0 = Math.floor((py - R) / G), gj1 = Math.floor((py + R) / G);
+      for (let j = gj0; j <= gj1; j++) for (let i = gi0; i <= gi1; i++) for (const s of grid.get(i + ',' + j) || []) {
+        const dx = s[2] - s[0], dy = s[3] - s[1], L2 = dx * dx + dy * dy, t = Math.max(0, Math.min(1, ((px - s[0]) * dx + (py - s[1]) * dy) / L2));
+        const cx = s[0] + t * dx, cy = s[1] + t * dy, d2 = (cx - px) * (cx - px) + (cy - py) * (cy - py);
+        // prefer the bigger road a little: lanes count as further away
+        const w = d2 * (1 + s[4] * 0.35);
+        if (w < bd) { bd = w; best = { cx, cy, s }; }
+      }
+      if (!best) continue;
+      const cg = best.s[4];
+      if (q.h > ROADKEEP[cg] || q.r < ROADZ[cg] || at(water, best.cx, best.cy)) continue;
+      const list = ROADFOLK[cg];
+      let t = list[Math.floor(hash3(Math.round(q.nx * 1e7), Math.round(q.ny * 1e7), 93) * list.length)];
+      if (cLat > 50 && cg >= 2 && q.h < 0.04) t = 'lr-sledge';
+      const dir = q.h * 1000 % 1 < 0.5 ? 1 : -1, goingLeft = (best.s[2] - best.s[0]) * dir < 0;
+      if (put(best.cx, best.cy, goingLeft ? t + '-l' : t, q.r, 'road')) nTrav++;
+    }
+    // a few moving travellers per tile: the longest main roads, drawn by js/ink-life.js along the line
+    longs.sort((a, b) => b.len - a.len);
+    for (let i = 0; i < Math.min(2, longs.length); i++) {
+      const L = longs[i], hh = hash3(Math.round(L.pp[0][0] * 10), Math.round(L.pp[0][1] * 10), z * 17 + x + y);
+      const list = ROADFOLK[L.cg];
+      out.tracks.push({ t: list[Math.floor(hh * list.length)], v: Math.round((0.6 + hh * 0.8) * 100) / 100, parts: [L.pp] });
+    }
+    // little steam trains on the railways, turned along the line (zoom 11 and closer)
+    if (z >= 11) {
+      let nTrain = 0;
+      for (const span of TR.feats) {
+        if (nTrain >= 2) break;
+        const F = featureOf(buf, TR, span); if (F.type !== 2 || F.props.class !== 'rail' || F.props.brunnel === 'tunnel') continue;
+        if (F.props.service || !['rail', 'narrow_gauge', 'preserved'].includes(F.props.subclass)) continue;
+        for (const part of lineParts(buf, F.geom)) {
+          const pp = part.map(q => [q[0] * sc, q[1] * sc]);
+          let len = 0; for (let i = 1; i < pp.length; i++) len += Math.hypot(pp[i][0] - pp[i - 1][0], pp[i][1] - pp[i - 1][1]);
+          if (len < 160) continue;
+          let goal = len * (0.3 + 0.4 * hash3(Math.round(pp[0][0]), Math.round(pp[0][1]), 97)), acc = 0;
+          for (let i = 1; i < pp.length; i++) {
+            const a = pp[i - 1], b = pp[i], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            if (acc + L >= goal) { const t = (goal - acc) / L, cx = a[0] + (b[0] - a[0]) * t, cy = a[1] + (b[1] - a[1]) * t; const ang = (Math.atan2(b[0] - a[0], -(b[1] - a[1])) * 180 / Math.PI + 360) % 360; if (put(cx, cy, 'lr-train', 11, 'rail', Math.round(ang))) nTrain++; break; }
+            acc += L;
+          }
+          break;
+        }
+      }
+    }
+  }
+  out.pts.sort((a, b) => a.ny - b.ny);
+  return out;
+}
+
+// line features (parts in tile pixels, 512 a tile) as a vector tile layer
+function encodeLines(name, feats, keys, z, x, y) {
+  const ext = 4096, k = ext / 512;
+  const L = new Writer();
+  L.varint((15 << 3) | 0); L.varint(2);
+  L.str(1, name);
+  const vals = [], vmap = new Map();
+  const vi = v => { let i = vmap.get(v); if (i === undefined) { i = vals.length; vals.push(v); vmap.set(v, i); } return i; };
+  for (const f of feats) {
+    const F = new Writer(), T2 = new Writer();
+    keys.forEach((kk, ki) => { T2.varint(ki); T2.varint(vi(f[kk])); });
+    F.bytes(2, T2.a); F.tag(3, 0); F.varint(2);
+    const G = new Writer(); let cx = 0, cy = 0;
+    for (const part of f.parts) {
+      if (part.length < 2) continue;
+      const pts = part.map(q => [Math.round(q[0] * k), Math.round(q[1] * k)]);
+      G.varint((1 & 7) | (1 << 3)); G.varint(zz(pts[0][0] - cx)); G.varint(zz(pts[0][1] - cy)); cx = pts[0][0]; cy = pts[0][1];
+      G.varint((2 & 7) | ((pts.length - 1) << 3));
+      for (let i = 1; i < pts.length; i++) { G.varint(zz(pts[i][0] - cx)); G.varint(zz(pts[i][1] - cy)); cx = pts[i][0]; cy = pts[i][1]; }
+    }
+    F.bytes(4, G.a);
+    L.bytes(2, F.a);
+  }
+  for (const kk of keys) L.str(3, kk);
+  for (const v of vals) { const V = new Writer(); if (typeof v === 'string') V.str(1, v); else V.double(3, v); L.bytes(4, V.a); }
+  L.tag(5, 0); L.varint(ext);
+  return L.a;
+}
+
+// ---------------- the deep-winter snow extent (data/biomes_snow.geojson, sent in the config), tested per glyph here once, so the
+// style can pick the snowy drawing from a property (sz) instead of a polygon test per feature per layer
+let SZE = null;
+const SZB = 1024;
+function snowBands() {
+  if (SZE || !CFG.snowZone) return SZE;
+  const g = CFG.snowZone, polys = g.type === 'MultiPolygon' ? g.coordinates : g.type === 'Polygon' ? [g.coordinates] : [];
+  SZE = Array.from({ length: SZB }, () => []);
+  for (const poly of polys) for (const ring of poly) for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const ax = mercX(ring[j][0]), ay = mercY(ring[j][1]), bx = mercX(ring[i][0]), by = mercY(ring[i][1]);
+    if (ay === by) continue;
+    const e = [ax, ay, bx, by], b0 = Math.max(0, Math.floor(Math.min(ay, by) * SZB)), b1 = Math.min(SZB - 1, Math.floor(Math.max(ay, by) * SZB));
+    for (let b = b0; b <= b1; b++) SZE[b].push(e);
+  }
+  return SZE;
+}
+function inSnow(nx, ny) {
+  const B = snowBands(); if (!B) return 0;
+  const E = B[Math.max(0, Math.min(SZB - 1, Math.floor(ny * SZB)))]; let c = 0;
+  for (const [ax, ay, bx, by] of E) if ((ay > ny) !== (by > ny) && nx < ax + (ny - ay) / (by - ay) * (bx - ax)) c ^= 1;
+  return c;
+}
+const tagSnow = pts => { for (const p of pts) p.sz = inSnow(p.nx, p.ny); return pts; };
+
+const ABORT = { aborted: true };
+async function buildTile(z, x, y, parentKept, alive) {
+  // a tile nobody wants any more (the map zoomed or panned on) is given up between stages, so a fast fly-through does
+  // not queue up seconds of work for tiles that will never be shown
+  const check = () => { if (alive && !alive()) throw ABORT; };
   const T = new Writer();
   const [relief0, water] = await Promise.all([reliefPoints(z, x, y), z <= CFG.ofmMax && CFG.ofm ? waterMask(z, x, y) : null]);
+  check();
   const n = Math.pow(2, z);
   const wetAt = (i, j) => water[Math.max(0, Math.min(MS - 1, j)) * MS + Math.max(0, Math.min(MS - 1, i))] === 1;
   const wet = p => { if (!water || water.none) return false; return wetAt(Math.floor((p.nx * n - x) * MS), Math.floor((p.ny * n - y) * MS)); };
@@ -862,9 +1207,9 @@ async function buildTile(z, x, y, parentKept) {
       pts.push({ nx: p.nx, ny: p.ny, r: p.r, b, v: Math.floor(hash3(Math.round(p.nx * 1e7), Math.round(p.ny * 1e7), 9) * 4) });
     }
     pts.sort((a, b) => a.ny - b.ny);
-    if (pts.length) T.bytes(3, encodeLayer('biome', pts, ['r', 'b', 'v'], z, x, y));
+    if (pts.length) T.bytes(3, encodeLayer('biome', tagSnow(pts), ['r', 'b', 'v', 'sz'], z, x, y));
   }
-  if (relief.length) T.bytes(3, encodeLayer('relief', relief, ['r', 'k', 's', 'v', 'e', 'rl', 'rg', 'sn'], z, x, y));
+  if (relief.length) T.bytes(3, encodeLayer('relief', tagSnow(relief), ['r', 'k', 's', 'v', 'e', 'rl', 'rg', 'sn', 'sz'], z, x, y));
   if (z >= 7 && CFG.ofm) {
     const oz = Math.min(z, CFG.ofmMax);
     if (oz === z) {
@@ -874,15 +1219,24 @@ async function buildTile(z, x, y, parentKept) {
         const at = p => { const n = Math.pow(2, z); const i = Math.floor((p.nx * n - x) * MS), j = Math.floor((p.ny * n - y) * MS); return j * MS + i; };
         if (mask.forest || mask.wood) {
           const trees = [];
+          // woodland by type: OpenMapTiles carries no leaf type, so the mix of conifers and broadleaves is set by the
+          // kind of wood (managed forest or wood), the height of the ground, the latitude and the biome: plantations of
+          // conifers on the uplands and in the north, oak, ash and beech woods in the lowlands
+          const elev = await elevSampler(z, x, y), BRw = await biomeRaster();
+          const tLat = latOfY((y + 0.5) / n);
           for (const p of nestedPoints(z, x, y, CFG.CT, 6, z + 1, 11)) {
             const i = at(p);
             const f = mask.forest && mask.forest[i], w = mask.wood && mask.wood[i];
             if ((!f && !w) || wet(p)) continue;
-            const con = f ? (p.h < 0.7 ? 1 : 0) : (p.h < 0.18 ? 1 : 0);
+            const e = elev((p.nx * n - x) * 512, (p.ny * n - y) * 512), bw = biomeAt(BRw, p.nx, p.ny);
+            const north = tLat > 56 || bw === 4 || bw === 7, med = tLat < 44;
+            const share = f ? (north || e > 250 ? 0.92 : e > 120 ? 0.75 : med ? 0.55 : 0.45)
+              : (north ? 0.8 : e > 350 ? 0.5 : e > 180 ? 0.25 : med ? 0.3 : 0.08);
+            const con = p.h < share ? 1 : 0;
             trees.push({ nx: p.nx, ny: p.ny, r: p.r, c: con, v: Math.floor(hash3(Math.round(p.nx * 1e7), Math.round(p.ny * 1e7), 5) * 4) });
           }
           trees.sort((a, b) => a.ny - b.ny);
-          if (trees.length) T.bytes(3, encodeLayer('trees', trees, ['r', 'c', 'v'], z, x, y));
+          if (trees.length) T.bytes(3, encodeLayer('trees', tagSnow(trees), ['r', 'c', 'v', 'sz'], z, x, y));
         }
         if (z >= 9 && (mask.wet || mask.heath)) {
           const tufts = [];
@@ -892,11 +1246,12 @@ async function buildTile(z, x, y, parentKept) {
             if ((!wt && !ht) || wet(p)) continue;
             tufts.push({ nx: p.nx, ny: p.ny, r: p.r, w: wt ? 1 : 0, v: Math.floor(p.h * 3) });
           }
-          if (tufts.length) T.bytes(3, encodeLayer('tufts', tufts, ['r', 'w', 'v'], z, x, y));
+          if (tufts.length) T.bytes(3, encodeLayer('tufts', tagSnow(tufts), ['r', 'w', 'v', 'sz'], z, x, y));
         }
       }
     }
   }
+  check();
   // beasts of the countryside: a few a tile, in country that suits them, on the same nested grid so they stay put as you zoom
   if (z >= 6 && z <= 14) {
     const BR2 = await biomeRaster(), beasts = [];
@@ -925,6 +1280,7 @@ async function buildTile(z, x, y, parentKept) {
     const kept = beasts.slice(0, 6);
     if (kept.length) T.bytes(3, encodeLayer('beasts', kept, ['r', 'a'], z, x, y));
   }
+  check();
   // heritage drawings and, close in, the drawn towns
   const her = await heritagePoints(z, x, y);
   if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q', 'l'], z, x, y));
@@ -934,36 +1290,59 @@ async function buildTile(z, x, y, parentKept) {
     const xp = await placePoints(z, x, y);
     if (xp.length) T.bytes(3, encodeLayer('xplaces', xp, ['z', 'k', 'n', 'w'], z, x, y));
   }
+  check();
   if (z >= 12) {
     const town = await townPoints(z, x, y, her);
     town.sort((a, b) => a.ny - b.ny);
-    if (town.length) T.bytes(3, encodeLayer('town', town, ['t', 'a', 'o'], z, x, y));
+    if (town.length) T.bytes(3, encodeLayer('town', tagSnow(town), ['t', 'a', 'o', 'sz'], z, x, y));
+  }
+  check();
+  // countryside and town life (js/ink-life.js draws it): fields, hedges and walls, moors, fens, industry, the modern
+  // world turned medieval, and travellers on the roads
+  if (z >= 9 && z <= CFG.ofmMax && CFG.ofm && CFG.life !== false) {
+    try {
+      const L = await lifeTile(z, x, y, cover, her);
+      if (L.pts.length) T.bytes(3, encodeLayer('life', tagSnow(L.pts), ['t', 'r', 'g', 'a', 'sz'], z, x, y));
+      const tsz = inSnow((x + 0.5) / Math.pow(2, z), (y + 0.5) / Math.pow(2, z));   // hedgerows: snowy or not by the tile's centre
+      for (const f of L.lines) f.sz = tsz;
+      if (L.lines.length) T.bytes(3, encodeLines('lifeline', L.lines, ['k', 'sz'], z, x, y));
+      if (L.tracks.length) T.bytes(3, encodeLines('lifetrack', L.tracks, ['t', 'v'], z, x, y));
+    } catch (e) { /* life is decoration: never fail a tile over it */ }
   }
   return { buf: new Uint8Array(T.a).buffer, kept: keptIds };
 }
 // finished tiles, kept a while: zooming back out and in again, or panning back, costs nothing
 const tileCache = new Map();
 
-const live = new Set();
+const live = new Map();       // request id -> tile key
+const inflight = new Map();   // tile key -> the build under way (two requests for one tile share it)
+const wanted = key => { for (const k of live.values()) if (k === key) return true; return false; };
 self.onmessage = async (ev) => {
   const m = ev.data;
   if (m.config) { Object.assign(CFG, m.config); return; }
   if (m.cancel) { live.delete(m.cancel); return; }
-  live.add(m.id);
+  const key = m.z + '/' + m.x + '/' + m.y;
+  live.set(m.id, key);
   try {
     const t0 = performance.now();
-    const key = m.z + '/' + m.x + '/' + m.y;
     let res = tileCache.get(key);
-    if (!res) {
-      res = await buildTile(m.z, m.x, m.y, m.parentKept);
-      tileCache.set(key, res); if (tileCache.size > 160) tileCache.delete(tileCache.keys().next().value);
+    if (res) { tileCache.delete(key); tileCache.set(key, res); }   // most recently used last
+    else {
+      let job = inflight.get(key);
+      if (!job) {
+        job = buildTile(m.z, m.x, m.y, m.parentKept, () => wanted(key));
+        inflight.set(key, job);
+        job.then(r => { tileCache.set(key, r); if (tileCache.size > 160) tileCache.delete(tileCache.keys().next().value); }, () => {}).finally(() => inflight.delete(key));
+      }
+      res = await job;
     }
     if (!live.has(m.id)) return;
     live.delete(m.id);
     const buf = res.buf.slice(0);
     self.postMessage({ id: m.id, buf, kept: res.kept, ms: performance.now() - t0 }, [buf]);
   } catch (e) {
-    live.delete(m.id);
+    const was = live.delete(m.id);
+    if (e === ABORT) { if (was) self.postMessage({ id: m.id, err: 'aborted' }); return; }
     self.postMessage({ id: m.id, err: String(e && e.stack || e) });
   }
 };

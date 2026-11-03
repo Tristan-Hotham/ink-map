@@ -4,14 +4,21 @@
  * Dr Tristan Hotham, Independent researcher, 2026. MIT licence. */
 (function (global) {
   'use strict';
-  const INK = '#2B2119', PAPER = 'rgba(243,229,191,0.97)', RED = '#A3261B', BLUE = '#3D6E9E', BLUES = '#6F9DC6', SNOW = '#FBF8EE';
+  const PAL = global.InkPalette || {};
+  const INK = PAL.ink || '#2B2119', PAPER = PAL.paperFill || 'rgba(243,229,191,0.97)', RED = PAL.red || '#A3261B', BLUE = PAL.blue || '#3D6E9E', BLUES = PAL.blueSoft || '#6F9DC6', SNOW = PAL.snow || '#FBF8EE';
+  const SNOWSH = PAL.snowShade || '#D6E0E6', ICE = PAL.iceLine || '#8FB0CC';
+  let SNOWY = false;   // while true, roofs are drawn under snow (the winter twins of the town drawings, id + '-s')
   function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 100000) / 100000; }; }
   function hashStr(t) { let h = 2166136261; for (const ch of t) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 
   // ---------------- the pen
-  function Pen(w, h, seed) {
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d'); x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK; x.fillStyle = PAPER;
+  // icons are drawn at K times their logical size and registered with pixelRatio 2K (js/ink-palette.js SCALE), so they stay
+  // crisp on 3x screens; patterns pass k = 1, since they tile at their pixel size
+  const K = ((global.InkPalette && global.InkPalette.SCALE) || 3) / 2;
+  function Pen(w, h, seed, k) {
+    k = k === undefined ? K : k;
+    const c = document.createElement('canvas'); c.width = Math.ceil(w * k); c.height = Math.ceil(h * k); c.__k = k;
+    const x = c.getContext('2d', { willReadFrequently: true }); if (k !== 1) x.scale(k, k); x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK; x.fillStyle = PAPER;
     const R = rng(seed || 7);
     const j = a => (R() - 0.5) * a;
     const pen = {
@@ -52,7 +59,7 @@
         if (opt.win !== false) pen.wins(cx - tw * 0.22, t + th * 0.25, tw * 0.44, 1, Math.min(5, th * 0.18));
         if (top === 'cren') pen.crenels(l - 0.6, t, tw + 1.2, Math.max(2, Math.round(tw / 3.4)));
         else if (top === 'spire') { pen.poly([[l - 0.5, t], [cx, t - tw * (opt.k || 1.9)], [l + tw + 0.5, t]], PAPER, 1.5); pen.hatch([[cx, t - tw * (opt.k || 1.9)], [l + tw + 0.5, t], [cx, t]], 70, 1.8, 0.7); }
-        else if (top === 'cone') { pen.poly([[l - 1, t], [cx, t - tw * 1.1], [l + tw + 1, t]], opt.red ? RED : PAPER, 1.5); }
+        else if (top === 'cone') { pen.poly([[l - 1, t], [cx, t - tw * 1.1], [l + tw + 1, t]], opt.red ? RED : PAPER, 1.5); if (SNOWY) pen.poly([[l - 0.2, t - tw * 0.35], [cx, t - tw * 1.1], [l + tw + 0.2, t - tw * 0.35], [cx + tw * 0.2, t - tw * 0.2], [cx - tw * 0.25, t - tw * 0.3]], SNOW, 0.5); }
         else if (top === 'dome') pen.ell(cx, t, tw * 0.55, tw * 0.55, PAPER, 1.5, Math.PI, Math.PI * 2);
         else if (top === 'onion') { const r = tw * 0.62; pen.poly([[cx - r, t], [cx - r * 0.95, t - r * 0.8], [cx - r * 0.3, t - r * 1.35], [cx, t - r * 2], [cx + r * 0.3, t - r * 1.35], [cx + r * 0.95, t - r * 0.8], [cx + r, t]], opt.fill || PAPER, 1.4); }
         else if (top === 'pyr') pen.poly([[l - 0.5, t], [cx, t - tw * 0.8], [l + tw + 0.5, t]], PAPER, 1.4);
@@ -73,8 +80,8 @@
   }
   function church(p, cx, gy, s, spire) {
     p.rect(cx - 9 * s, gy - 9 * s, 13 * s, 9 * s, PAPER, 1.5);
-    p.poly([[cx - 10 * s, gy - 9 * s], [cx - 2.5 * s, gy - 14 * s], [cx + 5 * s, gy - 9 * s]], PAPER, 1.4);
-    p.hatch([[cx - 2.5 * s, gy - 14 * s], [cx + 5 * s, gy - 9 * s], [cx - 2.5 * s, gy - 9 * s]], 60, 1.7, 0.7);
+    p.poly([[cx - 10 * s, gy - 9 * s], [cx - 2.5 * s, gy - 14 * s], [cx + 5 * s, gy - 9 * s]], SNOWY ? SNOW : PAPER, 1.4);
+    p.hatch([[cx - 2.5 * s, gy - 14 * s], [cx + 5 * s, gy - 9 * s], [cx - 2.5 * s, gy - 9 * s]], 60, 1.7, 0.7, SNOWY ? ICE : undefined);
     p.wins(cx - 7 * s, gy - 7 * s, 9 * s, 3, 3.5 * s);
     p.tower(cx + 7 * s, gy, 6 * s, 15 * s, spire ? 'spire' : 'cren', { k: 2.2 });
     p.line([[cx + 7 * s, gy - 15 * s - (spire ? 13.5 * s : 3) - 1], [cx + 7 * s, gy - 15 * s - (spire ? 13.5 * s : 3) - 5 * s]], 1);
@@ -100,6 +107,7 @@
       p.poly([B, Bb, Bbt, Bt], WALLSH, 1);                               // side wall
       p.poly([Bt, Bbt, Fb, F], TS, 1);                                   // right slope, in shade
       p.hatch([Bt, Bbt, Fb, F], -38, 1.6, 0.5, 'rgba(43,33,25,0.55)');
+      if (SNOWY) { p.poly([At, F, Fb, Abt].map((q, i) => i === 0 ? lerp(q, F, 0.12) : i === 3 ? lerp(q, Fb, 0.12) : q), SNOW, 0.5); p.poly([Bt, Bbt, Fb, F].map((q, i) => i < 2 ? lerp(q, i ? Fb : F, 0.15) : q), SNOWSH, 0.5); icicles(p, At, Bt, gy); }
       p.poly([A, B, Bt, F, At], WALL, 1);                                // gable front
       p.line([[x0 + w / 2 - 0.9, top - rh * 0.45], [x0 + w / 2 + 0.9, top - rh * 0.45]], 0.7);
     } else {
@@ -110,6 +118,7 @@
       p.poly([Bt, Bbt, R2], WALLSH, 1);                                  // gable end
       p.poly([At, Bt, R2, R1], T, 1);                                    // front slope
       p.hatch([At, Bt, R2, R1], 0, 1.7, 0.5, 'rgba(43,33,25,0.5)');      // tile courses
+      if (SNOWY) { p.poly([R1, R2, Bbt, Abt], SNOWSH, 0.5); p.poly([lerp(At, R1, 0.22), lerp(Bt, R2, 0.22), R2, R1], SNOW, 0.5); p.poly([Bt, Bbt, R2], SNOW, 0.4); icicles(p, At, Bt, gy); }
       p.poly([A, B, Bt, At], WALL, 1);                                   // front wall
     }
     // windows and a door
@@ -119,6 +128,9 @@
     if (opt.chimney) { const cx = x0 + w * 0.72 + dx * 0.35, cy = top + dy * 0.35 - rh * 0.7; p.rect(cx - 0.8, cy - 2.6, 1.6, 2.8, WALL, 0.8); }
     if (opt.party) for (let k = 1; k < opt.party; k++) { const xx = x0 + w * k / opt.party; p.line([[xx, top], [xx + dx / 2, top + dy / 2 - rh]], 0.8); p.line([[xx, gy], [xx, top]], 0.6); }
   }
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  // a fringe of icicles under the eaves (drawn before the front wall, so they hang over it)
+  function icicles(p, a, b, gy) { const n = Math.max(2, Math.round((b[0] - a[0]) / 2.4)); p.col(ICE); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, xx = a[0] + (b[0] - a[0]) * t, yy = a[1] + (b[1] - a[1]) * t; p.line([[xx, yy], [xx, yy + 0.9 + (i % 3) * 0.5]], 0.45); } p.col(INK); }
   function bhVariant(p, v) {
     // seen from high up, so roofs dominate and walls are short, as on Braun and Hogenberg's plans
     const gy = 26;
@@ -174,6 +186,7 @@
     // townhouses for the drawn towns, all seen from one viewpoint (high in the south, a little to the east), as on the
     // bird's-eye town plans of the sixteenth century: cream walls, red tiled roofs, every house turned the same way
     for (let v = 0; v < 12; v++) add('th' + v, 32, 30, p => { bhVariant(p, v); }, 3000 + v);
+    for (let v = 0; v < 12; v++) add('th' + v + '-s', 32, 30, p => { SNOWY = true; try { bhVariant(p, v); } finally { SNOWY = false; } }, 3000 + v);
     add('market', 30, 26, p => {
       p.poly([[3, 22], [27, 22], [24, 14], [6, 14]], PAPER, 1.4);   // a cobbled square with a market cross and stalls
       for (let i = 0; i < 4; i++) p.dot(8 + i * 5, 19, 0.7);
@@ -181,11 +194,12 @@
       p.poly([[4, 13], [9, 10], [9, 14]], RED, 0.8);
     });
     add('townchurch', 30, 40, p => { church(p, 12, 36, 1.05, true); });
+    add('townchurch-s', 30, 40, p => { SNOWY = true; try { church(p, 12, 36, 1.05, true); } finally { SNOWY = false; } }, hashStr('townchurch'));
     // market stalls with striped awnings, and a village green with its tree and pond
     for (let v = 0; v < 3; v++) add('stall' + v, 18, 16, p => { const col = ['#A3261B', '#3D6E9E', '#B8862B'][v]; p.rect(3, 8, 12, 6, PAPER, 1.1); p.poly([[1, 9], [17, 9], [15, 4], [3, 4]], col, 1); for (let k = 0; k < 3; k++) p.line([[5 + k * 4, 4], [4.5 + k * 4, 9]], 0.8); p.dot(6, 11.5, 0.8); p.dot(10, 11.5, 0.8, '#B8862B'); }, 6100 + v);
     add('green', 40, 30, p => { p.ell(20, 18, 18, 9, '#C9D3A0', 1.1); p.ell(29, 20, 5, 2.6, '#9DBBD6', 0.9); p.line([[12, 22], [12, 15]], 1.4); p.ell(12, 11, 5.5, 5, '#B9C98F', 1.3); p.hatch([[12, 6], [17, 11], [12, 16]], 60, 1.6, 0.6); });
     // a walled city at the middle zooms: a ring wall with gate towers, the cathedral spire and the castle on its rise
-    add('citybig', 96, 78, p => {
+    const citybig = p => {
       const cx = 48, gy = 66;
       p.ell(cx, 52, 42, 17, '#EFE1BC', 1.8);
       p.ell(cx, 52, 37, 13.5, null, 0.7);
@@ -195,7 +209,9 @@
       p.tower(30, 44, 9, 18, 'cren'); p.tower(23, 46, 6, 12, 'cren', { win: false }); p.flag(30, 26 - 1, 1.1);   // castle keep
       for (const [tx, ty] of [[8, 54], [24, 66], [48, 70], [72, 66], [88, 54], [48, 37]]) p.tower(tx, ty, 7, 11, 'cone', { red: true, win: false });
       p.rect(44, 62, 8, 8, PAPER, 1.4); p.line([[46, 70], [46, 65], [48, 63.5], [50, 65], [50, 70]], 1);   // the main gate
-    });
+    };
+    add('citybig', 96, 78, citybig);
+    add('citybig-s', 96, 78, p => { SNOWY = true; try { citybig(p); } finally { SNOWY = false; } }, hashStr('citybig'));
     // pick and shovel for mines and quarries; an anchor for harbours
     add('quarry', 26, 24, p => { p.line([[5, 20], [19, 6]], 1.8); p.line([[12, 3], [16, 4], [21, 9], [22, 13]], 1.6); p.line([[21, 20], [9, 8]], 1.6); p.poly([[6, 5], [11, 6], [9, 11], [4, 9]], '#9C8656', 1.1); p.ground(1, 25, 22); });
     add('anchor', 22, 26, p => { p.col(BLUE); p.ell(11, 4, 2.4, 2.4, null, 1.3); p.line([[11, 6.5], [11, 22]], 1.8); p.line([[6, 10], [16, 10]], 1.5); p.line([[3, 15], [5, 21], [11, 23], [17, 21], [19, 15]], 1.6); p.line([[1.5, 16.5], [3, 15], [5, 16]], 1.2); p.line([[17, 16], [19, 15], [20.5, 16.5]], 1.2); p.col(INK); });
@@ -411,8 +427,8 @@
   // bestiary style: each beast is cut out on a pale gold ground with a fine gilt edge, as in the margins of an illuminated manuscript
   function gild(c) {
     const P = 4, o = document.createElement('canvas'); o.width = c.width + 2 * P; o.height = c.height + 2 * P;
-    const x = o.getContext('2d'), t = document.createElement('canvas'); t.width = c.width; t.height = c.height;
-    const tx = t.getContext('2d');
+    const x = o.getContext('2d', { willReadFrequently: true }), t = document.createElement('canvas'); t.width = c.width; t.height = c.height;
+    const tx = t.getContext('2d', { willReadFrequently: true });
     const ring = (r, col) => { tx.globalCompositeOperation = 'source-over'; tx.clearRect(0, 0, t.width, t.height); tx.drawImage(c, 0, 0); tx.globalCompositeOperation = 'source-in'; tx.fillStyle = col; tx.fillRect(0, 0, t.width, t.height); for (let a = 0; a < 6.28; a += 0.4) x.drawImage(t, P + Math.cos(a) * r, P + Math.sin(a) * r); };
     ring(2.8, 'rgba(140,100,32,0.85)'); ring(2.0, 'rgba(250,240,210,1)');
     x.drawImage(c, P, P);
@@ -524,34 +540,20 @@
 
   // ---------------- snowy mountains (variants of the relief glyph with a white cap and fine snow lines)
   function snowPeaks(add, mountainSprite) {
-    for (let v = 0; v < 8; v++) add('ms' + v, 76, 64, null, 0, () => {
-      const c = mountainSprite(v), x = c.getContext('2d');
-      // find the silhouette: the highest inked pixels per column, then paint a white cap over the top third
-      const d = x.getImageData(0, 0, c.width, c.height).data, top = new Array(c.width).fill(-1);
-      for (let i = 0; i < c.width; i++) for (let j = 0; j < c.height; j++) if (d[(j * c.width + i) * 4 + 3] > 120) { top[i] = j; break; }
-      let peakY = 99, peakX = 0; top.forEach((t, i) => { if (t >= 0 && t < peakY) { peakY = t; peakX = i; } });
-      const capH = 18, R = rng(400 + v);
-      // the cap: along the ridge line, then back along a ragged snow line below it
-      const cols = []; for (let i = 0; i < c.width; i++) if (top[i] >= 0 && top[i] < peakY + capH && Math.abs(i - peakX) < 24) cols.push(i);
-      const lowY = i => Math.max(top[i] + 2, Math.min(top[i] + capH * 0.9, peakY + capH * (0.62 + 0.28 * Math.sin(i * 0.9 + v))));
-      x.save(); x.beginPath();
-      cols.forEach((i, k) => k ? x.lineTo(i, top[i] + 1.2) : x.moveTo(i, top[i] + 1.2));
-      for (let k = cols.length - 1; k >= 0; k--) x.lineTo(cols[k], lowY(cols[k]));
-      x.closePath(); x.fillStyle = SNOW; x.fill();
-      x.beginPath(); for (let k = cols.length - 1; k >= 0; k--) { const i = cols[k]; k === cols.length - 1 ? x.moveTo(i, lowY(i)) : x.lineTo(i, lowY(i)); }
-      x.strokeStyle = INK; x.lineWidth = 0.9; x.stroke();
-      x.strokeStyle = BLUES; x.lineWidth = 0.8;
-      for (let k = 0; k < 4; k++) { const sx = peakX + 2 + k * 2.6 + R() * 1.5; x.beginPath(); x.moveTo(sx, peakY + 4 + k * 1.6); x.lineTo(sx + 1.6, peakY + 9 + k * 1.6); x.stroke(); }
-      x.restore();
-      return c;
-    });
+    // the snowy mountains are drawn by js/ink-map.js (mountainSprite(v, true)): a white cap with a ragged snow line
+    for (let v = 0; v < 8; v++) add('ms' + v, 76, 64, null, 0, () => mountainSprite(v, true));
     // snowfield and glacier hatching for high ground (pale blue, light)
     for (let v = 0; v < 3; v++) add('snowf' + v, 40, 18, p => { p.col(BLUES); for (let k = 0; k < 4; k++) p.line([[4 + k * 9, 14], [10 + k * 9, 4]], 1.1); p.line([[2, 16], [38, 15]], 0.7); if (v === 1) p.line([[8, 9], [30, 8]], 0.7); p.col(INK); }, 7000 + v);
   }
 
   // ---------------- fill patterns for the countryside and parks, and the ribbon and banner behind city names
   function patterns(map) {
-    const put = (id, w, h, draw, opts) => { if (map.hasImage(id)) return; const p = Pen(w, h, hashStr(id)); draw(p); const c = p.done(); map.addImage(id, c.getContext('2d').getImageData(0, 0, w, h), Object.assign({ pixelRatio: 2 }, opts || {})); };
+    const mk = (id, w, h, draw) => { const p = Pen(w, h, hashStr(id), 1); draw(p); return p.done().getContext('2d').getImageData(0, 0, w, h); };
+    const put = (id, w, h, draw, opts) => {
+      const o = Object.assign({ pixelRatio: 2 }, opts || {});
+      if (map.__inkReg) { map.__inkReg.set(id, () => ({ img: mk(id, w, h, draw), opts: o })); return; }   // drawn when first needed
+      if (!map.hasImage(id)) map.addImage(id, mk(id, w, h, draw), o);
+    };
     // ploughed strips: four directions, ochre and green, faint, tiling seamlessly on 64 px
     const FC = [['rgba(184,149,74,0.10)', 'rgba(150,112,48,0.55)'], ['rgba(125,143,78,0.10)', 'rgba(92,110,52,0.5)']];
     for (let k = 0; k < 8; k++) put('fld' + k, 64, 64, p => {
@@ -575,24 +577,28 @@
       p.poly(R, '#FBF3DC', 1.4); p.line([[19, 10], [111, 10]], 0.6); p.line([[19, 24], [111, 24]], 0.6);
       p.poly([[3, 4], [17, 4], [17, 15], [10, 22], [3, 15]], '#A3261B', 1.3); p.poly([[7, 7], [13, 7], [13, 13], [10, 16], [7, 13]], '#C9A24A', 0.8);
     }, { stretchX: [[24, 56], [64, 100]], stretchY: [[12, 22]], content: [22, 8, 104, 26] });
+    // a banner with swallowtail ends folded back behind it (the folds in a shaded parchment), a gilt rule and red inner line
     put('banner', 104, 30, p => {
-      p.poly([[4, 6], [100, 6], [95, 15], [100, 24], [4, 24], [9, 15]], '#FBF3DC', 1.3); p.line([[10, 9], [94, 9]], 0.5); p.line([[10, 21], [94, 21]], 0.5);
-    }, { stretchX: [[16, 48], [56, 88]], stretchY: [[11, 19]], content: [12, 7, 92, 23] });
-    // a range of little peaks, for the far-out caterpillar ranges (three variants)
-    for (let v = 0; v < 3; v++) put('rng' + v, 34, 22, p => {
-      const pk = [[3 + v, 20, 11 + v * 2, 7 - v, 20 - v * 0.5], [12, 20, 19 + v, 3 + v * 1.5, 26 - v]];
-      for (const [x0, gy, ax, ay, x1] of pk) { p.poly([[x0, gy], [ax, ay], [x1 + 4, gy]], 'rgba(243,229,191,0.97)', 0); p.hatch([[ax, ay], [x1 + 4, gy], [ax + 1.5, gy]], 70, 1.7, 0.7); p.line([[x0, gy], [ax - 1.5, ay + (gy - ay) * 0.3], [ax, ay], [ax + 2, ay + (gy - ay) * 0.35], [x1 + 4, gy]], 1.6); }
-    });
+      p.poly([[1, 10], [12, 10], [12, 27], [1, 27], [5, 18.5]], '#E2D0A4', 1.1); p.poly([[103, 10], [92, 10], [92, 27], [103, 27], [99, 18.5]], '#E2D0A4', 1.1);
+      p.poly([[8, 24], [12, 27], [12, 24]], '#B9A57A', 0.8); p.poly([[96, 24], [92, 27], [92, 24]], '#B9A57A', 0.8);
+      p.poly([[8, 4], [96, 4], [96, 24], [8, 24]], '#FBF3DC', 1.3);
+      p.col('#C9A24A'); p.line([[11, 7], [93, 7]], 0.9); p.line([[11, 21], [93, 21]], 0.9); p.col('#A3261B'); p.line([[11, 8.6], [93, 8.6]], 0.35); p.line([[11, 19.4], [93, 19.4]], 0.35); p.col(INK);
+    }, { stretchX: [[16, 48], [56, 88]], stretchY: [[11, 17]], content: [13, 5, 91, 23] });
   }
 
   // ---------------- registration
   function addAll(map, trim, mountainSprite) {
     const out = [];
-    const add = (id, w, h, draw, seed, raw) => {
+    const build = (id, w, h, draw, seed, raw) => {
       let c;
       if (raw) c = raw();
       else { const p = Pen(w, h, seed || hashStr(id)); draw(p); c = p.done(); }
-      if (!map.hasImage(id)) map.addImage(id, trim(c).getContext('2d').getImageData(0, 0, trim(c).width, trim(c).height), { pixelRatio: 2 });
+      const t = trim(c); return { img: t.getContext('2d').getImageData(0, 0, t.width, t.height), opts: { pixelRatio: 2 * (t.__k || c.__k || 1) } };
+    };
+    const add = (id, w, h, draw, seed, raw) => {
+      // a lazy map (js/ink-map.js) gets a builder, drawn the first time a tile asks for the image
+      if (map.__inkReg) map.__inkReg.set(id, () => build(id, w, h, draw, seed, raw));
+      else if (!map.hasImage(id)) { const r = build(id, w, h, draw, seed, raw); map.addImage(id, r.img, r.opts); }
       out.push(id);
     };
     settlements(add); heritage(add); landmarks(add); peaks(add); animals(add); vessels(add);
@@ -600,17 +606,21 @@
     snowPeaks((id, w, h, draw, seed, raw) => add(id, w, h, draw, seed, raw), mountainSprite);
     return out;
   }
-  // a stand-alone canvas for the key and the poster legends
+  // a stand-alone canvas for the key and the poster legends: builders are collected once, each icon drawn when first asked for
   let sheet = null;
   function draw(id, mountainSprite) {
     if (!sheet) {
-      sheet = new Map();
-      const fake = { __fake: true, hasImage: () => false, addImage: (i, img) => { sheet.set(i, img); } };
-      addAll(fake, c => c, mountainSprite || (() => document.createElement('canvas')));
+      sheet = { __fake: true, __inkReg: new Map(), hasImage: () => false, addImage: () => {} };
+      addAll(sheet, c => c, mountainSprite || (() => document.createElement('canvas')));
+      patterns(sheet);
     }
-    const img = sheet.get(id); if (!img) return null;
+    const f = sheet.__inkReg.get(id); if (!f) return null;
+    const img = f().img;
     const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').putImageData(img, 0, 0);
     return c;
   }
-  global.InkIcons = { addAll, draw, INK, RED, BLUE };
+  // every icon id this file can draw (the style uses it to choose snowy variants without testing for images at run time)
+  let idList = null;
+  function ids() { if (!idList) { const f = { __fake: true, __inkReg: new Map(), hasImage: () => false, addImage: () => {} }; addAll(f, c => c, () => null); patterns(f); idList = [...f.__inkReg.keys()]; } return idList; }
+  global.InkIcons = { addAll, draw, ids, INK, RED, BLUE };
 })(window);

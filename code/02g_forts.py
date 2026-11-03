@@ -88,7 +88,7 @@ for r in csv.reader(open(f'{RAW}/raw13/starforts_wd.tsv'), delimiter='\t'):
     q = r[0].rsplit('/', 1)[1].rstrip('>'); cls = r[1].rsplit('/', 1)[1].rstrip('>')
     m = re.match(r'"?POINT\(([-\d.eE]+) ([-\d.eE]+)\)', r[3].strip('"').split('^^')[0])
     if not m: continue
-    name = r[2].split('"@')[0].strip('"') if r[2] else ''
+    name = re.sub(r'@[a-z-]+$', '', r[2].split('"@')[0].strip('"')) if r[2] else ''   # a bare language tag too
     sl = int(r[6].split('^^')[0].strip('"')) if r[6] else 0
     import urllib.parse
     en = urllib.parse.unquote(r[7].strip('<>').rsplit('/', 1)[1]).replace('_', ' ') if len(r) > 7 and r[7] else ''

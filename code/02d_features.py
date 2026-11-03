@@ -60,7 +60,7 @@ if os.path.exists(hp):
         except Exception: continue
         if key in seen or e < 300: continue
         seen.add(key)
-        name = (row.get('?peakLabel') or row.get('peakLabel') or '').strip('"').split('"@')[0]
+        name = re.sub(r'@[a-z-]+$', '', (row.get('?peakLabel') or row.get('peakLabel') or '').strip('"').split('"@')[0])   # a bare language tag too
         z = 6.5 if (row.get('?areaType') or '').strip('"') == 'country' else 8
         pk.append(feat(lon, lat, {'n': name, 'e': e, 'z': z, 'w': (row.get('?enwiki') or '').strip('"').split('"@')[0]}))
 dump({'type': 'FeatureCollection', 'features': pk}, os.path.join(DATA, 'peaks_famous.geojson'))

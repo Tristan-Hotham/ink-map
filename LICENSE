@@ -41,7 +41,14 @@ Third-party material:
   are derived from Natural Earth (public domain). data/walls.geojson is derived from OpenStreetMap
   (c) OpenStreetMap contributors, Open Database Licence 1.0, and is made
   available under that licence. Ship positions in data/decor.geojson follow
-  passages from the CLIWOC logbook database (1750 to 1850).
+  passages from the CLIWOC logbook database (1750 to 1850). The same holds for
+  data/walls_major.geojson, data/walls_boxes.json and data/grid/walls/ (cut from
+  walls.geojson) and data/forts*.geojson and data/grid/forts/ (OpenStreetMap, ODbL).
+- data/life/: data/life/roman_roads/ is derived from Itiner-e (CC BY 4.0);
+  data/life/pilgrim_routes/ from OpenStreetMap (ODbL 1.0, available under that
+  licence); data/life/battles/, wrecks/ and monasteries/ from Wikidata (CC0);
+  data/life/lost_villages/ from Beresford's Lost Villages (University of Hull),
+  CC BY-NC-SA 4.0, and Wikidata (CC0), and is made available under CC BY-NC-SA 4.0.
 - fonts/ttf/ holds MedievalSharp and IM Fell fonts under the SIL Open Font
   License 1.1 (licence texts alongside). fonts/Ink */ are SDF glyph sets
   generated from them (a modified version, so they carry new names and do not

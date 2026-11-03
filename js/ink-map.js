@@ -4,9 +4,12 @@
  * Dr Tristan Hotham, Independent researcher, 2026. MIT licence. */
 (function (global) {
   'use strict';
+  // colours come from js/ink-palette.js (one palette for every drawing); the fallbacks keep this file working on its own
+  const PAL = global.InkPalette || {};
   const INK = {
-    paper: '#F3E5BF', paperDeep: '#E7D2A0', ink: '#2B2119', inkSoft: 'rgba(43,33,25,0.55)',
-    red: '#A3261B', redDeep: '#8A1F16', blue: '#3D6E9E', blueSoft: '#6F9DC6', wash: '#7FA9CF',
+    paper: PAL.paper || '#F3E5BF', paperDeep: PAL.paperDeep || '#E7D2A0', ink: PAL.ink || '#2B2119', inkSoft: PAL.inkSoft || 'rgba(43,33,25,0.55)',
+    red: PAL.red || '#A3261B', redDeep: PAL.redDeep || '#8A1F16', blue: PAL.blue || '#3D6E9E', blueSoft: PAL.blueSoft || '#6F9DC6', wash: PAL.wash || '#7FA9CF',
+    ice: PAL.ice || '#DCE8F0', iceLine: PAL.iceLine || '#8FB0CC', snow: PAL.snow || '#FBFAF4',
   };
   const DEFAULTS = {
     tilejson: 'https://tiles.openfreemap.org/planet',
@@ -17,124 +20,272 @@
 
   // ------------------------------------------------------------------ sprites
   function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 100000) / 100000; }; }
-  function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+  // sprites are drawn at K times their logical size (K = InkPalette.SCALE / 2) and registered with pixelRatio 2K, so they
+  // are sharp on 3x screens; c.__k carries the factor to the registration
+  const K = (PAL.SCALE || 3) / 2;
+  // contexts are made with willReadFrequently: sprites are read back once with getImageData, which on a GPU canvas forces a slow
+  // readback (seconds in total on a phone or in software rendering)
+  function canvas(w, h, k) { k = k === undefined ? K : k; const c = document.createElement('canvas'); c.width = Math.ceil(w * k); c.height = Math.ceil(h * k); c.__k = k; const x = c.getContext('2d', { willReadFrequently: true }); if (k !== 1) x.scale(k, k); return c; }
   function wob(ctx, pts, R, amt) { // stroke a polyline with a slight hand wobble
     ctx.beginPath();
     pts.forEach((p, i) => { const x = p[0] + (R() - 0.5) * amt, y = p[1] + (R() - 0.5) * amt; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
     ctx.stroke();
   }
+  // a pen stroke that swells and tapers (w0 at the start, w1 at the end), as a nib does
+  function taper(ctx, pts, R, w0, w1, amt) {
+    const q = pts.map(p => [p[0] + (R() - 0.5) * (amt || 0), p[1] + (R() - 0.5) * (amt || 0)]);
+    for (let i = 1; i < q.length; i++) { const t = (i - 0.5) / (q.length - 1); ctx.lineWidth = w0 + (w1 - w0) * t; ctx.beginPath(); ctx.moveTo(q[i - 1][0], q[i - 1][1]); ctx.lineTo(q[i][0], q[i][1]); ctx.stroke(); }
+  }
   function quad(p0, c, p1, n) { const o = []; for (let i = 0; i <= n; i++) { const t = i / n, a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, d = t * t; o.push([a * p0[0] + b * c[0] + d * p1[0], a * p0[1] + b * c[1] + d * p1[1]]); } return o; }
-  function toImage(c) { return c.getContext('2d').getImageData(0, 0, c.width, c.height); }
+  function fillPath(x, pts, col) { x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.fillStyle = col; x.fill(); }
+  function clipPath(x, pts) { x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.clip(); }
+  function toImage(c) { return c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, c.width, c.height); }
   // crop a sprite to its inked pixels, so a glyph only gives way to a name where it really touches it
   function trim(c) {
-    const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-    let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
-    for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3] > 10) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-    if (x1 < 0) return c;
-    const o = canvas(x1 - x0 + 3, y1 - y0 + 3); o.getContext('2d').drawImage(c, -x0 + 1, -y0 + 1);
+    const W = c.width, H = c.height, d = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, W, H).data;
+    const on = (x, y) => d[(y * W + x) * 4 + 3] > 10;
+    const rowHit = y => { for (let x = 0; x < W; x++) if (on(x, y)) return true; return false; };
+    const colHit = (x, ya, yb) => { for (let y = ya; y <= yb; y++) if (on(x, y)) return true; return false; };
+    // scan in from each edge (most of a sprite's box is inked, so this touches few pixels)
+    let y0 = 0; while (y0 < H && !rowHit(y0)) y0++;
+    if (y0 >= H) return c;
+    let y1 = H - 1; while (y1 > y0 && !rowHit(y1)) y1--;
+    let x0 = 0; while (x0 < W && !colHit(x0, y0, y1)) x0++;
+    let x1 = W - 1; while (x1 > x0 && !colHit(x1, y0, y1)) x1--;
+    const o = canvas(x1 - x0 + 3, y1 - y0 + 3, 1); o.getContext('2d').drawImage(c, -x0 + 1, -y0 + 1); o.__k = c.__k || 1;
     return o;
   }
+  const PG = PAL.pigments || {};
+  const SNOW = PAL.snow || '#FBFAF4', SNOWSH = PAL.snowShade || '#D6E0E6', SNOWLN = PAL.snowLine || '#9DB4C8';
+  const PFILL = 'rgba(243,229,191,0.97)';
+  const SHADE = 'rgba(120,96,64,0.20)';     // the sepia wash laid on the shaded side of every glyph
 
-  function mountainSprite(v) {
+  // ---- mountains: varied silhouettes (single peak, shouldered, twin, notched crag), a sepia wash and tapered hatching on the
+  // shaded (east) face, a few strokes on the lit face, scree at the foot; snow: a white cap with a ragged snow line and cool
+  // blue shading on the shaded side
+  function mountainShape(v, R, W, base) {
+    const tall = v % 4 === 3 ? 0.66 : 0.78 + R() * 0.16;
+    const ax = 30 + R() * 14, ay = base - (base - 6) * tall;
+    const lf = 4 + R() * 5, rf = W - 4 - R() * 5;
+    let left, right, peaks = [[ax, ay]];
+    const type = v % 4;
+    if (type === 1) {   // a shoulder on the right
+      const sx = ax + (rf - ax) * 0.5, sy = ay + (base - ay) * (0.36 + R() * 0.1);
+      left = quad([lf, base], [ax - 10 - R() * 6, base - (base - ay) * 0.45], [ax, ay], 10);
+      right = quad([ax, ay], [ax + 4, ay + (sy - ay) * 0.6], [sx - 3, sy - 2], 6).concat(quad([sx - 3, sy - 2], [sx + 6, sy - 3], [rf, base], 8).slice(1));
+    } else if (type === 2) {   // twin peaks, the left one lower
+      const bx = lf + (ax - lf) * 0.45, by = ay + (base - ay) * (0.22 + R() * 0.08), cx = lf + (ax - lf) * 0.72, cy = by + (base - ay) * 0.18;
+      left = quad([lf, base], [lf + 3, by + 10], [bx, by], 6).concat(quad([bx, by], [bx + 3, cy - 1], [cx, cy], 4).slice(1)).concat(quad([cx, cy], [ax - 3, ay + 6], [ax, ay], 5).slice(1));
+      right = quad([ax, ay], [ax + 12 + R() * 6, base - (base - ay) * 0.5], [rf, base], 10);
+      peaks.push([bx, by]);
+    } else if (type === 3) {   // a broad crag with a notched summit
+      const n1 = [ax - 7, ay + 4], n2 = [ax - 4, ay + 1.5], n3 = [ax + 5, ay + 3], n4 = [ax + 8, ay + 1];
+      left = quad([lf, base], [lf + 5, ay + 12], n1, 8).concat([n2, [ax, ay]]);
+      right = [[ax, ay], n3, n4].concat(quad(n4, [ax + 18, ay + 10], [rf, base], 9).slice(1));
+    } else {
+      left = quad([lf, base], [ax - 10 - R() * 6, base - (base - ay) * 0.42], [ax, ay], 10);
+      right = quad([ax, ay], [ax + 12 + R() * 6, base - (base - ay) * 0.55], [rf, base], 10);
+    }
+    const spurX = ax + 6 + R() * 7;
+    const spur = quad([ax, ay], [ax + 1 + R() * 3, ay + (base - ay) * 0.5], [spurX, base], 8);
+    return { ax, ay, lf, rf, left, right, spur, peaks };
+  }
+  function mountainSprite(v, snowy) {
     const R = rng(1000 + v * 7919), W = 76, H = 64, base = 58;
     const c = canvas(W, H), x = c.getContext('2d');
     x.lineCap = 'round'; x.lineJoin = 'round';
-    const tall = v % 4 === 3 ? 0.62 : 0.78 + R() * 0.16;
-    const ax = 30 + R() * 14, ay = base - (base - 6) * tall;
-    const lf = 4 + R() * 5, rf = W - 4 - R() * 5;
-    // flanks: left concave, right slightly convex; optional shoulder
-    let left = quad([lf, base], [ax - 10 - R() * 6, base - (base - ay) * 0.42], [ax, ay], 10);
-    let right;
-    if (v % 3 === 1) { // shoulder on the right
-      const sx = ax + (rf - ax) * 0.5, sy = ay + (base - ay) * (0.38 + R() * 0.1);
-      right = quad([ax, ay], [ax + 4, ay + (sy - ay) * 0.6], [sx - 3, sy - 2], 6).concat(quad([sx - 3, sy - 2], [sx + 6, sy - 3], [rf, base], 8).slice(1));
-    } else if (v % 3 === 2) { // shoulder on the left
-      const sx = lf + (ax - lf) * 0.42, sy = ay + (base - ay) * (0.42 + R() * 0.1);
-      left = quad([lf, base], [lf + 4, sy + 6], [sx, sy], 6).concat(quad([sx, sy], [sx + 6, sy - 2], [ax, ay], 7).slice(1));
-      right = quad([ax, ay], [ax + 12 + R() * 6, base - (base - ay) * 0.5], [rf, base], 10);
-    } else right = quad([ax, ay], [ax + 12 + R() * 6, base - (base - ay) * 0.55], [rf, base], 10);
-    const spurX = ax + 7 + R() * 7;
-    const spur = quad([ax, ay], [ax + 2 + R() * 3, ay + (base - ay) * 0.5], [spurX, base], 8);
-    // silhouette fill (paper) so peaks behind are hidden
-    x.beginPath(); left.concat(right).forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath();
-    x.fillStyle = 'rgba(243,229,191,0.97)'; x.fill();
-    // shaded face between spur and right flank
-    x.save(); x.beginPath(); spur.concat(right.slice().reverse()).forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.clip();
-    x.strokeStyle = INK.ink; x.lineWidth = 1.35;
-    const dx = -0.42, step = 2.7;
-    for (let s = -60; s < 110; s += step) {
-      const x0 = ax + s * 0.7 - 10, y0 = ay - 4, len = 80;
-      wob(x, [[x0, y0], [x0 + dx * len * 0.5, y0 + len * 0.5], [x0 + dx * len, y0 + len]], R, 0.5);
+    const { ax, ay, lf, rf, left, right, spur } = mountainShape(v, R, W, base);
+    const sil = left.concat(right.slice(1));
+    const face = spur.concat(right.slice().reverse());
+    // ground shadow cast to the east, under everything
+    x.strokeStyle = 'rgba(43,33,25,0.35)'; x.lineWidth = 0.9;
+    for (let k = 0; k < 3; k++) wob(x, [[rf - 10 + k * 4, base + 1.5 + k * 0.4], [rf + 2 + k * 2.5, base + 1.2 + k * 0.4]], R, 0.3);
+    // paper silhouette (hides peaks behind), then the shadow wash on the east face
+    fillPath(x, sil, PFILL);
+    if (snowy) fillPath(x, sil, 'rgba(250,250,244,0.9)');   // deep winter: the whole mountain under snow, the cap whitest
+    x.save(); clipPath(x, face); fillPath(x, face, snowy ? 'rgba(120,140,160,0.22)' : SHADE);
+    // tapered hatching on the east face: strokes from the ridge down and out, denser near the summit
+    x.strokeStyle = INK.ink;
+    const nH = 20 + (v % 3) * 2;
+    for (let k = 0; k < nH; k++) {
+      const t = (k + 0.5) / nH + (R() - 0.5) * 0.015, p = right[Math.max(0, Math.min(right.length - 1, Math.round(t * (right.length - 1))))];
+      const len = 8 + (1 - t) * 26 + R() * 8, dx = -0.3 - R() * 0.14, bow = (R() - 0.5) * 2;
+      const q0 = [p[0] - 0.6, p[1] + 0.8], q1 = [p[0] + dx * len * 0.5 + bow, p[1] + len * 0.5], q2 = [p[0] + dx * len, p[1] + len];
+      taper(x, [q0, q1, q2], R, k % 3 === 0 ? 1.35 : 1.05, 0.3, 0.35);
     }
+    // cross-hatching low on the face, where the shadow is deepest
+    x.lineWidth = 0.6; x.strokeStyle = 'rgba(43,33,25,0.55)';
+    for (let k = 0; k < 7; k++) { const yy = base - 3 - k * 3.2, xx = ax + 4 + k * 1.5; wob(x, [[xx, yy], [xx + 16 - k * 1.2, yy - 4]], R, 0.4); }
     x.restore();
-    // a few strokes on the lit face
-    x.strokeStyle = INK.ink; x.lineWidth = 1.1;
-    for (let k = 0; k < 2 + (v % 2); k++) {
-      const t = 0.45 + R() * 0.4, p = left[Math.floor(t * (left.length - 1))];
-      wob(x, [[p[0] + 3, p[1] + 2], [p[0] + 6 + R() * 3, p[1] + 7 + R() * 4]], R, 0.4);
+    // a darker wash low on the face, so the mountain sits on the ground
+    x.save(); clipPath(x, face); const g = x.createLinearGradient(0, ay, 0, base); g.addColorStop(0, 'rgba(90,70,45,0)'); g.addColorStop(1, 'rgba(90,70,45,0.16)'); x.fillStyle = g; x.fillRect(0, 0, W, H); x.restore();
+    // snow cap
+    if (snowy) {
+      const sY = ay + (base - ay) * (0.5 + R() * 0.1);
+      const line = []; for (let px = lf - 2; px <= rf + 2; px += 2.6) { const near = Math.abs(px - (ax + 5)) < 4 ? 5 : 0; line.push([px, sY + (line.length % 2 ? 3.2 : -0.8) + R() * 2.2 + near - Math.abs(px - ax) * 0.06]); }
+      const cap = [[lf - 4, -4], [rf + 4, -4]].concat(line.slice().reverse());
+      x.save(); clipPath(x, sil); fillPath(x, cap, SNOW);
+      x.save(); clipPath(x, face); fillPath(x, cap, SNOWSH); x.restore();
+      x.strokeStyle = SNOWLN; for (let k = 0; k < 6; k++) { const t = 0.08 + k * 0.1, p = right[Math.floor(t * (right.length - 1))]; if (p[1] > sY + 2) continue; taper(x, [[p[0] - 0.8, p[1] + 1], [p[0] - 3.5 - R(), p[1] + 6 + R() * 2]], R, 0.9, 0.4, 0.2); }
+      x.strokeStyle = 'rgba(43,33,25,0.75)'; x.lineWidth = 0.75; wob(x, line, R, 0.4);
+      x.restore();
     }
-    // outline
-    x.lineWidth = 2.8; x.strokeStyle = INK.ink;
-    wob(x, left, R, 0.6); wob(x, right, R, 0.6);
-    x.lineWidth = 1.3; wob(x, spur.slice(0, 7), R, 0.4);
-    // ground ticks
-    x.lineWidth = 1.2;
-    wob(x, [[lf - 2, base + 1], [lf + 7, base + 1.5]], R, 0.3);
-    wob(x, [[rf - 7, base + 1.5], [rf + 1, base + 1]], R, 0.3);
+    // a few strokes on the lit (west) face
+    x.strokeStyle = INK.ink;
+    for (let k = 0; k < 2 + (v % 2); k++) {
+      const t = 0.5 + R() * 0.38, p = left[Math.floor(t * (left.length - 1))];
+      taper(x, [[p[0] + 2.5, p[1] + 2], [p[0] + 5 + R() * 3, p[1] + 6 + R() * 3], [p[0] + 6 + R() * 3, p[1] + 9 + R() * 3]], R, 1.0, 0.35, 0.3);
+    }
+    // outline: heavy, tapering towards the feet
+    x.strokeStyle = INK.ink;
+    taper(x, left, R, 1.6, 2.9, 0.5); taper(x, right, R, 2.9, 1.6, 0.5);
+    taper(x, spur.slice(0, 6), R, 1.4, 0.5, 0.35);
+    // scree and ground ticks
+    x.lineWidth = 1.1; wob(x, [[lf - 3, base + 0.8], [lf + 7, base + 1.4]], R, 0.3);
+    x.fillStyle = INK.ink; for (let k = 0; k < 4; k++) { x.beginPath(); x.arc(lf + 8 + R() * (rf - lf - 16), base + 1.5 + R() * 1.2, 0.45, 0, 7); x.fill(); }
     return c;
   }
-  function hillSprite(v) {
+  function hillSprite(v, snowy) {
     const R = rng(5000 + v * 104729), W = 56, H = 30, base = 25;
     const c = canvas(W, H), x = c.getContext('2d');
     x.lineCap = 'round'; x.lineJoin = 'round';
-    const h = 11 + R() * 6, cx = 24 + R() * 8;
-    const arc = quad([4, base], [cx - 6, base - h * 2.0], [W - 5, base], 14);
-    x.beginPath(); arc.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath();
-    x.fillStyle = 'rgba(243,229,191,0.95)'; x.fill();
-    x.strokeStyle = INK.ink; x.lineWidth = 1.5;
+    const h = 12 + R() * 7, cx = 22 + R() * 10, l = 3 + R() * 3, r = W - 4 - R() * 3;
+    const arc = v % 3 === 2 ? quad([l, base], [cx - 10, base - h * 1.4], [cx, base - h], 8).concat(quad([cx, base - h], [cx + 10, base - h * 0.9], [r, base], 8).slice(1)) : quad([l, base], [cx - 6, base - h * 2.0], [r, base], 14);
+    fillPath(x, arc, PFILL); if (snowy) fillPath(x, arc, 'rgba(250,250,244,0.9)');
+    // the shaded east side: a wash and short curved strokes following the slope
+    const top = arc.reduce((a, p) => p[1] < a[1] ? p : a, arc[0]);
+    const east = arc.filter(p => p[0] >= top[0] - 2);
+    const face = east.concat([[top[0] + 3, base]]);
+    fillPath(x, face, snowy ? 'rgba(120,140,160,0.22)' : SHADE);
+    if (snowy) {
+      const sY = top[1] + h * 0.75;
+      const line = []; for (let px = l; px <= r; px += 2.4) line.push([px, sY + (line.length % 2 ? 2.2 : -0.4) + R() * 1.2]);
+      x.save(); clipPath(x, arc); fillPath(x, [[l - 3, -3], [r + 3, -3]].concat(line.slice().reverse()), SNOW); x.save(); clipPath(x, face); fillPath(x, [[l - 3, -3], [r + 3, -3]].concat(line.slice().reverse()), SNOWSH); x.restore(); x.restore();
+    }
+    x.strokeStyle = snowy ? SNOWLN : INK.ink;
     const n = 4 + (v % 3);
     for (let k = 0; k < n; k++) {
-      const t = 0.55 + k * (0.38 / n), p = arc[Math.round(t * (arc.length - 1))];
-      wob(x, [[p[0] - 1, p[1] + 2], [p[0] - 4 - R() * 2, p[1] + 5 + R() * 3]], R, 0.3);
+      const t = 0.56 + k * (0.36 / n), p = arc[Math.round(t * (arc.length - 1))];
+      if (snowy && k < 2) x.strokeStyle = SNOWLN; else x.strokeStyle = INK.ink;
+      taper(x, [[p[0] - 0.8, p[1] + 1.8], [p[0] - 3 - R() * 1.5, p[1] + 4.5 + R() * 2], [p[0] - 4 - R() * 2, p[1] + 7 + R() * 2]], R, 1.2, 0.35, 0.25);
     }
-    x.lineWidth = 2.6; wob(x, arc, R, 0.5);
-    x.lineWidth = 1.1; wob(x, [[W - 9, base + 1], [W - 1, base + 1]], R, 0.3);
+    x.strokeStyle = INK.ink; taper(x, arc, R, 1.5, 2.5, 0.45);
+    x.lineWidth = 0.9; x.strokeStyle = 'rgba(43,33,25,0.5)'; wob(x, [[r - 8, base + 1.2], [r + 2, base + 1]], R, 0.3);
     return c;
   }
+  // ---- trees: four broadleaf kinds (oak, tall elm, spreading beech, small round) and four conifers (spruce, fir, pine,
+  // young spruce), each with a watercolour crown, hatching on the shaded side, a trunk and a small ground shadow. In winter
+  // the broadleaves are bare (trunk and twigs) and the conifers carry snow on every tier.
+  const LEAF = 'rgba(160,182,112,0.88)', LEAFSH = 'rgba(96,120,64,0.45)', PINE = 'rgba(112,140,100,0.9)', PINESH = 'rgba(62,90,64,0.5)';
+  function crownPts(cx, cy, rx, ry, lobes, ph, amp) { const pts = []; for (let i = 0; i <= 44; i++) { const a = i / 44 * Math.PI * 2; const rr = 1 + amp * Math.abs(Math.sin(a * lobes / 2 + ph)); pts.push([cx + Math.cos(a) * rx * rr, cy + Math.sin(a) * ry * rr]); } return pts; }
+  function groundShadow(x, cx, gy, w) { x.fillStyle = 'rgba(43,33,25,0.16)'; x.beginPath(); x.ellipse(cx + w * 0.25, gy + 0.6, w, 1.5, 0, 0, 7); x.fill(); }
   function treeSprite(v, conifer) {
-    const R = rng(9000 + v * 31 + (conifer ? 777 : 0)), W = 26, H = 32;
+    const R = rng(9000 + v * 31 + (conifer ? 777 : 0)), W = 26, H = 34;
     const c = canvas(W, H), x = c.getContext('2d');
     x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK.ink;
     if (!conifer) {
-      const cx = 13, cy = 12, r = 8 + R() * 1.5;
-      const pts = [];
-      for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 2, rr = r * (1 + 0.1 * Math.sin(a * 7 + v)) * (a > 0.3 && a < 2.8 ? 1 : 0.97); pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * 0.92]); }
-      x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath();
-      x.fillStyle = 'rgba(243,229,191,0.96)'; x.fill();
-      x.lineWidth = 1.1;
-      for (let k = 0; k < 3; k++) { const a = 0.2 + k * 0.45; wob(x, [[cx + Math.cos(a) * (r - 2.5), cy + Math.sin(a) * (r - 2.5)], [cx + Math.cos(a + 0.35) * (r - 1.5), cy + Math.sin(a + 0.35) * (r - 1.5)]], R, 0.2); }
-      x.lineWidth = 1.7; wob(x, pts, R, 0.35);
-      x.lineWidth = 1.6; wob(x, [[cx, cy + r * 0.9], [cx + 0.3, cy + r * 0.9 + 6]], R, 0.2);
+      const kinds = [[13, 12, 8.6, 7.6, 7, 0.09], [13, 11, 6.2, 9.6, 5, 0.07], [13, 13, 10.4, 6.8, 9, 0.08], [13, 14, 7, 6.4, 6, 0.1]];
+      const [cx, cy, rx, ry, lobes, amp] = kinds[v % 4], gy = cy + ry + 7;
+      groundShadow(x, cx, gy, 6);
+      x.lineWidth = 1.7; wob(x, [[cx, cy + ry * 0.7], [cx + 0.3, gy]], R, 0.2);
+      if (v === 3) { x.lineWidth = 1.1; wob(x, [[cx, gy - 3.5], [cx - 2.5, cy + ry * 0.6]], R, 0.2); }
+      const pts = crownPts(cx, cy, rx, ry, lobes, v, amp);
+      fillPath(x, pts, PFILL); fillPath(x, pts, LEAF);
+      x.save(); clipPath(x, pts); x.fillStyle = LEAFSH; x.beginPath(); x.ellipse(cx + rx * 0.55, cy + ry * 0.35, rx * 0.85, ry * 0.95, 0, 0, 7); x.fill();
+      x.strokeStyle = INK.ink; for (let k = 0; k < 5; k++) { const a = -0.2 + k * 0.32; taper(x, [[cx + Math.cos(a) * rx * 0.35, cy + Math.sin(a) * ry * 0.35], [cx + Math.cos(a + 0.25) * rx * 0.85, cy + Math.sin(a + 0.25) * ry * 0.85]], R, 0.9, 0.3, 0.2); }
+      x.restore();
+      // little leaf-clump arcs inside the crown
+      x.lineWidth = 0.7; x.strokeStyle = 'rgba(43,33,25,0.55)';
+      for (let k = 0; k < 3; k++) { const a = 2.6 + k * 0.7; x.beginPath(); x.arc(cx + Math.cos(a) * rx * 0.45, cy + Math.sin(a) * ry * 0.45, 2, 3.6, 5.6); x.stroke(); }
+      x.strokeStyle = INK.ink; taper(x, pts.slice(0, 23), R, 1.9, 1.3, 0.3); taper(x, pts.slice(22), R, 1.3, 1.9, 0.3);
     } else {
-      const cx = 13, top = 1.5, w = 6.5 + R() * 1.5, tiers = 3;
-      const sil = [[cx, top]];
-      const right = [], left = [];
+      const kinds = [[13, 1.5, 7.2, 4, 6.4], [13, 0.5, 5.4, 5, 5.6], [13, 3, 8.4, 3, 7], [13, 7, 6, 3, 5.6]];
+      const [cx, top, w, tiers, step] = kinds[v % 4];
+      const bot = top + (tiers - 1) * step + 9.5, gy = bot + 4.5;
+      groundShadow(x, cx, gy, 5);
+      x.lineWidth = 1.6; wob(x, [[cx, bot - 1], [cx, gy]], R, 0.2);
       for (let k = 0; k < tiers; k++) {
-        const y0 = top + k * 6.2, y1 = y0 + 9.5, ww = w * (k + 1) / tiers + 1.2;
-        right.push([cx + ww * 0.45, y0 + 4.5], [cx + ww, y1]);
-        left.push([cx - ww * 0.45, y0 + 4.5], [cx - ww, y1]);
+        const y0 = top + k * step, y1 = y0 + 9.5, ww = w * (k + 1) / tiers + 1.2;
+        const tri = v % 4 === 2 ? [[cx - ww, y1], [cx - ww * 0.55, y0 + 3], [cx, y0], [cx + ww * 0.55, y0 + 3], [cx + ww, y1]] : [[cx - ww, y1], [cx - ww * 0.4, y0 + 4.2], [cx, y0], [cx + ww * 0.4, y0 + 4.2], [cx + ww, y1]];
+        fillPath(x, tri, PFILL); fillPath(x, tri, PINE);
+        fillPath(x, [[cx, y0], [cx + ww * 0.4, y0 + 4.2], [cx + ww, y1], [cx + 0.5, y1]], PINESH);
+        x.strokeStyle = INK.ink; for (let h = 0; h < 3; h++) taper(x, [[cx + 1 + h * ww * 0.25, y0 + 3 + h * 1.6], [cx + 1.5 + h * ww * 0.28, y1 - 0.8]], R, 0.8, 0.3, 0.15);
+        taper(x, tri, R, 1.3, 1.6, 0.25);
+        x.lineWidth = 1.2; wob(x, [[cx - ww, y1], [cx + ww, y1]], R, 0.25);
       }
-      const bot = top + (tiers - 1) * 6.2 + 9.5;
-      x.beginPath(); x.moveTo(cx, top); right.forEach(p => x.lineTo(p[0], p[1])); left.slice().reverse().forEach(p => x.lineTo(p[0], p[1])); x.closePath();
-      x.fillStyle = 'rgba(243,229,191,0.96)'; x.fill();
-      x.lineWidth = 1.0; for (let k = 0; k < tiers; k++) { const y = top + k * 6.2 + 8; wob(x, [[cx + 1, y - 1], [cx + w * (k + 1) / tiers, y + 0.5]], R, 0.2); }
-      x.lineWidth = 1.6;
-      for (let k = 0; k < tiers; k++) {
-        const y0 = top + k * 6.2, y1 = y0 + 9.5, ww = w * (k + 1) / tiers + 1.2;
-        wob(x, [[cx - ww, y1], [cx - ww * 0.4, y0 + 4.2], [cx, y0], [cx + ww * 0.4, y0 + 4.2], [cx + ww, y1]], R, 0.3);
-        wob(x, [[cx - ww, y1], [cx + ww, y1]], R, 0.25);
-      }
-      x.lineWidth = 1.6; wob(x, [[cx, bot], [cx, bot + 4.5]], R, 0.2);
+    }
+    return c;
+  }
+  // winter: a bare broadleaf (trunk and branching twigs) on a patch of snow
+  function bareTreeSprite(v) {
+    const R = rng(9500 + v * 41), W = 26, H = 34;
+    const c = canvas(W, H), x = c.getContext('2d');
+    x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK.ink;
+    const gy = [27, 26, 28, 27][v % 4], cx = 13;
+    x.fillStyle = 'rgba(214,224,230,0.9)'; x.beginPath(); x.ellipse(cx + 1, gy + 0.8, 7, 1.7, 0, 0, 7); x.fill();
+    const spread = [1, 0.7, 1.25, 0.9][v % 4];
+    function branch(px, py, ang, len, w, d) {
+      const ex = px + Math.cos(ang) * len, ey = py + Math.sin(ang) * len;
+      taper(x, [[px, py], [px + Math.cos(ang) * len * 0.5 + (R() - 0.5), py + Math.sin(ang) * len * 0.5], [ex, ey]], R, w, w * 0.62, 0.15);
+      if (d <= 0) return;
+      const n = d > 2 ? 2 : 2 + (R() < 0.4 ? 1 : 0);
+      for (let k = 0; k < n; k++) branch(ex, ey, ang + (k - (n - 1) / 2) * 0.62 * spread + (R() - 0.5) * 0.3, len * (0.68 + R() * 0.1), w * 0.62, d - 1);
+    }
+    branch(cx, gy, -Math.PI / 2 + (R() - 0.5) * 0.1, 8.5 - (v % 2), 2.2, 3);
+    // a little snow caught on the main forks
+    x.fillStyle = SNOW; x.strokeStyle = 'rgba(43,33,25,0.4)'; x.lineWidth = 0.4;
+    return c;
+  }
+  // winter: a conifer laden with snow (white along each tier's upper edge, the dark green showing beneath)
+  function snowConiferSprite(v) {
+    const R = rng(9700 + v * 43), W = 26, H = 34;
+    const c = canvas(W, H), x = c.getContext('2d');
+    x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK.ink;
+    const kinds = [[13, 1.5, 7.2, 4, 6.4], [13, 0.5, 5.4, 5, 5.6], [13, 3, 8.4, 3, 7], [13, 7, 6, 3, 5.6]];
+    const [cx, top, w, tiers, step] = kinds[v % 4];
+    const bot = top + (tiers - 1) * step + 9.5, gy = bot + 4.5;
+    x.fillStyle = 'rgba(214,224,230,0.9)'; x.beginPath(); x.ellipse(cx + 1, gy + 0.6, 7, 1.6, 0, 0, 7); x.fill();
+    x.lineWidth = 1.6; wob(x, [[cx, bot - 1], [cx, gy]], R, 0.2);
+    for (let k = 0; k < tiers; k++) {
+      const y0 = top + k * step, y1 = y0 + 9.5, ww = w * (k + 1) / tiers + 1.2;
+      const tri = [[cx - ww, y1], [cx - ww * 0.4, y0 + 4.2], [cx, y0], [cx + ww * 0.4, y0 + 4.2], [cx + ww, y1]];
+      fillPath(x, tri, PFILL); fillPath(x, tri, 'rgba(86,112,84,0.92)');
+      // snow on the tier: a white band following the upper edges, drooping in scallops at the tips
+      const sn = [[cx - ww * 0.92, y1 - 1.6], [cx - ww * 0.4, y0 + 3.4], [cx, y0 - 0.4], [cx + ww * 0.4, y0 + 3.4], [cx + ww * 0.92, y1 - 1.6], [cx + ww * 0.55, y1 - 3.2], [cx + ww * 0.25, y0 + 6.2], [cx, y0 + 4.4], [cx - ww * 0.3, y0 + 6.4], [cx - ww * 0.6, y1 - 3]];
+      fillPath(x, sn, SNOW);
+      x.strokeStyle = SNOWLN; x.lineWidth = 0.6; wob(x, sn.slice(5).concat([sn[0]]), R, 0.2);
+      x.strokeStyle = INK.ink; taper(x, tri, R, 1.3, 1.6, 0.25);
+    }
+    return c;
+  }
+  // taiga marks for the biome layer (narrow spires), plain and snowy
+  function taigaSprite(v, snowy) {
+    const R = rng(9300 + v * 29), c = canvas(14, 27), x = c.getContext('2d');
+    x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK.ink;
+    const h = 17 + R() * 4, w = 4 + R();
+    const L = [[7, 2], [7 - w * 0.5, 2 + h * 0.4], [7 - w * 0.3, 2 + h * 0.42], [7 - w, 2 + h]], Rr = [[7, 2], [7 + w * 0.5, 2 + h * 0.4], [7 + w * 0.3, 2 + h * 0.42], [7 + w, 2 + h]];
+    const sil = L.concat(Rr.slice().reverse());
+    fillPath(x, sil, PFILL); fillPath(x, sil, snowy ? 'rgba(86,112,84,0.9)' : PINE);
+    fillPath(x, [[7, 2]].concat(Rr.slice(1)).concat([[7.4, 2 + h]]), PINESH);
+    if (snowy) { fillPath(x, [[7, 1.5], [7 - w * 0.5, 2 + h * 0.4], [7 - w * 0.15, 2 + h * 0.3], [7, 2 + h * 0.36], [7 + w * 0.2, 2 + h * 0.3], [7 + w * 0.5, 2 + h * 0.4]], SNOW); fillPath(x, [[7 - w * 0.3, 2 + h * 0.43], [7 - w * 0.9, 2 + h * 0.93], [7 - w * 0.2, 2 + h * 0.78], [7 + w * 0.3, 2 + h * 0.84], [7 + w * 0.9, 2 + h * 0.93], [7 + w * 0.3, 2 + h * 0.43], [7, 2 + h * 0.52]], SNOW); }
+    taper(x, L, R, 1.2, 1.8, 0.2); taper(x, Rr, R, 1.2, 1.8, 0.2); x.lineWidth = 1.5; wob(x, [[7 - w, 2 + h], [7 + w, 2 + h]], R, 0.2);
+    x.lineWidth = 1.3; wob(x, [[7, 2 + h], [7, 2 + h + 3.5]], R, 0.1);
+    return c;
+  }
+  // a short row of little peaks for the far-out ranges (three variants), plain and snow-capped
+  function rangeSprite(v, snowy) {
+    const R = rng(4100 + v * 13), W = 36, H = 24, c = canvas(W, H), x = c.getContext('2d');
+    x.lineCap = 'round'; x.lineJoin = 'round';
+    const pk = [[2, 21, 10 + v, 8 - v * 0.8, 21 - v * 0.5], [12, 21, 19 + v, 3 + v * 1.2, 30 - v]];
+    for (const [x0, gy, ax, ay, x1] of pk) {
+      const left = quad([x0, gy], [ax - 3, ay + (gy - ay) * 0.45], [ax, ay], 5), right = quad([ax, ay], [ax + 4, ay + (gy - ay) * 0.5], [x1 + 2, gy], 5);
+      const sil = left.concat(right.slice(1)), face = [[ax, ay]].concat(right.slice(1)).concat([[ax + 2, gy]]);
+      fillPath(x, sil, PFILL); fillPath(x, face, SHADE);
+      if (snowy) { const sY = ay + (gy - ay) * 0.45; x.save(); clipPath(x, sil); fillPath(x, [[0, 0], [W, 0], [W, sY], [ax + 3, sY + 1.5], [ax + 1, sY - 1], [ax - 2, sY + 2], [0, sY]], SNOW); x.save(); clipPath(x, face); fillPath(x, [[0, 0], [W, 0], [W, sY + 1.5], [0, sY + 1.5]], SNOWSH); x.restore(); x.restore(); }
+      x.strokeStyle = INK.ink; x.save(); clipPath(x, face);
+      for (let k = 0; k < 5; k++) { const t = 0.15 + k * 0.17, p = right[Math.min(right.length - 1, Math.round(t * (right.length - 1)))]; if (snowy && k < 2) continue; taper(x, [[p[0] - 0.4, p[1] + 0.5], [p[0] - 2.4, p[1] + 5 + (1 - t) * 3]], R, 1.0, 0.35, 0.15); }
+      x.restore();
+      taper(x, left, R, 1.3, 2.0, 0.25); taper(x, right, R, 2.0, 1.3, 0.25);
     }
     return c;
   }
@@ -157,6 +308,8 @@
     const rows = [[3, 9, 22], [22, 15, 24], [8, 21, 18]];
     rows.slice(0, 2 + (v % 2)).forEach(([ox, oy, w], k) => {
       ox += R() * 4; const tip = [ox + w, oy - 1];
+      fillPath(x, quad([ox, oy + 2], [ox + w * 0.55, oy - 6], tip, 10).concat(quad(tip, [ox + w * 0.82, oy + 3], [ox + w * 0.6, oy + 4.5], 6).slice(1)), 'rgba(226,186,110,0.55)');
+      fillPath(x, [tip, [ox + w * 0.82, oy + 3], [ox + w * 0.6, oy + 4.5], [ox + w * 0.7, oy + 1]], 'rgba(170,120,60,0.45)');
       x.lineWidth = 1.45; wob(x, quad([ox, oy + 2], [ox + w * 0.55, oy - 6], tip, 10), R, 0.3);
       x.lineWidth = 1.0; wob(x, quad(tip, [ox + w * 0.82, oy + 3], [ox + w * 0.6, oy + 4.5], 6), R, 0.2);
       x.lineWidth = 0.7; for (let t = 0; t < 3; t++) wob(x, [[ox + w * (0.72 + t * 0.07), oy + 0.5], [ox + w * (0.7 + t * 0.07), oy + 3.2]], R, 0.1);
@@ -183,21 +336,12 @@
     const crowns = [[10, 16, 7], [22, 15, 7.5], [16, 9, 7]];
     for (const [cx, cy, r] of crowns) {
       const pts = []; for (let i = 0; i <= 28; i++) { const a = i / 28 * Math.PI * 2; const rr = r * (1 + 0.14 * Math.sin(a * 5 + v + cx)); pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * 0.85]); }
-      x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.fillStyle = 'rgba(243,229,191,0.97)'; x.fill();
+      fillPath(x, pts, PFILL); fillPath(x, pts, 'rgba(110,150,96,0.85)');
+      x.save(); clipPath(x, pts); x.fillStyle = 'rgba(52,86,50,0.45)'; x.beginPath(); x.ellipse(cx + r * 0.5, cy + r * 0.3, r * 0.8, r * 0.8, 0, 0, 7); x.fill(); x.restore();
       x.lineWidth = 1.4; wob(x, pts, R, 0.3);
       x.lineWidth = 0.9; for (let k = 0; k < 2; k++) { const a = 0.3 + k * 0.7; wob(x, [[cx + Math.cos(a) * r * 0.45, cy + Math.sin(a) * r * 0.4], [cx + Math.cos(a + 0.5) * r * 0.65, cy + Math.sin(a + 0.5) * r * 0.55]], R, 0.15); }
     }
     x.lineWidth = 1.4; wob(x, [[16, 22], [16.3, 28]], R, 0.2);
-    return c;
-  }
-  function taigaSprite(v) {
-    const R = rng(9300 + v * 29), c = canvas(14, 26), x = c.getContext('2d');
-    x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = INK.ink;
-    const h = 17 + R() * 4, w = 4 + R();
-    const L = [[7, 2], [7 - w * 0.5, 2 + h * 0.4], [7 - w * 0.3, 2 + h * 0.42], [7 - w, 2 + h]], Rr = [[7, 2], [7 + w * 0.5, 2 + h * 0.4], [7 + w * 0.3, 2 + h * 0.42], [7 + w, 2 + h]];
-    x.beginPath(); L.concat(Rr.slice().reverse()).forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.fillStyle = 'rgba(243,229,191,0.96)'; x.fill();
-    x.lineWidth = 1.7; wob(x, L, R, 0.2); wob(x, Rr, R, 0.2); wob(x, [[7 - w, 2 + h], [7 + w, 2 + h]], R, 0.2);
-    x.lineWidth = 1.3; wob(x, [[7, 2 + h], [7, 2 + h + 3.5]], R, 0.1);
     return c;
   }
   function iceSprite(v) {
@@ -233,7 +377,7 @@
     return c;
   }
   function paperTexture() {
-    const N = 512, c = canvas(N, N), x = c.getContext('2d');
+    const N = 512, c = canvas(N, N, 1), x = c.getContext('2d');
     const img = x.createImageData(N, N), d = img.data, R = rng(424242);
     const grids = [[8, 10], [16, 6], [32, 4], [64, 2.4], [128, 1.6]];
     const layers = grids.map(([g, amp]) => { const a = new Float32Array(g * g); for (let i = 0; i < a.length; i++) a[i] = R() * 2 - 1; return { g, amp, a }; });
@@ -260,16 +404,31 @@
     }
     return c;
   }
+  // Sprites are drawn lazily: each one is registered with a builder, and drawn the first time a tile asks for it (MapLibre's
+  // styleimagemissing event, answered synchronously). A view of Britain needs a few dozen of the ~500 sprites, so the page no
+  // longer spends seconds drawing every beast, monument and snowy variant before the first frame.
+  function lazySprites(map) {
+    if (map.__inkReg) return map.__inkReg;
+    const reg = map.__inkReg = new Map();
+    map.on('styleimagemissing', e => {
+      const f = reg.get(e.id); if (!f || map.hasImage(e.id)) return;
+      try { const r = f(); map.addImage(e.id, r.img, r.opts); } catch (err) { console.warn('sprite ' + e.id, err); }
+    });
+    return reg;
+  }
   function addSprites(map) {
-    const add = (name, c, pr) => { if (!map.hasImage(name)) map.addImage(name, toImage(c), { pixelRatio: pr || 2 }); };
-    if (global.InkIcons && !map.hasImage('h-castle')) global.InkIcons.addAll(map, trim, mountainSprite);
-    for (let v = 0; v < 8; v++) add('m' + v, trim(mountainSprite(v)));
-    for (let v = 0; v < 8; v++) add('h' + v, trim(hillSprite(v)));
-    for (let v = 0; v < 4; v++) { add('t' + v, trim(treeSprite(v, false))); add('c' + v, trim(treeSprite(v, true))); }
-    for (let v = 0; v < 3; v++) { add('w' + v, trim(tuftSprite(v, true))); add('g' + v, trim(tuftSprite(v, false))); }
-    for (let v = 0; v < 4; v++) { add('b1-' + v, trim(duneSprite(v))); add('b2-' + v, trim(grassSprite(v))); add('b3-' + v, trim(rainSprite(v))); add('b4-' + v, trim(taigaSprite(v))); add('b5-' + v, trim(iceSprite(v))); add('b6-' + v, trim(tuftSprite(v % 3, true))); add('b7-' + v, trim(tuftSprite(v % 3, false))); }
-    for (const k of ['capital', 'city', 'town', 'village', 'hamlet', 'peak']) add('s-' + k, settleSprite(k));
-    add('paper', paperTexture(), 2);
+    const reg = lazySprites(map);
+    if (reg.size) return;
+    const add = (name, mk, pr) => reg.set(name, () => { const c = mk(); return { img: toImage(c), opts: { pixelRatio: pr || 2 * (c.__k || 1) } }; });
+    if (global.InkIcons) global.InkIcons.addAll(map, trim, mountainSprite);
+    for (let v = 0; v < 8; v++) { add('m' + v, () => trim(mountainSprite(v))); add('ms' + v, () => trim(mountainSprite(v, true))); }
+    for (let v = 0; v < 8; v++) { add('h' + v, () => trim(hillSprite(v))); add('hs' + v, () => trim(hillSprite(v, true))); }
+    for (let v = 0; v < 4; v++) { add('t' + v, () => trim(treeSprite(v, false))); add('c' + v, () => trim(treeSprite(v, true))); add('tb' + v, () => trim(bareTreeSprite(v))); add('cs' + v, () => trim(snowConiferSprite(v))); add('b4s-' + v, () => trim(taigaSprite(v, true))); }
+    for (let v = 0; v < 3; v++) { add('rng' + v, () => trim(rangeSprite(v))); add('rngs' + v, () => trim(rangeSprite(v, true))); }
+    for (let v = 0; v < 3; v++) { add('w' + v, () => trim(tuftSprite(v, true))); add('g' + v, () => trim(tuftSprite(v, false))); }
+    for (let v = 0; v < 4; v++) { add('b1-' + v, () => trim(duneSprite(v))); add('b2-' + v, () => trim(grassSprite(v))); add('b3-' + v, () => trim(rainSprite(v))); add('b4-' + v, () => trim(taigaSprite(v))); add('b5-' + v, () => trim(iceSprite(v))); add('b6-' + v, () => trim(tuftSprite(v % 3, true))); add('b7-' + v, () => trim(tuftSprite(v % 3, false))); }
+    for (const k of ['capital', 'city', 'town', 'village', 'hamlet', 'peak']) add('s-' + k, () => settleSprite(k));
+    add('paper', paperTexture, 2);
   }
 
   // ------------------------------------------------------------------ expressions
@@ -293,7 +452,8 @@
   const fadeProp = (prop, hi) => byZoom(z => ['*', clamp01(['-', z + 0.7, ['get', prop]]), hi === undefined ? 1 : (typeof hi === 'function' ? hi(z) : hi)]);
   const NAME_LOCAL = ['coalesce', ['get', 'name:latin'], ['get', 'name_int'], ['get', 'name']];
   const NAME_EN = ['coalesce', ['get', 'name_en'], ['get', 'name:en'], ['get', 'name:latin'], ['get', 'name']];
-  const HALO = 'rgba(243,229,191,0.92)';
+  // a soft parchment halo: strong enough to lift names off the hatching, light enough not to show as a cream patch on snow
+  const HALO = 'rgba(245,236,212,0.8)';
 
   // ------------------------------------------------------------------ style
   function buildStyle(o) {
@@ -303,22 +463,44 @@
     const LAKE = ['in', ['get', 'class'], ['literal', ['lake', 'pond', 'river']]];
     const layers = [];
     const HZ = ['get', 'z'];
-    const L = (l, group) => { l.metadata = { group: group || 'ink' }; layers.push(l); };
+    const L = (l, group) => { l.metadata = Object.assign({ group: group || 'ink' }, l.metadata || {}); layers.push(l); };
+    // ---- deep winter: the default look. Snowy versions of the glyphs (snow-laden conifers, bare trees, white-capped peaks,
+    // snowy roofs) are drawn where a point lies inside the snow extent (data/biomes_snow.geojson, code/02i_tints.py);
+    // one layer each: in winter its icon (or colour) is chosen by a test, snowy inside the snow extent and plain outside;
+    // InkMap.setWinter swaps the expression for the plain one, so the toggle needs no reload and no twin layers. The glyphs
+    // drawn by js/ink-worker.js carry the test as a property (sz), the world marks too (sn); OpenFreeMap features are tested
+    // with "within". A layer with no snowy look shows nothing inside the snow in winter.
+    const WINTER = o.winter !== undefined ? !!o.winter : PAL.winter !== false;
+    const ICON_IDS = global.InkIcons && global.InkIcons.ids ? global.InkIcons.ids() : [];
+    const TSNOW = ICON_IDS.filter(i => /-s$/.test(i)).map(i => i.slice(0, -2)).filter(i => ICON_IDS.includes(i));   // town glyphs with a snowy roof
+    const SNOWZ = o.snowZone ? ['within', o.snowZone] : null;
+    const SZP = ['==', ['get', 'sz'], 1];
+    const wsplit = (base, group, snowy, test) => {
+      const SZ = test || (base.source === 'ink' ? SZP : SNOWZ);
+      if (!SZ) { L(base, group); return; }
+      const wl = {}, wp = {};
+      // zoom steps must stay on the outside of an expression: a step on zoom gets the test inside each of its outputs
+      const isStep = e => Array.isArray(e) && e[0] === 'step' && Array.isArray(e[1]) && e[1][0] === 'zoom';
+      const pick = (win, plain) => (isStep(win) && isStep(plain) && win.length === plain.length)
+        ? plain.map((v, i) => (i === 2 || (i > 2 && i % 2 === 0)) ? ['case', SZ, win[i], v] : v)
+        : ['case', SZ, win, plain];
+      const sw = (sect, out, k, win) => { const plain = base[sect][k]; const e = pick(win, plain); out[k] = [e, plain]; base[sect][k] = WINTER ? e : plain; };
+      if (base.type === 'symbol') sw('layout', wl, 'icon-image', snowy && snowy.layout && snowy.layout['icon-image'] !== undefined ? snowy.layout['icon-image'] : '');
+      for (const [k, v] of Object.entries((snowy && snowy.paint) || {})) sw('paint', wp, k, v);
+      if (snowy && snowy.layout) for (const [k, v] of Object.entries(snowy.layout)) if (k !== 'icon-image') sw('layout', wl, k, v);
+      base.metadata = Object.assign(base.metadata || {}, Object.keys(wl).length ? { wlayout: wl } : {}, Object.keys(wp).length ? { wpaint: wp } : {});
+      L(base, group);
+    };
 
     L({ id: 'paper', type: 'background', paint: { 'background-pattern': 'paper' } }, 'paper');
     L({ id: 'm-bg', type: 'background', layout: { visibility: 'none' }, paint: { 'background-color': '#F2EFE9' } }, 'modern');
-    // ---- sea shading
-    L(water({ id: 'sea-tint', type: 'fill', paint: { 'fill-color': INK.wash, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 0, ['case', OCEAN, 0.07, 0.10], 6, ['case', OCEAN, 0.05, 0.10], 12, ['case', OCEAN, 0.04, 0.10]], 'fill-antialias': false } }), 'sea');
-    [[2.2, 4, 0.055], [4.4, 4, 0.035], [6.4, 3, 0.022]].forEach(([off, w, op], i) => {
-      L(water({ id: 'sea-wash-' + i, type: 'line', filter: OCEAN, paint: { 'line-color': INK.wash, 'line-width': w, 'line-offset': off, 'line-blur': w * 0.8, 'line-opacity': iz(0, op * 1.2, 6, op, 12, op * 0.8) } }), 'sea');
-    });
-    // ripples: thin offset lines along the coast (the first in black ink, the rest blue); more appear as you zoom
-    const rip = [[1.7, INK.ink, 0.55, null], [3.3, INK.blue, 0.5, null], [4.9, INK.blue, 0.42, [3, 4.5]], [6.4, INK.blueSoft, 0.48, [5, 6.5]], [7.7, INK.blueSoft, 0.4, [7, 8.5]]];
-    rip.forEach(([off, col, op, zr], i) => {
-      L(water({ id: 'ripple-' + i, type: 'line', filter: i < 2 ? ['any', OCEAN, ['>=', ['zoom'], 8]] : OCEAN, minzoom: zr ? zr[0] : 0,
-        paint: { 'line-color': col, 'line-offset': iz(0, off * 0.6, 3, off * 0.7, 6, off, 12, off), 'line-width': iz(0, 0.45, 6, 0.7, 12, 0.9 - i * 0.08),
-          'line-opacity': zr ? iz(zr[0], 0, zr[1], op) : op } }), 'sea');
-    });
+    // ---- watercolour: a soft wash over the land by biome and height, as on a hand-tinted antique map (data/biomes_tint.webp,
+    // code/02i_tints.py); it fades as you zoom in so the paper and the drawn countryside take over
+    // far out in winter the wash and the snow are one raster, the snow laid over the wash in the browser (tintw below): one
+    // full-screen pass instead of two; from zoom 6.5, where the fields come between them, they are drawn apart again
+    L({ id: 'tint-w', type: 'raster', source: 'tintw', maxzoom: 6.5, layout: { visibility: WINTER ? 'visible' : 'none' }, metadata: { winter: true },
+      paint: { 'raster-opacity': 1, 'raster-resampling': 'linear', 'raster-fade-duration': 0 } }, 'tint');
+    L({ id: 'tint', type: 'raster', source: 'tint', minzoom: WINTER ? 6.5 : 0, paint: { 'raster-opacity': iz(0, 0.9, 4, 0.85, 8, 0.7, 11, 0.5, 14, 0.38), 'raster-resampling': 'linear', 'raster-fade-duration': 0, 'raster-saturation': -0.05 } }, 'tint');
     // ---- land cover hints
     L({ id: 'ice', type: 'fill', source: 'ofm', 'source-layer': 'landcover', filter: ['==', ['get', 'class'], 'ice'], paint: { 'fill-color': '#FBF6E6', 'fill-opacity': 0.75 } }, 'ink');
     L({ id: 'ice-edge', type: 'line', source: 'ofm', 'source-layer': 'landcover', filter: ['==', ['get', 'class'], 'ice'], paint: { 'line-color': INK.blue, 'line-width': 0.6, 'line-dasharray': [2, 2], 'line-opacity': 0.6 } }, 'ink');
@@ -341,8 +523,6 @@
       paint: { 'fill-pattern': 'alt', 'fill-opacity': iz(12, 0, 12.6, 0.7) } }, 'farms');
     L({ id: 'meadows', type: 'fill', source: 'ofm', 'source-layer': 'landcover', minzoom: 10.5, filter: MEAD,
       paint: { 'fill-pattern': 'mdw', 'fill-opacity': iz(10.5, 0, 11.5, 0.8) } }, 'farms');
-    L({ id: 'field-edges', type: 'line', source: 'ofm', 'source-layer': 'landcover', minzoom: 11.5, filter: FARM,
-      paint: { 'line-color': '#7C6A3E', 'line-width': iz(11.5, 0.4, 14, 0.8), 'line-opacity': iz(11.5, 0, 12.5, 0.45) } }, 'farms');
     // parks and gardens as areas: a soft green wash, little round trees, parterres in formal gardens, a railing line round
     const PARK = ['any', ['all', ['==', LC, 'grass'], ['in', LS, ['literal', ['park', 'garden', 'recreation_ground']]]]];
     L({ id: 'park-fill', type: 'fill', source: 'ofm', 'source-layer': 'landcover', minzoom: 10.5, filter: PARK,
@@ -351,11 +531,36 @@
       paint: { 'fill-pattern': ['match', ['get', 'class'], 'garden', 'par', 'prk'], 'fill-opacity': iz(11, 0, 12, 0.9) } }, 'heritage');
     L({ id: 'park-rail', type: 'line', source: 'ofm', 'source-layer': 'landcover', minzoom: 11.5, filter: PARK,
       paint: { 'line-color': '#4F6B3A', 'line-width': iz(11.5, 0.6, 15, 1.2), 'line-dasharray': [3, 1.2], 'line-opacity': iz(11.5, 0, 12.2, 0.8) } }, 'heritage');
+    // ---- deep winter (the default look): snow over the land where deep winter lays it (data/biomes_snow.webp: by latitude,
+    // height and climate), over the fields so they show faintly through it; lakes are cleared of the wash first, so in the
+    // snow they read as frozen white sheets inside their ink edge. The sea is cleared again afterwards with plain paper.
+    L(water({ id: 'lake-mask', type: 'fill', filter: ['!', OCEAN], paint: { 'fill-pattern': 'paper', 'fill-antialias': false } }), 'paper');
+    L({ id: 'snow', type: 'raster', source: 'snowimg', minzoom: 6.5, layout: { visibility: WINTER ? 'visible' : 'none' }, metadata: { winter: true },
+      paint: { 'raster-opacity': iz(0, 0.97, 6, 0.95, 10, 0.9, 14, 0.86), 'raster-resampling': 'linear', 'raster-fade-duration': 0 } }, 'paper');
+    // frozen lakes: a pale sheet of ice over every lake in winter, with the snow lying on it where it falls
+    L(water({ id: 'lake-ice', type: 'fill', filter: ['==', ['get', 'class'], 'lake'], minzoom: 6, layout: { visibility: WINTER ? 'visible' : 'none' }, metadata: { winter: true },
+      paint: { 'fill-color': INK.ice, 'fill-opacity': iz(6, 0, 7, 0.55), 'fill-antialias': false } }), 'rivers');
+    L(water({ id: 'sea-mask', type: 'fill', filter: OCEAN, paint: { 'fill-pattern': 'paper', 'fill-antialias': false } }), 'paper');
+    // ---- sea shading
+    L(water({ id: 'sea-tint', type: 'fill', paint: { 'fill-color': INK.wash, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 0, ['case', OCEAN, 0.07, 0.10], 6, ['case', OCEAN, 0.05, 0.10], 12, ['case', OCEAN, 0.04, 0.10]], 'fill-antialias': false } }), 'sea');
+    [[2.2, 4, 0.055], [4.4, 4, 0.035], [6.4, 3, 0.022]].forEach(([off, w, op], i) => {
+      L(water({ id: 'sea-wash-' + i, type: 'line', filter: OCEAN, paint: { 'line-color': INK.wash, 'line-width': w, 'line-offset': off, 'line-blur': w * 0.8, 'line-opacity': iz(0, op * 1.2, 6, op, 12, op * 0.8) } }), 'sea');
+    });
+    // ripples: thin offset lines along the coast (the first in black ink, the rest blue); more appear as you zoom
+    const rip = [[1.7, INK.ink, 0.55, null], [3.3, INK.blue, 0.5, null], [4.9, INK.blue, 0.42, [3, 4.5]], [6.4, INK.blueSoft, 0.48, [5, 6.5]], [7.7, INK.blueSoft, 0.4, [7, 8.5]]];
+    rip.forEach(([off, col, op, zr], i) => {
+      L(water({ id: 'ripple-' + i, type: 'line', filter: i < 2 ? ['any', OCEAN, ['>=', ['zoom'], 8]] : OCEAN, minzoom: zr ? zr[0] : 0,
+        paint: { 'line-color': col, 'line-offset': iz(0, off * 0.6, 3, off * 0.7, 6, off, 12, off), 'line-width': iz(0, 0.45, 6, 0.7, 12, 0.9 - i * 0.08),
+          'line-opacity': zr ? iz(zr[0], 0, zr[1], op) : op } }), 'sea');
+    });
+    L({ id: 'field-edges', type: 'line', source: 'ofm', 'source-layer': 'landcover', minzoom: 11.5, filter: FARM,
+      paint: { 'line-color': '#6E5C36', 'line-width': iz(11.5, 0.4, 14, 0.8), 'line-opacity': iz(11.5, 0, 12.5, 0.45) } }, 'farms');
     // ---- lakes and rivers
     L(water({ id: 'lake-edge', type: 'line', filter: ['!', OCEAN], minzoom: 5, paint: { 'line-color': INK.ink, 'line-width': iz(5, 0.4, 9, 0.8, 13, 1.1), 'line-opacity': iz(5, 0, 6, 0.85) } }), 'ink');
     // ripples inside lakes and reservoirs (blue, as along the coast)
     [[2.2, 0.5], [4.2, 0.35]].forEach(([off, op], i) => L(water({ id: 'lake-ripple-' + i, type: 'line', filter: ['==', ['get', 'class'], 'lake'], minzoom: 8 + i,
-      paint: { 'line-color': INK.blue, 'line-offset': off, 'line-width': 0.6, 'line-opacity': iz(8 + i, 0, 9 + i, op) } }), 'rivers'));
+      metadata: { wpaint: { 'line-color': [INK.iceLine, INK.blue] } },
+      paint: { 'line-color': WINTER ? INK.iceLine : INK.blue, 'line-offset': off, 'line-width': 0.6, 'line-opacity': iz(8 + i, 0, 9 + i, op) } }), 'rivers'));
     // parks and protected land: a dotted green-brown boundary (OpenMapTiles park layer, and town parks from land use)
     L({ id: 'park-edge', type: 'line', source: 'ofm', 'source-layer': 'park', minzoom: 7, layout: { 'line-cap': 'round' },
       paint: { 'line-color': '#4F6B3A', 'line-width': iz(7, 0.7, 12, 1.3), 'line-dasharray': [0.1, 2.4], 'line-opacity': iz(7, 0, 8, 0.6) } }, 'heritage');
@@ -386,11 +591,11 @@
       layout: { 'icon-image': 'h-starfort', 'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.55, 9, 0.8, 12, 1.0], 'icon-overlap': 'cooperative', 'symbol-sort-key': ['get', 'z'],
         'text-field': ['step', ['zoom'], '', 7, ['get', 'n']], 'text-font': ['Ink Italic'], 'text-size': iz(7, 10, 12, 12.5), 'text-optional': true, 'text-variable-anchor': ['top', 'bottom', 'right', 'left'], 'text-radial-offset': 1.25 },
       paint: { 'icon-opacity': ['interpolate', ['linear'], ['zoom'], 11.4, 1, 12.2, 0], 'text-opacity': ['interpolate', ['linear'], ['zoom'], 11.4, 1, 12.2, 0], 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.3 } }, 'heritage');
-    L({ id: 'rivers', type: 'line', source: 'ofm', 'source-layer': 'waterway', filter: ['!=', ['get', 'intermittent'], 1],
+    wsplit({ id: 'rivers', type: 'line', source: 'ofm', 'source-layer': 'waterway', filter: ['!=', ['get', 'intermittent'], 1],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': INK.blue,
         'line-width': ['interpolate', ['linear'], ['zoom'], 3, ['match', ['get', 'class'], 'river', 0.6, 0.2], 7, ['match', ['get', 'class'], 'river', 1.1, 'canal', 0.5, 0.3], 10, ['match', ['get', 'class'], 'river', 1.6, 'canal', 0.9, 'stream', 0.6, 0.4], 14, ['match', ['get', 'class'], 'river', 2.4, 'canal', 1.4, 'stream', 1.0, 0.6]],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 3, ['match', ['get', 'class'], 'river', 0.8, 0], 9, ['match', ['get', 'class'], 'river', 0.95, 'canal', 0.6, 0], 11, ['match', ['get', 'class'], 'river', 1, 'canal', 0.8, 'stream', 0.75, 0.3]] } }, 'rivers');
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 3, ['match', ['get', 'class'], 'river', 0.8, 0], 9, ['match', ['get', 'class'], 'river', 0.95, 'canal', 0.6, 0], 11, ['match', ['get', 'class'], 'river', 1, 'canal', 0.8, 'stream', 0.75, 0.3]] } }, 'rivers', { paint: { 'line-color': INK.iceLine } });
     // ---- coast
     L(water({ id: 'coast', type: 'line', filter: OCEAN, layout: { 'line-join': 'round' }, paint: { 'line-color': INK.ink, 'line-width': iz(0, 0.7, 4, 1.0, 8, 1.4, 12, 1.7), 'line-blur': 0.2 } }), 'coast');
     // ---- boundaries
@@ -432,16 +637,21 @@
     // high, rugged range, dune fields in the great sand seas and bands of trees across the taiga and the rainforests. They fade out
     // between zoom 3 and 4, where the glyphs drawn tile by tile take over.
     const WZ = ['get', 'z'];
-    const wfade = (hi) => byZoom(z => ['*', clamp01(['-', z + 0.6, WZ]), z <= 3 ? hi : z >= 4 ? 0 : hi * (4 - z)]);
-    L({ id: 'world-ranges', type: 'symbol', source: 'world', maxzoom: 4.2, filter: ['all', ['==', ['get', 'kind'], 'range'], ['<=', WZ, ['+', ['zoom'], 0.6]]],
+    // each mark fades in over half a zoom before its first zoom (symbol filters are evaluated at the tile's whole zoom, so the
+    // filter lets in all that are due before the next one and the fade decides); the world layer hands over to the tile glyphs
+    // between zoom 3 and 3.9
+    const wfade = (hi) => byZoom(z => ['*', clamp01(['+', 1, ['*', 2, ['-', z, WZ]]]), z <= 3 ? hi : z >= 4 ? 0 : hi * Math.max(0, (3.9 - z) / 0.9)]);
+    wsplit({ id: 'world-ranges', type: 'symbol', source: 'world', maxzoom: 4, filter: ['all', ['==', ['get', 'kind'], 'range'], ['<=', WZ, ['+', ['zoom'], 1.0]]],
       layout: { 'icon-image': ['concat', 'rng', ['to-string', ['get', 'v']]],
-        'icon-size': iz(0.5, ['*', ['get', 's'], 0.5], 2, ['*', ['get', 's'], 0.68], 3.5, ['*', ['get', 's'], 0.85]), 'icon-anchor': 'bottom',
+        'icon-size': iz(0, ['*', ['get', 's'], 0.72], 1, ['*', ['get', 's'], 0.84], 2, ['*', ['get', 's'], 0.92], 3, ['*', ['get', 's'], 1.0], 4, ['*', ['get', 's'], 1.05]), 'icon-anchor': 'bottom',
         'icon-overlap': 'cooperative', 'icon-padding': 0, 'symbol-z-order': 'viewport-y', 'symbol-avoid-edges': false },
-      paint: { 'icon-opacity': wfade(0.95) } }, 'mountains');
-    L({ id: 'world-biome', type: 'symbol', source: 'world', maxzoom: 4.2, filter: ['all', ['!=', ['get', 'kind'], 'range'], ['<=', WZ, ['+', ['zoom'], 0.6]]],
-      layout: glyphLayout(['concat', ['match', ['get', 'kind'], 'dune', 'b1-', 'rain', 'b3-', 'b4-'], ['to-string', ['get', 'v']]],
-        iz(0.5, ['*', ['match', ['get', 'kind'], 'dune', 0.75, 'rain', 0.62, 0.8], 0.62], 2, ['*', ['match', ['get', 'kind'], 'dune', 0.75, 'rain', 0.62, 0.8], 0.75], 3.5, ['*', ['match', ['get', 'kind'], 'dune', 0.75, 'rain', 0.62, 0.8], 0.9])),
-      paint: { 'icon-opacity': wfade(0.85) } }, 'biomes');
+      paint: { 'icon-opacity': wfade(0.97) } }, 'mountains', { layout: { 'icon-image': ['concat', 'rngs', ['to-string', ['get', 'v']]] } }, ['==', ['get', 'sn'], 1]);
+    const WK = ['get', 'kind'];
+    const wbSize = (k) => ['*', ['match', WK, 'dune', 1.2, 'rain', 0.8, 'hill', 0.72, 1.1], k];
+    wsplit({ id: 'world-biome', type: 'symbol', source: 'world', maxzoom: 4, filter: ['all', ['!=', WK, 'range'], ['<=', WZ, ['+', ['zoom'], 1.0]]],
+      layout: glyphLayout(['concat', ['match', WK, 'dune', 'b1-', 'rain', 'b3-', 'hill', 'h', 'b4-'], ['to-string', ['get', 'v']]],
+        iz(0, wbSize(0.8), 1, wbSize(0.9), 2, wbSize(0.95), 3, wbSize(1.0))),
+      paint: { 'icon-opacity': wfade(0.9) } }, 'biomes', { layout: { 'icon-image': ['concat', ['match', WK, 'dune', 'b1-', 'rain', 'b3-', 'hill', 'hs', 'b4s-'], ['to-string', ['get', 'v']]] } }, ['==', ['get', 'sn'], 1]);
     // beasts of the countryside, zoom 6 to 14: deer and boar in the woods, sheep on the moors, cattle on the farms, eagles over
     // the mountains, herons by the water (js/ink-worker.js: one in a few cells of the nested grid, a few a tile at most)
     L({ id: 'beasts', type: 'symbol', source: 'ink', 'source-layer': 'beasts', minzoom: 6,
@@ -450,27 +660,27 @@
     // biome glyphs (RESOLVE Ecoregions 2017 with OpenStreetMap ice and sand): grow and multiply with zoom like the peaks;
     // rainforest and taiga crowns fade out at zoom 7, where OpenStreetMap's own woods take over
     const BB = ['get', 'b'];
-    L({ id: 'biome', type: 'symbol', source: 'ink', 'source-layer': 'biome',
+    wsplit({ id: 'biome', type: 'symbol', source: 'ink', 'source-layer': 'biome',
       layout: glyphLayout(['concat', 'b', ['to-string', BB], '-', ['to-string', ['get', 'v']]],
         byZoom(z => ['*', ['match', BB, 1, 0.82, 2, 1.0, 3, 0.74, 4, 1.0, 5, 0.85, 0.6], z < 3 ? 0.85 : 1, ['min', 1.35, ['^', 2, ['*', 0.35, ['-', z, R_]]]]])),
-      paint: { 'icon-opacity': byZoom(z => ['*', clamp01(['-', z + 1, R_]),
-        ['match', BB, 3, z < 6 ? 1 : z >= 7 ? 0 : 7 - z, 4, z < 6 ? 1 : z >= 7 ? 0 : 7 - z, 5, 0.9, 7, 0.75, 2, 0.85, 0.95]]) } }, 'biomes');
-    L({ id: 'tufts', type: 'symbol', source: 'ink', 'source-layer': 'tufts', minzoom: 9,
+      paint: { 'icon-opacity': byZoom(z => ['*', clamp01(['-', z + 1, R_]), z <= 2 ? 0 : z === 3 ? 0.75 : 1,
+        ['match', BB, 3, z < 6 ? 1 : z >= 7 ? 0 : 7 - z, 4, z < 6 ? 1 : z >= 7 ? 0 : 7 - z, 5, 0.9, 7, 0.75, 2, 0.85, 0.95]]) } }, 'biomes', { layout: { 'icon-image': ['match', BB, 4, ['concat', 'b4s-', ['to-string', ['get', 'v']]], 5, ['concat', 'b5-', ['to-string', ['get', 'v']]], 1, ['concat', 'b1-', ['to-string', ['get', 'v']]], ''] } });
+    wsplit({ id: 'tufts', type: 'symbol', source: 'ink', 'source-layer': 'tufts', minzoom: 9,
       layout: glyphLayout(['concat', ['match', ['get', 'w'], 1, 'w', 'g'], ['to-string', ['get', 'v']]], growRank(0.75, 0.3, 1.1)),
       paint: { 'icon-opacity': fadeRank(z => (z <= 9 ? 0 : z >= 10 ? 0.75 : 0.75 * (z - 9))) } }, 'forests');
-    L({ id: 'trees', type: 'symbol', source: 'ink', 'source-layer': 'trees', minzoom: 7,
+    wsplit({ id: 'trees', type: 'symbol', source: 'ink', 'source-layer': 'trees', minzoom: 7,
       layout: glyphLayout(['concat', ['match', ['get', 'c'], 1, 'c', 't'], ['to-string', ['get', 'v']]], growRank(0.82, 0.3, 1.2)),
-      paint: { 'icon-opacity': fadeRank(z => (z <= 7 ? 0 : z >= 8 ? 1 : (z - 7))) } }, 'forests');
-    L({ id: 'relief', type: 'symbol', source: 'ink', 'source-layer': 'relief',
+      paint: { 'icon-opacity': fadeRank(z => (z <= 7 ? 0 : z >= 8 ? 1 : (z - 7))) } }, 'forests', { layout: { 'icon-image': ['concat', ['match', ['get', 'c'], 1, 'cs', 'tb'], ['to-string', ['get', 'v']]] } });
+    wsplit({ id: 'relief', type: 'symbol', source: 'ink', 'source-layer': 'relief',
       layout: glyphLayout(['concat', ['match', ['get', 'k'], 0, ['case', ['==', ['get', 'sn'], 1], 'ms', 'm'], 2, 'snowf', 'h'], ['to-string', ['get', 'v']]],
         byZoom(z => ['*', ['match', ['get', 'k'], 0, 0.54, 2, 0.5, 0.52], ['get', 's'], z < 3 ? 0.8 : z < 5 ? 0.9 : z <= 7 ? 1 : z <= 11 ? 1 + (z - 7) * 0.075 : Math.min(1.6, 1.3 + (z - 11) * 0.1), ['min', z <= 11 ? 1.45 : Math.min(1.75, 1.45 + (z - 11) * 0.1), ['^', 2, ['*', 0.42, ['-', z, R_]]]]])),
-      paint: { 'icon-opacity': fadeRank() } }, 'mountains');
+      paint: { 'icon-opacity': fadeRank(z => z <= 2 ? 0 : z >= 4 ? 1 : z === 3 ? 0.75 : 1) } }, 'mountains', { layout: { 'icon-image': ['concat', ['match', ['get', 'k'], 0, 'ms', 2, 'snowf', 'hs'], ['to-string', ['get', 'v']]] } });
     // drawn towns (zoom 12 and closer): townhouses facing the streets, market squares, churches, town walls
-    L({ id: 'town', type: 'symbol', source: 'ink', 'source-layer': 'town', minzoom: 11.6,
+    wsplit({ id: 'town', type: 'symbol', source: 'ink', 'source-layer': 'town', minzoom: 11.6,
       layout: { 'icon-image': ['get', 't'], 'icon-rotate': ['match', ['get', 't'], 'wallseg', ['get', 'a'], 0], 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport',   // every house seen from the same side, as on a bird's-eye town plan
         'icon-size': iz(12, 1.15, 13, 1.3, 14, 1.5, 16, 2.0), 'icon-overlap': 'always', 'icon-ignore-placement': true, 'icon-padding': 0, 'symbol-z-order': 'viewport-y',
         'symbol-sort-key': ['match', ['get', 't'], 'market', 0, 'townchurch', 1, 'walltower', 2, 'wallseg', 3, 5] },
-      paint: { 'icon-opacity': iz(11.6, 0, 12.4, 1) } }, 'towns');
+      paint: { 'icon-opacity': iz(11.6, 0, 12.4, 1) } }, 'towns', { layout: { 'icon-image': TSNOW.length ? ['match', ['get', 't'], TSNOW, ['concat', ['get', 't'], '-s'], ['get', 't']] : ['get', 't'] } });
     // animals in their native ranges, whales where they gather, and a few decorative serpents far out
     const DK = ['get', 'k'];
     L({ id: 'animals', type: 'symbol', source: 'decor', maxzoom: 7.2, filter: ['in', DK, ['literal', ['animal', 'whale']]],
@@ -504,7 +714,7 @@
     // lines themselves are cut to fit the real size (code/02_labels.py).
     L({ id: 'countries', type: 'symbol', source: 'labels', maxzoom: 10.5,
       filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'zb'], ['zoom']]],
-      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 28, 'text-keep-upright': true,
+      layout: TXT({ 'text-field': ['format', ['slice', ['get', 'name'], 0, 1], { 'font-scale': 1.3, 'text-color': INK.redDeep }, ['slice', ['get', 'name'], 1], {}], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 28, 'text-keep-upright': true,
         'text-size': iz(1, 8.5, 2, 10, 3, 12.5, 4, 16, 5, 18, 7, 25, 9, 32, 10.6, 32, 11, 6),
         'text-letter-spacing': iz(1, 0.1, 3, 0.22, 5, 0.36, 8, 0.48), 'symbol-sort-key': ['get', 'lr'], 'text-padding': 2 }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.6, 'text-halo-blur': 0.6,
@@ -512,7 +722,7 @@
           1, z >= 10 ? 0 : z >= 9 ? 0.6 : 1]) } }, 'names');
     // England, Scotland and Wales on curves from zoom 5; Northern Ireland on two lines at its middle
     L({ id: 'nations', type: 'symbol', source: 'labels', minzoom: 4.6, maxzoom: 10.5, filter: ['all', ['==', ['get', 'kind'], 'nation'], ['==', ['geometry-type'], 'LineString'], ['==', ['get', 'zb'], ['zoom']]],
-      layout: TXT({ 'text-field': ['get', 'name'], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 28, 'text-keep-upright': true,
+      layout: TXT({ 'text-field': ['format', ['slice', ['get', 'name'], 0, 1], { 'font-scale': 1.3, 'text-color': INK.redDeep }, ['slice', ['get', 'name'], 1], {}], 'text-font': ['Ink Caps'], 'symbol-placement': 'line-center', 'text-max-angle': 28, 'text-keep-upright': true,
         'text-size': iz(5, 12, 6, 14, 7, 17, 9, 24, 10.6, 24, 11, 6), 'text-letter-spacing': iz(5, 0.3, 7, 0.4, 9, 0.5) }),
       paint: { 'text-color': INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.6, 'text-halo-blur': 0.6, 'text-opacity': iz(4.6, 0, 5.2, 1, 9, 1, 10, 0.6) } }, 'names');
     L({ id: 'nations-pt', type: 'symbol', source: 'labels', minzoom: 5, maxzoom: 10.5, filter: ['all', ['==', ['get', 'kind'], 'nation'], ['==', ['geometry-type'], 'Point']],
@@ -565,11 +775,11 @@
     // capitals first, on a ribbon with a small shield (from zoom 3; a capital is always lettered before any other city);
     // the great cities on a plain banner; a drawn walled city marks both from zoom 6.5 until the drawn towns take over
     const CAP = ['==', ['get', 'capital'], 2], RK = ['coalesce', ['get', 'rank'], 9];
-    L({ id: 'city-marks', type: 'symbol', source: 'ofm', 'source-layer': 'place', minzoom: 3, maxzoom: 12.4,
+    wsplit({ id: 'city-marks', type: 'symbol', source: 'ofm', 'source-layer': 'place', minzoom: 3, maxzoom: 12.4,
       filter: ['all', ['==', CL, 'city'], ['any', CAP, ['<=', RK, 3]], ['<=', RK, ['step', ['zoom'], 2, 4, 4, 5, 6, 6, 99]]],
       layout: { 'icon-image': ['step', ['zoom'], ['case', CAP, 's-capital', 's-city'], 6.5, 'citybig'], 'icon-size': iz(3, ['case', CAP, 0.6, 0.48], 6.4, ['case', CAP, 0.85, 0.7], 6.5, 0.42, 9, 0.62, 11, 0.8, 12, 0.9),
         'icon-overlap': 'always', 'icon-ignore-placement': true, 'icon-padding': 1, 'symbol-sort-key': ['case', CAP, 0, RK] },
-      paint: { 'icon-opacity': iz(3, 0, 3.5, 1, 11.6, 1, 12.3, 0) } }, 'names');
+      paint: { 'icon-opacity': iz(3, 0, 3.5, 1, 11.6, 1, 12.3, 0) } }, 'names', { layout: { 'icon-image': ['step', ['zoom'], ['case', CAP, 's-capital', 's-city'], 6.5, 'citybig-s'] } });
     L({ id: 'capitals', type: 'symbol', source: 'ofm', 'source-layer': 'place', minzoom: 3,
       filter: ['all', ['==', CL, 'city'], CAP, ['<=', RK, ['step', ['zoom'], 2, 4, 4, 5, 6, 6, 99]]],
       layout: TXT({ 'text-field': NAME_EN, 'text-font': ['Ink SC'], 'text-size': iz(3, 11.5, 7, 16, 11, 19), 'text-letter-spacing': 0.06, 'text-max-width': 12,
@@ -676,7 +886,10 @@
     const LFADE = byZoom(z => clamp01(['-', z + 1.7, HZ]));
     // the drawing is placed before the city names (so the best known show from the world view); its name comes after the
     // towns, so it never pushes a city's name off the map
-    const LIMG = ['coalesce', ['image', ['concat', 'l-', ['get', 'i']]], ['image', ['concat', 'h-', ['get', 'i']]]];
+    // a monument's own drawing where there is one, else the heritage pictogram (decided from the known icon ids, not by testing
+    // for the image, since sprites are drawn lazily and a missing one would not be found yet)
+    const LIDS = ICON_IDS.filter(i => i.startsWith('l-')).map(i => i.slice(2));
+    const LIMG = LIDS.length ? ['match', ['get', 'i'], LIDS, ['concat', 'l-', ['get', 'i']], ['concat', 'h-', ['get', 'i']]] : ['concat', 'h-', ['get', 'i']];
     L({ id: 'landmarks', type: 'symbol', source: 'landmarks', maxzoom: 6, filter: ['<=', HZ, ['+', ['zoom'], 1.7]],
       layout: { 'icon-image': LIMG, 'icon-size': iz(2, 0.6, 4, 0.75, 6, 0.9), 'icon-overlap': 'never', 'icon-padding': 2, 'symbol-sort-key': HZ },
       paint: { 'icon-opacity': LFADE } }, 'heritage');
@@ -724,7 +937,7 @@
     // walls, towers and star forts go on top of the drawn towns, so the houses never hide a town wall
     const TOP = ['fort-moat', 'fort-moat-edge', 'fort-rampart', 'fort-line', 'walls-casing', 'walls', 'walls-crest', 'wall-towers', 'fort-icons'];
     const ti = rest.findIndex(l => l.id === 'town');
-    if (ti >= 0) { const mv = TOP.map(id => rest.find(l => l.id === id)).filter(Boolean); for (const l of mv) rest.splice(rest.indexOf(l), 1); rest.splice(rest.findIndex(l => l.id === 'town') + 1, 0, ...mv); }
+    if (ti >= 0) { const mv = TOP.map(id => rest.find(l => l.id === id)).filter(Boolean); for (const l of mv) rest.splice(rest.indexOf(l), 1); const tl = Math.max(rest.findIndex(l => l.id === 'town'), rest.findIndex(l => l.id === 'town-snow')); rest.splice(tl + 1, 0, ...mv); }
     const final = rest.concat(named.reverse());
     // close in, where the drawn towns pack the streets, names get a wider parchment halo so they read over the houses
     for (const l of final) {
@@ -743,13 +956,19 @@
       if (k !== 1) l.layout['text-size'] = scaleOut(l.layout['text-size'], k);
     }
 
-    return {
-      version: 8, name: 'The Inked World',
-      glyphs: base + 'fonts/{fontstack}/{range}.pbf',
-      sources: {
-        ofm: { type: 'vector', url: o.tilejson, attribution: '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">© OpenMapTiles</a> Data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors' },
-        ink: { type: 'vector', tiles: ['ink://{z}/{x}/{y}'], minzoom: 0, maxzoom: 14, tileSize: 512, attribution: 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank">Terrain Tiles</a>; biomes: <a href="https://ecoregions.appspot.com/" target="_blank">RESOLVE Ecoregions 2017</a> (CC BY 4.0)' },
-        dem: { type: 'raster-dem', tiles: [o.dem], encoding: 'terrarium', tileSize: 256, maxzoom: 15 },
+    // ---- lazily loaded data: a source starts empty (or with a light first file) and gets its data once the map has drawn
+    // its first view, and only while the zoom is in the range where its layers show; the heavy detail files come in only when
+    // you zoom in to them. [source, [[file, from zoom, to zoom, before first idle?], ...]], later stages replace earlier ones.
+    const LAZY = o.lazy === false ? [] : [
+      ['world', [['data/world_ink.geojson?v=20261104', 0, 4.6, true]]],
+      ['walls', [['data/walls_major.geojson?v=20261103', 0, 99], ['grid:walls', 9.6, 99]]],
+      ['forts', [['data/forts_points.geojson?v=20261103', 4.5, 99], ['grid:forts', 10.4, 99]]],
+      ['rivers', [['data/rivers.geojson', 0, 9.6]]],
+      ['lakes', [['data/lakes.geojson', 0, 9.3]]],
+      ['decor', [['data/decor.geojson', 0, 12]]],
+    ];
+    const EMPTY = { type: 'FeatureCollection', features: [] };
+    const SRC = {
         labels: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_countries.geojson', attribution: 'Lettering lines: Natural Earth, ONS' },
         regions: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_regions.geojson' },
         landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
@@ -759,8 +978,25 @@
         rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
         lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },
-        world: { type: 'geojson', tolerance: 0.6, data: base + 'data/world_ink.geojson?v=20261102', attribution: 'World ink: AWS Terrain Tiles, RESOLVE Ecoregions 2017' },
+        world: { type: 'geojson', tolerance: 0.6, data: base + 'data/world_ink.geojson?v=20261104', attribution: 'World ink: AWS Terrain Tiles, RESOLVE Ecoregions 2017' },
         lakesink: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/lakes_lettered.geojson?v=20261102' },
+    };
+    for (const [id] of LAZY) SRC[id].data = EMPTY;
+
+    return {
+      version: 8, name: 'The Inked World', metadata: { inkLazy: LAZY },
+      glyphs: base + 'fonts/{fontstack}/{range}.pbf',
+      sources: {
+        ofm: { type: 'vector', url: o.tilejson, attribution: '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">© OpenMapTiles</a> Data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors' },
+        ink: { type: 'vector', tiles: ['ink://{z}/{x}/{y}'], minzoom: 2, maxzoom: 14, tileSize: 512, attribution: 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank">Terrain Tiles</a>; biomes: <a href="https://ecoregions.appspot.com/" target="_blank">RESOLVE Ecoregions 2017</a> (CC BY 4.0)' },
+        dem: { type: 'raster-dem', tiles: [o.dem], encoding: 'terrarium', tileSize: 256, maxzoom: 15 },
+        ...SRC,
+        // the watercolour wash and the deep-winter snow, each one 2048 px image of the whole web Mercator square
+        // (served as 512 px raster tiles cut from the image in the browser, js "inkimg://" protocol, so world copies and
+        // culling behave as for any tiled layer)
+        tint: { type: 'raster', tiles: ['inkimg://tint/{z}/{x}/{y}'], tileSize: 512, maxzoom: 2, attribution: 'Tints: <a href="https://ecoregions.appspot.com/" target="_blank">RESOLVE Ecoregions 2017</a> (CC BY 4.0), Natural Earth' },
+        snowimg: { type: 'raster', tiles: ['inkimg://snow/{z}/{x}/{y}'], tileSize: 512, maxzoom: 2 },
+        tintw: { type: 'raster', tiles: ['inkimg://tintw/{z}/{x}/{y}'], tileSize: 512, maxzoom: 2 },
       },
       layers: final,
     };
@@ -774,7 +1010,7 @@
   // a small pool of workers; each tile always goes to the same worker (by x) so elevation caches are reused
   let pool = null;
   function setupProtocol(o, ofmTemplate) {
-    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls.geojson' }, o.workerConfig || {}) };
+    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls_boxes.json?v=20261103', snowZone: o.snowZone || null }, o.workerConfig || {}) };
     if (pool) { pool.forEach(w => w.postMessage(cfg)); return; }
     const n = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
     pool = [];
@@ -864,6 +1100,29 @@
     }
     return any ? new Uint8Array(o) : b;
   }
+  // ---- the watercolour and snow images (2048 px, whole web Mercator square) cut into 512 px raster tiles on request
+  const IMGS = { tint: 'data/biomes_tint.webp?v=20261103', snow: 'data/biomes_snow.webp?v=20261103' };
+  let imgProtocol = false; const imgCache = {};
+  function setupImgProtocol(base) {
+    if (imgProtocol) return; imgProtocol = true;
+    maplibregl.addProtocol('inkimg', async (params) => {
+      const m = params.url.match(/inkimg:\/\/(\w+)\/(\d+)\/(\d+)\/(\d+)/);
+      const name = m[1], z = +m[2], x = +m[3], y = +m[4];
+      const load = nm => (imgCache[nm] = imgCache[nm] || fetch(base + IMGS[nm]).then(r => r.blob()).then(b => createImageBitmap(b)));
+      const T = 512;
+      if (name === 'tintw') {
+        // the wash, then the snow over it, at the opacities the two layers have far out (0.85 and 0.95)
+        const [tb, sb] = await Promise.all([load('tint'), load('snow')]), S = tb.width / Math.pow(2, z), S2 = sb.width / Math.pow(2, z);
+        const cv = new OffscreenCanvas(T, T), cx = cv.getContext('2d'); cx.imageSmoothingQuality = 'high';
+        cx.globalAlpha = 0.85; cx.drawImage(tb, x * S, y * S, S, S, 0, 0, T, T);
+        cx.globalAlpha = 0.95; cx.drawImage(sb, x * S2, y * S2, S2, S2, 0, 0, T, T);
+        return { data: cv.transferToImageBitmap() };
+      }
+      const bmp = await load(name), S = bmp.width / Math.pow(2, z);
+      // the tile is cut and scaled straight to an ImageBitmap, which MapLibre takes as it is (no canvas, no PNG encode and decode)
+      return { data: await createImageBitmap(bmp, x * S, y * S, S, S, { resizeWidth: T, resizeHeight: T, resizeQuality: 'high' }) };
+    });
+  }
   let edgeProtocol = false;
   function setupEdgeProtocol() {
     if (edgeProtocol) return; edgeProtocol = true;
@@ -888,10 +1147,14 @@
   async function create(container, opts) {
     const o = Object.assign({}, DEFAULTS, opts || {});
     if (!o.base) o.base = new URL('./', location.href).href;
+    if (o.mapOptions && o.mapOptions.interactive === false && o.lazy === undefined) o.lazy = false;   // the poster loads everything at once
     let tj = null;
+    const snowZoneP = fetch(o.base + 'data/biomes_snow.geojson?v=20261104').then(r => r.json());
     try { tj = await (await fetch(o.tilejson)).json(); } catch (e) { console.warn('tilejson', e); }
     const ofmTemplate = tj && tj.tiles ? tj.tiles[0] : null;
-    setupProtocol(o, ofmTemplate);
+    // the snow extent (18 KB): the worker tags each glyph inside it (sz), the style tests OpenFreeMap features with "within"
+    try { o.snowZone = (await snowZoneP).features[0].geometry; } catch (e) { console.warn('snow zone', e); o.snowZone = null; }
+    setupProtocol(o, ofmTemplate); setupImgProtocol(o.base);
     const style = buildStyle(o);
     if (ofmTemplate) {
       setupEdgeProtocol();
@@ -904,20 +1167,107 @@
       localIdeographFontFamily: "'Noto Serif', 'Songti SC', serif",
     }, o.mapOptions || {}));
     map.touchZoomRotate.disableRotation();
-    map.on('styleimagemissing', () => {});
     addSprites(map);
-    map.once('styledata', () => addSprites(map));
     map.INK = INK; map.__inkOpts = Object.assign({}, opts || {}, { mapOptions: undefined });
     if (!map.isStyleLoaded()) await new Promise(res => map.once('style.load', res));
+    lazyData(map, o.base, style.metadata.inkLazy);
+    // newly loaded country is inked in with a quick pen sweep (js/ink-extras.js); not on the poster's hidden map
+    if (global.InkExtras && global.InkExtras.inkingIn && !(o.mapOptions && o.mapOptions.interactive === false)) global.InkExtras.inkingIn(map);
     return map;
   }
 
-  // layer groups for the panel
+  // the lazily loaded sources (see LAZY in buildStyle): each gets the latest stage its zoom range allows, once
+  function lazyData(map, base, lazy) {
+    if (!lazy || !lazy.length) return;
+    const got = {};   // source -> index of the stage loaded
+    let idle = false;
+    const check = () => {
+      const z = map.getZoom();
+      for (const [id, stages] of lazy) {
+        let k = -1;
+        stages.forEach((st, i) => { if (z >= st[1] - 0.01 && z < st[2] && (idle || st[3])) k = i; });
+        if (k < 0 || (got[id] !== undefined && got[id] >= k)) continue;
+        got[id] = k; const f = stages[k][0];
+        if (f.startsWith('grid:')) gridSource(map, id, f.slice(5), stages[k][1], base, k > 0 ? base + stages[k - 1][0] : null);
+        else { const src = map.getSource(id); if (src) src.setData(base + f); }
+      }
+    };
+    map.__inkLazyCheck = check;
+    check();
+    map.once('idle', () => { idle = true; setTimeout(check, 50); });
+    map.on('zoomend', check);
+  }
+
+  // ---- data cut into 5 degree cells (data/grid/index.json, code/02l_grid_split.py): the cells round the view are fetched once
+  // the zoom reaches z0, and the source holds the first-stage file (if any) plus every cell fetched so far
+  let gridIndex = null;
+  function gridSource(map, srcId, layer, z0, base, first) {
+    map.__inkGrids = map.__inkGrids || {};
+    if (map.__inkGrids[srcId]) return map.__inkGrids[srcId];
+    const st = map.__inkGrids[srcId] = { busy: 0, cells: new Map(), first: [] };
+    const idx = gridIndex = gridIndex || fetch(base + 'data/grid/index.json?v=20261103').then(r => r.json());
+    let timer = null;
+    const flush = () => { clearTimeout(timer); timer = setTimeout(() => {
+      const src = map.getSource(srcId); if (!src) return;
+      let fs = st.first; for (const v of st.cells.values()) if (v) fs = fs.concat(v);
+      src.setData({ type: 'FeatureCollection', features: fs });
+    }, 60); };
+    const job = p => { st.busy++; return p.finally(() => { st.busy--; }); };
+    if (first) job(fetch(first).then(r => r.json()).then(j => { st.first = j.features || []; flush(); }).catch(e => console.warn('grid first', e)));
+    const check = async () => {
+      if (map.getZoom() < z0 - 0.01) return;
+      const I = await idx, L = I[layer]; if (!L) return;
+      const have = st.have || (st.have = new Set(L.cells));
+      const b = map.getBounds(), mx = (b.getEast() - b.getWest()) * 0.25, my = (b.getNorth() - b.getSouth()) * 0.25;
+      const i0 = Math.floor((Math.max(-180, b.getWest() - mx) + 180) / 5), i1 = Math.floor((Math.min(179.99, b.getEast() + mx) + 180) / 5);
+      const j0 = Math.floor((Math.max(-89.9, b.getSouth() - my) + 90) / 5), j1 = Math.floor((Math.min(89.9, b.getNorth() + my) + 90) / 5);
+      if ((i1 - i0 + 1) * (j1 - j0 + 1) > 400) return;
+      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+        const k = i + '_' + j; if (!have.has(k) || st.cells.has(k)) continue;
+        st.cells.set(k, null);
+        job(fetch(base + L.dir + k + '.json').then(r => r.json()).then(j2 => { st.cells.set(k, j2.features || []); flush(); }).catch(e => console.warn('grid cell', k, e)));
+      }
+    };
+    st.check = check;
+    map.on('moveend', check); check();
+    return st;
+  }
+  const gridBusy = map => Object.values(map.__inkGrids || {}).some(g => g.busy > 0);
+
+  // layer groups for the panel; a layer that belongs to the winter look shows only while its group is on and it is winter
   function setGroup(map, group, on) {
+    const st = map.__inkGroups = map.__inkGroups || {};
+    st[group] = !!on;
+    const w = isWinter(map);
     for (const l of map.getStyle().layers) {
       const g = l.metadata && l.metadata.group;
-      if (g === group) map.setLayoutProperty(l.id, 'visibility', on ? 'visible' : 'none');
+      if (g === group) map.setLayoutProperty(l.id, 'visibility', on && (!l.metadata.winter || w) ? 'visible' : 'none');
     }
+    syncRasters(map);
   }
-  global.InkMap = { create, setGroup, INK, buildStyle, sprites: { mountainSprite, hillSprite, treeSprite, tuftSprite, settleSprite, paperTexture, duneSprite, grassSprite, rainSprite, taigaSprite, iceSprite } };
+  // the winter rasters: one combined layer far out while both the wash and the snow show, else the two apart at every zoom
+  function syncRasters(map) {
+    if (!map.getLayer('tint-w')) return;
+    const st = map.__inkGroups || {}, w = isWinter(map), tintOn = st.tint !== false && st.paper !== false;
+    const both = w && tintOn;
+    map.setLayoutProperty('tint-w', 'visibility', both ? 'visible' : 'none');
+    map.setLayerZoomRange('tint', both ? 6.5 : 0, 24);
+    map.setLayerZoomRange('snow', both ? 6.5 : 0, 24);
+  }
+  function isWinter(map) { return map.__inkWinter !== undefined ? map.__inkWinter : !(global.InkPalette && global.InkPalette.winter === false); }
+  // the Winter toggle: snow, frozen water, snowy trees, peaks and roofs on or off, without a reload
+  function setWinter(map, on) {
+    on = !!on; map.__inkWinter = on;
+    if (global.InkPalette && global.InkPalette.setWinter) global.InkPalette.setWinter(on);
+    const st = map.__inkGroups || {};
+    for (const l of map.getStyle().layers) {
+      const m = l.metadata || {};
+      if (m.wlayout) for (const [k, v] of Object.entries(m.wlayout)) map.setLayoutProperty(l.id, k, on ? v[0] : v[1]);
+      if (m.wpaint) for (const [k, v] of Object.entries(m.wpaint)) map.setPaintProperty(l.id, k, on ? v[0] : v[1]);
+      if (m.winter) map.setLayoutProperty(l.id, 'visibility', on && st[m.group] !== false ? 'visible' : 'none');
+    }
+    syncRasters(map);
+    map.fire('inkwinter', { on });
+  }
+  global.InkMap = { create, gridSource, gridBusy, setGroup, setWinter, isWinter, INK, buildStyle, sprites: { mountainSprite, hillSprite, treeSprite, bareTreeSprite, snowConiferSprite, rangeSprite, tuftSprite, settleSprite, paperTexture, duneSprite, grassSprite, rainSprite, taigaSprite, iceSprite } };
 })(window);

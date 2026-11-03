@@ -77,6 +77,13 @@ mask1 = range_mask(1000, 600, 60)
 mask2 = range_mask(650, 400, 120) & ~ndimage.binary_dilation(mask1, iterations=3)
 mask = mask1 | mask2
 sk = prune(skeletonize(mask1), 5) | prune(skeletonize(mask2), 5)
+DT = ndimage.distance_transform_edt(mask)
+# the size of each stretch of range country (its skeleton length in km), so a range's first zoom follows the whole range,
+# not the piece of centre line between two junctions
+LAB, NL = ndimage.label(ndimage.binary_dilation(mask, iterations=2))
+_ys, _xs = np.nonzero(sk)
+COMP_KM = np.zeros(NL + 1)
+np.add.at(COMP_KM, LAB[_ys, _xs], km_px[_ys])
 
 # ---- trace the skeleton into lines (break at junctions)
 ys, xs = np.nonzero(sk)
@@ -128,12 +135,19 @@ for L in lines:
     pts = chaikin(list(ls.coords))
     rel = float(np.mean([REL[min(N - 1, int(y)), min(N - 1, int(x))] for x, y in pts]))
     km = ls.length * float(np.mean([km_px[min(N - 1, int(y))] for x, y in pts]))
-    # the longest and highest ranges first: from zoom 0.5 for the great ranges to 2.6 for short ones
-    zf = round(float(np.clip(3.0 - 1.1 * math.log10(max(km, 50) / 50) - (rel - 1000) / 2500 + (0.5 if tier2 else 0), 0.5, 2.8)), 1)
+    # the longest and highest ranges first: from the whole-world view for the great ranges to zoom 2.5 for short ones
+    mid = ls.interpolate(0.5, normalized=True)
+    ckm = max(km, COMP_KM[LAB[min(N - 1, int(mid.y)), min(N - 1, int(mid.x))]])
+    # the polar coasts (Greenland, the Arctic islands, Antarctica) are thinned: rugged everywhere, they would ink the poles black
+    plat = abs(unmerc(0.5, mid.y / N)[1])
+    polar = 0.9 if plat > 64 else 0.45 if plat > 58 else 0.0
+    zf = round(float(np.clip(2.4 - 0.7 * math.log10(max(ckm, 50) / 50) - 0.35 * math.log10(max(km, 50) / 50) - (rel - 1000) / 2000 + (0.4 if tier2 else 0) + polar, 0.0, 2.5)), 1)
+    # half-width of the range country around the line (zoom 4 pixels, about 10 km): broad ranges get parallel rows
+    hw = float(np.median([DT[min(N - 1, int(y)), min(N - 1, int(x))] for x, y in pts]))
     coords = [[round(c, 3) for c in unmerc(x / N, y / N)] for x, y in pts]
     if abs(coords[0][0] - coords[-1][0]) > 180:
         continue
-    feats.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': zf, 's': round(float(np.clip(0.75 + (rel - 1000) / 3000, 0.65, 1.25)), 2), 'rl': int(rel)},
+    feats.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': zf, 's': round(float(np.clip(0.75 + (rel - 1000) / 3000, 0.65, 1.25)), 2), 'rl': int(rel), 'hw': hw},
                   'geometry': {'type': 'LineString', 'coordinates': coords}})
     n_range += 1
 
@@ -162,7 +176,7 @@ rel_b = np.asarray(Image.fromarray(REL).resize((BN, BN), Image.BILINEAR))
 rng = np.random.default_rng(7)
 noise = ndimage.gaussian_filter(rng.standard_normal((BN, BN)), 10)
 noise = (noise - noise.mean()) / noise.std()
-dune_ok = sand & (rel_b < 450) & (noise > -0.2)
+dune_ok = (sand | (cls == 1)) & (rel_b < 700) & (noise > -1.2)
 rain_ok = (cls == 3) & (rel_b < 1000)
 taiga_ok = (cls == 4) & (rel_b < 1000)
 mtn_b = np.asarray(Image.fromarray(mask.astype(np.uint8) * 255).resize((BN, BN), Image.NEAREST)) > 0
@@ -171,8 +185,8 @@ mtn_b = ndimage.binary_dilation(mtn_b, iterations=2)
 
 pts_feats = []
 counts = {}
-for kind, ok, cell, ranks, salt, keep in [('dune', dune_ok, 24, [0.5, 1.5, 2.5, 3.2], 1, 1.0), ('rain', rain_ok, 18, [0.5, 1.5, 2.5, 3.2], 2, 1.0),
-                                          ('taiga', taiga_ok, 18, [0.5, 1.5, 2.5, 3.2], 3, 0.9)]:
+for kind, ok, cell, ranks, salt, keep in [('dune', dune_ok, 12, [0.0, 1.0, 2.0], 1, 1.0), ('rain', rain_ok, 11, [0.0, 1.0, 2.0], 2, 1.0),
+                                          ('taiga', taiga_ok, 11, [0.0, 1.0, 2.0], 3, 0.95)]:
     kept = []
     # build rank by rank so a coarse point keeps its place when finer ones join it
     from scipy.spatial import cKDTree
@@ -204,9 +218,13 @@ for kind, ok, cell, ranks, salt, keep in [('dune', dune_ok, 24, [0.5, 1.5, 2.5, 
         n += 1
     counts[kind] = n
 
-# each range line becomes a row of little peaks: points every 9 screen pixels at zoom 2.6, every second one from 1.6 and every
-# fourth from 0.6 (and never before the range's own first zoom), so the rows stay put and thin out evenly as you zoom out
-SP = 9 / (512 * 2 ** 2.6)
+# each range line becomes a row of little peaks, nested so the rows stay about 10 screen pixels apart at every zoom: a point
+# every 10 px at zoom 3, every second one from zoom 2, every fourth from 1 and every eighth from 0 (never before the
+# range's own first zoom). Broad ranges (range country more than about 35 km either side of the line) get a parallel row
+# on each side, a zoom later, so the Himalaya, the Andes and the Alps read as bands of peaks rather than single files.
+SP = 10 / (512 * 2 ** 3)
+def nest_rank(i):
+    return 0.0 if i % 8 == 0 else 1.0 if i % 4 == 0 else 2.0 if i % 2 == 0 else 3.0
 range_pts = []
 for f in feats:
     P = np.array([merc(*c) for c in f['geometry']['coordinates']])
@@ -215,15 +233,66 @@ for f in feats:
     if n < 1:
         continue
     off = (L - n * SP) / 2
-    for i in range(n + 1):
-        t = off + i * SP
-        k = min(np.searchsorted(cum, t, side='right') - 1, len(seg) - 1)
-        q = P[k] + (P[k + 1] - P[k]) * ((t - cum[k]) / seg[k] if seg[k] > 0 else 0)
-        rank = 0.6 if i % 4 == 0 else 1.6 if i % 2 == 0 else 2.6
-        lon, lat = unmerc(*q)
-        range_pts.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': round(max(rank, f['properties']['z']), 1), 's': f['properties']['s'], 'v': (i * 7 + int(f['properties']['rl'])) % 3},
-                          'geometry': {'type': 'Point', 'coordinates': [round(lon, 3), round(lat, 3)]}})
-out = {'type': 'FeatureCollection', 'features': range_pts + pts_feats}
+    rows = [(0.0, 0.0)]
+    if f['properties']['hw'] >= 4.5:
+        o = min(f['properties']['hw'], 7) * 0.55 / N
+        rows += [(-o, 0.8), (o, 0.8)]
+    for dn, dz in rows:
+        for i in range(n + 1):
+            if dn and i % 2: continue                     # the side rows are sparser and staggered
+            if nest_rank(i) + dz >= 3: continue          # from zoom 3 the glyphs drawn tile by tile take over
+            t = off + i * SP + (SP * 0.5 if dn > 0 else 0)
+            if t > L: continue
+            k = min(np.searchsorted(cum, t, side='right') - 1, len(seg) - 1)
+            q = P[k] + (P[k + 1] - P[k]) * ((t - cum[k]) / seg[k] if seg[k] > 0 else 0)
+            if dn:
+                d = (P[k + 1] - P[k]) / (seg[k] or 1); q = q + np.array([-d[1], d[0]]) * dn
+                qx, qy = int(q[0] * N) % N, min(N - 1, max(0, int(q[1] * N)))
+                if not mask[qy, qx]: continue
+            rank = nest_rank(i) + dz
+            lon, lat = unmerc(*q)
+            if dn and not land.contains(Point(lon, lat)): continue
+            sc = f['properties']['s'] * (0.85 if dn else 1.0)
+            range_pts.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': round(max(rank, f['properties']['z'] + dz), 1), 's': round(sc, 2), 'v': (i * 7 + int(f['properties']['rl'])) % 3},
+                              'geometry': {'type': 'Point', 'coordinates': [round(lon, 3), round(lat, 3)]}})
+
+# upland hills: rolling high ground that is not range country (relief at least 350 m within about 40 km, above 250 m),
+# a scatter of small hill marks on a nested grid, so the Highlands, the Ethiopian and Brazilian highlands and the
+# Appalachian plateaus have a texture far out
+hill_ok_full = (REL >= 350) & (high >= 250) & ~ndimage.binary_dilation(mask, iterations=2)
+hill_ok_full[:int(N * 0.03)] = False; hill_ok_full[int(N * 0.965):] = False
+hill_ok = np.asarray(Image.fromarray(hill_ok_full.astype(np.uint8) * 255).resize((BN, BN), Image.NEAREST)) > 0
+from scipy.spatial import cKDTree
+hill_pts = []
+kept = []
+for r in [0.8, 1.8, 2.8]:
+    cw = 15 / (512 * 2 ** r)
+    n = int(math.ceil(1 / cw))
+    ii, jj = np.meshgrid(np.arange(n), np.arange(n))
+    h = np.modf(np.abs(np.sin(ii * 12.9898 + jj * 78.233 + 41 + r) * 43758.5453))[0]
+    h2 = np.modf(np.abs(np.sin(ii * 39.346 + jj * 11.135 + 17 + r) * 24634.6345))[0]
+    X = (ii + 0.15 + 0.7 * h2) * cw; Y = (jj + 0.15 + 0.7 * np.modf(h * 7.13)[0]) * cw
+    sel = (X < 1) & (Y > 0.03) & (Y < 0.97) & (h < 0.8)
+    X, Y = X[sel], Y[sel]
+    good = hill_ok[(Y * BN).astype(int), (X * BN).astype(int)]
+    X, Y = X[good], Y[good]
+    if kept:
+        t = cKDTree(np.array([(a, b) for a, b, _ in kept])); d, _ = t.query(np.c_[X, Y]); X, Y = X[d >= cw * 0.6], Y[d >= cw * 0.6]
+    kept += [(float(a), float(b), r) for a, b in zip(X, Y)]
+for x, y, r in kept:
+    lon, lat = unmerc(x, y)
+    if not land.contains(Point(lon, lat)): continue
+    hill_pts.append({'type': 'Feature', 'properties': {'kind': 'hill', 'z': r, 'v': int(((x * 9973 + y * 7919) * 1000) % 8)}, 'geometry': {'type': 'Point', 'coordinates': [round(lon, 3), round(lat, 3)]}})
+counts['hill'] = len(hill_pts)
+
+# deep-winter flag (sn = 1 inside the snow extent of code/02i_tints.py), so the style picks snowy marks by a property
+# rather than a costly point-in-polygon test on every mark
+_snowp = os.path.join(DATA, 'biomes_snow.geojson')
+if os.path.exists(_snowp):
+    _sz = prep(shape(json.load(open(_snowp))['features'][0]['geometry']))
+    for f in range_pts + hill_pts + pts_feats:
+        if _sz.contains(Point(*f['geometry']['coordinates'])): f['properties']['sn'] = 1
+out = {'type': 'FeatureCollection', 'features': range_pts + hill_pts + pts_feats}
 dump(out, os.path.join(DATA, 'world_ink.geojson'))
 stats = {'ranges': n_range, 'range_peaks': len(range_pts), 'range_relief_m': 1000, 'range_min_elev_m': 600, 'lower_range_relief_m': 650, 'lower_range_min_elev_m': 400, 'range_window_km': 40, **{k + 's': v for k, v in counts.items()},
          'sand_ecoregions': sorted(sand_names)}

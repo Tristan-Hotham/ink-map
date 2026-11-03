@@ -1,0 +1,743 @@
+id,name,place,lat,lon,country,region,archetype,hand_placed,water,source
+cartographer,The lost Cartographer,"High fells near Scafell Pike, Lake District",54.4521,-3.2072,United Kingdom,Britain and Ireland,cartographer,1,,hand-placed
+pedlar-hambleton,Pedlar and donkey,"The old drove road over the Hambleton Hills, North Yorkshire",54.3367,-1.2345,United Kingdom,Britain and Ireland,pedlar,1,,hand-placed
+monk-goose,The monk and the runaway goose,"Rievaulx Abbey, North Yorkshire",54.25804,-1.11424,United Kingdom,Britain and Ireland,monk,1,,"Wikidata via the map's heritage layer (Q1247496), offset 171 m"
+shepherd-dartmoor,Shepherd seeking one lost sheep,"Haytor Rocks, Dartmoor",50.5811,-3.7525,United Kingdom,Britain and Ireland,shepherd,1,,hand-placed
+lostsheep-dartmoor,The lost sheep,"Hound Tor, Dartmoor",50.59734,-3.77591,United Kingdom,Britain and Ireland,lostsheep,1,,"Wikidata via the map's heritage layer (Q115749743), offset 341 m"
+witch-holywell,Hedge-witch at the holy well,"St Winefride's Well, Holywell, Flintshire",53.27629,-3.22255,United Kingdom,Britain and Ireland,hedgewitch,1,,"Wikidata via the map's heritage layer (Q7595658), offset 114 m"
+witch-pendle,A witch on Pendle Hill,"Pendle Hill, Lancashire",53.8687,-2.2985,United Kingdom,Britain and Ireland,hedgewitch,1,,hand-placed
+captain-thames,Sea captain rowing up the river,The Thames at Greenwich,51.4871,-0.0078,United Kingdom,Britain and Ireland,rower_captain,1,fixed,hand-placed
+troll-kirkby,The toll-troll,"Devil's Bridge, Kirkby Lonsdale, Cumbria",54.201,-2.6022,United Kingdom,Britain and Ireland,troll,1,,hand-placed
+highwaymen-hounslow,Highwaymen on the heath,"Hounslow Heath, west London",51.45636,-0.39073,United Kingdom,Britain and Ireland,highwaymen,1,,"Wikidata via the map's heritage layer (Q5913296), offset 126 m"
+serpent-ness,The sulking serpent,"Loch Ness, off Urquhart Castle",57.3178,-4.43,United Kingdom,Britain and Ireland,serpent,1,lake,hand-placed
+smugglers-prussia,Smugglers in the cove,"Prussia Cove, Cornwall",50.1012,-5.4195,United Kingdom,Britain and Ireland,smugglers,1,,hand-placed
+wolves-findhorn,A wolf pack eyeing a village,"The Findhorn valley, Moray",57.428,-3.884,United Kingdom,Britain and Ireland,wolves,1,,hand-placed
+knight-wookey,The knight and the cross little dragon,"Wookey Hole Caves, Somerset",51.22837,-2.67083,United Kingdom,Britain and Ireland,knightcave,1,,"Wikidata via the map's heritage layer (Q4274972), offset 50 m"
+slough-dragon,Here be Roundabouts,"A roundabout in Slough, Berkshire",51.5086,-0.599,United Kingdom,Britain and Ireland,slough,1,,hand-placed
+wayland,Wayland the Smith,"Wayland's Smithy, Oxfordshire",51.56644,-1.59523,United Kingdom,Britain and Ireland,wayland,1,,"Wikidata via the map's heritage layer (Q2553002), offset 72 m"
+herne,Herne the Hunter,"Windsor Great Park, Berkshire",51.4462,-0.60852,United Kingdom,Britain and Ireland,herne,1,,"Wikidata via the map's heritage layer (Q3569306), offset 361 m"
+wight-kennet,The barrow-wight,"West Kennet Long Barrow, Wiltshire",51.40887,-1.85042,United Kingdom,Britain and Ireland,wight,1,,"Wikidata via the map's heritage layer (Q541312), offset 50 m"
+wodewose-wistman,The wodewose,"Wistman's Wood, Dartmoor",50.57816,-3.96112,United Kingdom,Britain and Ireland,wodewose,1,,"Wikidata via the map's heritage layer (Q3569474), offset 45 m"
+orcs-rannoch,Orcs camped on the moor,"Rannoch Moor, Highlands",56.626,-4.738,United Kingdom,Britain and Ireland,orcs,1,,hand-placed
+giant-cerne,The giant out for a walk,"Above Cerne Abbas, Dorset",50.81478,-2.4693,United Kingdom,Britain and Ireland,giant,1,,"Wikidata via the map's heritage layer (Q1055469), offset 398 m"
+unicorn-glencoe,The unicorn of the glen,"Glen Coe, Highlands",56.671,-5.048,United Kingdom,Britain and Ireland,unicorn,1,,hand-placed
+mermaid-zennor,The mermaid of Zennor,"Pendour Cove, Zennor, Cornwall",50.1991,-5.5705,United Kingdom,Britain and Ireland,mermaid,1,,hand-placed
+wisp-wicken,Will-o'-the-wisp,"Wicken Fen, Cambridgeshire",52.3117,0.28836,United Kingdom,Britain and Ireland,wisp,1,,"Wikidata via the map's heritage layer (Q7998320), offset 224 m"
+fairies-ditchling,Fairy ring on the downs,"Ditchling Beacon, South Downs",50.9012,-0.108,United Kingdom,Britain and Ireland,fairyring,1,,hand-placed
+cockatrice-corfe,The cockatrice in the ruins,"Corfe Castle, Dorset",50.63945,-2.05805,United Kingdom,Britain and Ireland,cockatrice,1,,"Wikidata via the map's heritage layer (Q1236511), offset 78 m"
+wyvern-emrys,Wyvern over Wales,"Dinas Emrys, Snowdonia",53.02236,-4.07781,United Kingdom,Britain and Ireland,wyvern,1,,"Wikidata via the map's heritage layer (Q354820), offset 89 m"
+giant-causeway,The giant at the causeway,"Giant's Causeway, County Antrim",55.2412,-6.511,United Kingdom,Britain and Ireland,giant,1,,hand-placed
+shuck-overstrand,Black Shuck,"The cliffs at Overstrand, Norfolk",52.9175,1.3405,United Kingdom,Britain and Ireland,blackdog,1,,hand-placed
+knockers-botallack,Knockers in the tin mine,"Botallack, Cornwall",50.1396,-5.6855,United Kingdom,Britain and Ireland,knockers,1,,hand-placed
+selkie-skaill,The selkie,"Bay of Skaill, Orkney",59.0495,-3.344,United Kingdom,Britain and Ireland,selkie,1,,hand-placed
+kelpie-lomond,The kelpie,Loch Lomond,56.082,-4.588,United Kingdom,Britain and Ireland,kelpie,1,lake,hand-placed
+banshee-leap,The banshee,"Leap Castle, County Offaly",53.02864,-7.80969,Ireland,Britain and Ireland,banshee,1,,"Wikidata via the map's heritage layer (Q833207), offset 100 m"
+leprechaun-gullion,The little shoemaker,"Slieve Gullion, County Armagh",54.122,-6.433,United Kingdom,Britain and Ireland,leprechaun,1,,hand-placed
+brownie-traquair,The brownie,"Traquair House, Scottish Borders",55.60893,-3.06305,United Kingdom,Britain and Ireland,brownie,1,,"Wikidata via the map's heritage layer (Q1307609), offset 92 m"
+greenman-rosslyn,The Green Man,"Rosslyn Chapel, Midlothian",55.85468,-3.15846,United Kingdom,Britain and Ireland,greenman,1,,"Wikidata via the map's heritage layer (Q49642), offset 120 m"
+ghost-bosworth,Ghost knight at Bosworth,"Bosworth Field, Leicestershire",52.59146,-1.40941,United Kingdom,Britain and Ireland,ghostknight,1,,"Wikidata via the map's heritage layer (Q222013), offset 72 m"
+halflings-picnic,Halflings at a picnic,"Near Broadway Tower, Cotswolds",52.02312,-1.83814,United Kingdom,Britain and Ireland,halflings_picnic,1,,"Wikidata via the map's heritage layer (Q208234), offset 200 m"
+halfling-cheese,The runaway cheese,"Cooper's Hill, Gloucestershire",51.8337,-2.1629,United Kingdom,Britain and Ireland,halfling_cheese,1,,hand-placed
+halfling-fisher,The halfling and the heron,"Ashness Bridge, above Derwentwater",54.5726,-3.1223,United Kingdom,Britain and Ireland,halfling_fisher,1,,hand-placed
+halfling-sleep,A nap in the orchard,"Cider orchards near Much Marcle, Herefordshire",51.9965,-2.494,United Kingdom,Britain and Ireland,halfling_sleep,1,,hand-placed
+dragon-suttonhoo,The dragon of the hoard,"Sutton Hoo, Suffolk",52.09024,1.34022,United Kingdom,Britain and Ireland,dragonhoard,1,,"Wikidata via the map's heritage layer (Q503256), offset 108 m"
+piper-maidens,The Merry Maidens' piper,"The Merry Maidens, Cornwall",50.06546,-5.58684,United Kingdom,Britain and Ireland,piper,1,,"Wikidata via the map's heritage layer (Q1922063), offset 146 m"
+surveyor-longman,Surveying the Long Man,"The Long Man of Wilmington, East Sussex",50.81,0.188,United Kingdom,Britain and Ireland,cartographer_world,1,,hand-placed
+stgeorge-uffington,Saint George on Dragon Hill,"Dragon Hill, Uffington, Oxfordshire",51.58,-1.5677,United Kingdom,Britain and Ireland,stgeorge,1,,hand-placed
+outlaw-sherwood,An outlaw in the greenwood,"The Major Oak, Sherwood Forest",53.2047,-1.072,United Kingdom,Britain and Ireland,archer,1,,hand-placed
+vikings-lindisfarne,Longship off Holy Island,"Off Lindisfarne, Northumberland",55.68,-1.755,United Kingdom,Britain and Ireland,viking,1,sea,hand-placed
+monks-lindisfarne,Monks of Lindisfarne,"Lindisfarne Priory, Northumberland",55.66956,-1.80176,United Kingdom,Britain and Ireland,monk,1,,"Wikidata via the map's heritage layer (Q354305), offset 72 m"
+viking-jorvik,A Viking in Jorvik,"Coppergate, York",53.9573,-1.0805,United Kingdom,Britain and Ireland,vikingfoot,1,,hand-placed
+nun-whitby,The abbess's nun,"Whitby Abbey, North Yorkshire",54.48764,-0.60626,United Kingdom,Britain and Ireland,nun,1,,"Wikidata via the map's heritage layer (Q1469493), offset 89 m"
+monk-durham,Monk at Durham,Durham Cathedral,54.7735,-1.577,United Kingdom,Britain and Ireland,monk,1,,hand-placed
+pilgrims-canterbury,Pilgrims riding to Canterbury,Canterbury,51.2795,1.076,United Kingdom,Britain and Ireland,pilgrimhorse,1,,hand-placed
+piper-edinburgh,Piper on the Mile,"The Royal Mile, Edinburgh",55.9497,-3.191,United Kingdom,Britain and Ireland,piper,1,,hand-placed
+fairies-skye,Fairies in the glen,"The Fairy Glen, Uig, Isle of Skye",57.58257,-6.3243,United Kingdom,Britain and Ireland,fairyring,1,,"Wikidata via the map's heritage layer (Q123518008), offset 42 m"
+knight-bamburgh,Knight at Bamburgh,"Bamburgh Castle, Northumberland",55.6085,-1.712,United Kingdom,Britain and Ireland,knight,1,,hand-placed
+watch-clitheroe,Watchman at Clitheroe,"Clitheroe Castle, Lancashire",53.87054,-2.39249,United Kingdom,Britain and Ireland,watchman,1,,"Wikidata via the map's heritage layer (Q5134437), offset 57 m"
+falconer-malham,Falconer at the cove,"Malham Cove, Yorkshire Dales",54.0712,-2.158,United Kingdom,Britain and Ireland,falconer,1,,hand-placed
+monk-glastonbury,Monk on the Tor,"Glastonbury Tor, Somerset",51.1443,-2.6985,United Kingdom,Britain and Ireland,monk,1,,hand-placed
+swineherd-bath,Bladud's swineherd,Bath,51.38086,-2.36063,United Kingdom,Britain and Ireland,swineherd,1,,"Wikidata via the map's heritage layer (Q334399), offset 134 m"
+worm-lambton,The Lambton Worm,"Penshaw Hill, County Durham",54.88256,-1.48231,United Kingdom,Britain and Ireland,tatzelwurm,1,,"Wikidata via the map's heritage layer (Q7164734), offset 108 m"
+gelert,Gelert the faithful hound,"Beddgelert, Gwynedd",53.0098,-4.1034,United Kingdom,Britain and Ireland,hound_alone,1,,hand-placed
+lady-fanfach,The Lady of the Lake,"Llyn y Fan Fach, Carmarthenshire",51.887,-3.7415,United Kingdom,Britain and Ireland,lakelady,1,,hand-placed
+fairies-newgrange,The fair folk at Brú na Bóinne,"Newgrange, County Meath",53.694,-6.4745,Ireland,Britain and Ireland,fairyring,1,,hand-placed
+monk-cashel,Monk on the Rock,"Rock of Cashel, County Tipperary",52.52055,-7.88947,Ireland,Britain and Ireland,monk,1,,"Wikidata via the map's heritage layer (Q134688319), offset 86 m"
+monk-skellig,Monk of Skellig,"Skellig Michael, County Kerry",51.77137,-10.54089,Ireland,Britain and Ireland,monk,1,,"Wikidata via the map's heritage layer (Q207193), offset 36 m"
+hermit-glendalough,Hermit of the glen of two lakes,"Glendalough, County Wicklow",53.00895,-6.34094,Ireland,Britain and Ireland,hermit,1,,"Wikidata via the map's heritage layer (Q691153), offset 912 m"
+fairies-man,At the Fairy Bridge,"The Fairy Bridge, Isle of Man",54.123,-4.5945,Isle of Man,Britain and Ireland,fairyring,1,,hand-placed
+watch-orgueil,Watchman at Mont Orgueil,"Mont Orgueil, Jersey",49.19904,-2.01885,Jersey,Britain and Ireland,watchman,1,,"Wikidata via the map's heritage layer (Q1313383), offset 57 m"
+shepherd-helvellyn,Shepherd under Helvellyn,"Glenridding, below Helvellyn",54.5449,-2.9652,United Kingdom,Britain and Ireland,shepherd,1,,hand-placed
+giant-stonehenge,A giant with a bluestone,"Near Stonehenge, Wiltshire",51.181,-1.83,United Kingdom,Britain and Ireland,giant,1,,hand-placed
+fairies-avebury,Dancers in the great circle,"Avebury, Wiltshire",51.4285,-1.852,United Kingdom,Britain and Ireland,fairyring,1,,hand-placed
+dwarf-ingleborough,A miner of the Dales,"Ingleborough Cave, Yorkshire Dales",54.13483,-2.37709,United Kingdom,Britain and Ireland,miner,1,,"Wikidata via the map's heritage layer (Q1663064), offset 50 m"
+pilgrims-walsingham,Pilgrims to Walsingham,"Walsingham, Norfolk",52.8935,0.8735,United Kingdom,Britain and Ireland,pilgrims,1,,hand-placed
+knight-tintagel,Watcher at Tintagel,"Tintagel, Cornwall",50.66884,-4.76137,United Kingdom,Britain and Ireland,watchman,1,,"Wikidata via the map's heritage layer (Q934922), offset 72 m"
+watch-housesteads,On the Wall,"Hadrian's Wall at Housesteads, Northumberland",55.01363,-2.33006,United Kingdom,Britain and Ireland,watchman,1,,"Wikidata via the map's heritage layer (Q1812832), offset 92 m"
+hermit-cheddar,Hermit in the gorge,"Cheddar Gorge, Somerset",51.2828,-2.759,United Kingdom,Britain and Ireland,hermit,1,,hand-placed
+banshee-moher,Keening on the cliffs,"Cliffs of Moher, County Clare",52.972,-9.426,Ireland,Britain and Ireland,banshee,1,,hand-placed
+orcs-kinder,A warband on Kinder,"Kinder Scout, Peak District",53.385,-1.87,United Kingdom,Britain and Ireland,orcs,1,,hand-placed
+climber-stanage,Archer at Stanage,"Stanage Edge, Peak District",53.364,-1.638,United Kingdom,Britain and Ireland,archer,1,,hand-placed
+cat-bodmin,The beast of the moor,"Bodmin Moor, Cornwall",50.524,-4.46,United Kingdom,Britain and Ireland,blackdog,1,,hand-placed
+scholar-oxford,Scholar at Oxford,"Radcliffe Square, Oxford",51.7533,-1.2537,United Kingdom,Britain and Ireland,scholar,1,,hand-placed
+scholar-cambridge,Scholar at Cambridge,"King's Parade, Cambridge",52.204,0.118,United Kingdom,Britain and Ireland,scholar,1,,hand-placed
+miller-cley,The miller of Cley,"Cley windmill, Norfolk",52.955,1.0435,United Kingdom,Britain and Ireland,miller,1,,hand-placed
+vintner-bolney,A Sussex vintner,"The vineyards of the South Downs, Sussex",50.987,-0.185,United Kingdom,Britain and Ireland,vintner,1,,hand-placed
+pedlar-ludlow,Pedlar at Ludlow,"Ludlow, Shropshire",52.3665,-2.7225,United Kingdom,Britain and Ireland,pedlar,1,,hand-placed
+knight-conwy,Knight at Conwy,"Conwy, Gwynedd",53.2795,-3.827,United Kingdom,Britain and Ireland,knight,1,,hand-placed
+knight-caernarfon,Guard at Caernarfon,"Caernarfon Castle, Gwynedd",53.139,-4.278,United Kingdom,Britain and Ireland,watchman,1,,hand-placed
+skaters-ouse,Skaters on the frozen fen,"Bury Fen, Cambridgeshire",52.364,0.051,United Kingdom,Britain and Ireland,skaters,1,,hand-placed
+ploughman-laxton,Ploughing the open field,"Laxton, Nottinghamshire",53.196,-0.92,United Kingdom,Britain and Ireland,ploughman,1,,hand-placed
+goosegirl-nottingham,Goose girl at the fair,"Goose Fair, Nottingham",52.964,-1.165,United Kingdom,Britain and Ireland,goosegirl,1,,hand-placed
+cheese-wensleydale,Dairymaid of the dale,"Hawes, Wensleydale",54.3045,-2.196,United Kingdom,Britain and Ireland,milkmaid,1,,hand-placed
+pilgrims-cebreiro,Pilgrims on the Camino,"O Cebreiro, Galicia",42.7078,-7.0432,Spain,Southern Europe,pilgrims,1,,hand-placed
+pilgrims-santiago,Pilgrims arrive,Santiago de Compostela,42.8806,-8.5458,Spain,Southern Europe,pilgrims,1,,hand-placed
+pilgrims-roncesvalles,Over the pass,"Roncesvalles, Navarre",43.0093,-1.3195,Spain,Southern Europe,pilgrimhorse,1,,hand-placed
+pilgrims-lepuy,Setting out from Le Puy,"Le Puy-en-Velay, Auvergne",45.044,3.885,France,Western Europe,pilgrims,1,,hand-placed
+pilgrims-vezelay,From Vézelay,"Vézelay, Burgundy",47.465,3.744,France,Western Europe,pilgrims,1,,hand-placed
+pilgrims-msm,Crossing the bay,The sands of Mont-Saint-Michel,48.628,-1.511,France,Western Europe,pilgrims,1,,hand-placed
+knight-carcassonne,Knight at Carcassonne,"Carcassonne, Occitanie",43.207,2.364,France,Western Europe,knight,1,,hand-placed
+scholar-paris,Scholar on the Île de la Cité,Notre-Dame de Paris,48.8525,2.3485,France,Western Europe,scholar,1,,hand-placed
+wisp-broceliande,Lights in Brocéliande,"Forest of Paimpont (Brocéliande), Brittany",48.003,-2.207,France,Western Europe,wisp,1,,hand-placed
+lorelei,The singer on the rock,"The Lorelei, Rhine",50.1405,7.73,Germany,Western Europe,mermaid,1,,hand-placed
+witch-brocken,Witch on the Brocken,"The Brocken, Harz",51.8,10.617,Germany,Western Europe,hedgewitch,1,,hand-placed
+dwarves-goslar,Dwarf smiths of the Harz,"Rammelsberg, Goslar, Harz",51.892,10.42,Germany,Western Europe,smith,1,,hand-placed
+piper-hamelin,The piper and the rats,"Hamelin, Lower Saxony",52.104,9.359,Germany,Western Europe,pipedpiper,1,,hand-placed
+musicians-bremen,The town musicians,Bremen,53.076,8.807,Germany,Western Europe,musicians,1,,hand-placed
+woodcutter-blackforest,Woodcutter of the Black Forest,The Black Forest near Triberg,48.129,8.23,Germany,Western Europe,woodcutter,1,,hand-placed
+knight-neuschwanstein,The swan knight,"Below Neuschwanstein, Bavaria",47.555,10.74,Germany,Western Europe,knight,1,,hand-placed
+skaters-kinderdijk,Skaters at the windmills,"Kinderdijk, South Holland",51.885,4.638,Netherlands,Western Europe,skaters,1,,hand-placed
+miller-zaanse,Miller of the Zaan,"Zaanse Schans, North Holland",52.474,4.817,Netherlands,Western Europe,miller,1,,hand-placed
+merchant-bruges,Merchant of Bruges,Bruges,51.2085,3.2245,Belgium,Western Europe,merchant,1,,hand-placed
+alphorn-rigi,Alphorn on the Rigi,"The Rigi, Lucerne",47.0565,8.485,Switzerland,Western Europe,alphorn,1,,hand-placed
+tatzelwurm-tyrol,The tatzelwurm,"High pastures near Kufstein, Tyrol",47.565,12.265,Austria,Western Europe,tatzelwurm,1,,hand-placed
+griffin-matterhorn,Griffin on the peak,"Below the Matterhorn, Zermatt",45.989,7.672,Switzerland,Western Europe,griffin,1,,hand-placed
+miner-hallstatt,Salt miner of Hallstatt,"Hallstatt, Upper Austria",47.559,13.638,Austria,Western Europe,miner,1,,hand-placed
+gondolier-venice,Gondolier,"The Grand Canal, Venice",45.438,12.3355,Italy,Southern Europe,gondolier,1,canal,hand-placed
+friar-gubbio,The friar and the wolf,"Gubbio, Umbria",43.352,12.578,Italy,Southern Europe,friar_wolf,1,,hand-placed
+pilgrim-rome,Pilgrim in Rome,"St Peter's Square, Rome",41.9023,12.457,Italy,Southern Europe,pilgrims,1,,hand-placed
+guard-vatican,A guard of the smallest state,Vatican City,41.903,12.454,Vatican,Southern Europe,watchman,1,,hand-placed
+wolves-abruzzo,Wolves in the Apennines,"Pescasseroli, Abruzzo",41.81,13.795,Italy,Southern Europe,wolves,1,,hand-placed
+scylla-messina,Monster of the strait,Strait of Messina,38.235,15.638,Italy,Southern Europe,kraken,1,sea,hand-placed
+quixote-consuegra,Tilting at windmills,"The windmills of Consuegra, La Mancha",39.45,-3.607,Spain,Southern Europe,quixote,1,,hand-placed
+smith-toledo,Swordsmith of Toledo,Toledo,39.857,-4.023,Spain,Southern Europe,smith,1,,hand-placed
+minstrel-alhambra,Minstrel at the Alhambra,"The Alhambra, Granada",37.1765,-3.588,Spain,Southern Europe,minstrel,1,,hand-placed
+navigator-belem,Navigator at Belém,"Belém, Lisbon",38.69,-9.215,Portugal,Southern Europe,cogship,1,river,hand-placed
+monks-meteora,Monks of the Meteora,"Meteora, Thessaly",39.714,21.629,Greece,Southern Europe,monk,1,,hand-placed
+shepherd-olympus,Shepherd on Olympus,"Mount Olympus, Greece",40.089,22.37,Greece,Southern Europe,shepherd,1,,hand-placed
+kraken-lofoten,Kraken of the Maelstrom,"The Moskstraumen, Lofoten",67.815,12.78,Norway,Northern Europe,kraken,1,sea,hand-placed
+longship-sogne,Longship in the fjord,"The Sognefjord, Norway",61.12454,6.56997,Norway,Northern Europe,viking,1,sea,hand-placed
+trolls-trollstigen,Trolls at the ladder,"Trollstigen, Romsdal",62.456,7.67,Norway,Northern Europe,trollbare,1,,hand-placed
+dragon-uppsala,The dragon in the king's mound,"Gamla Uppsala, Sweden",59.898,17.632,Sweden,Northern Europe,dragonhoard,1,,hand-placed
+herder-jokkmokk,Reindeer herder of Sápmi,"Jokkmokk, Swedish Lapland",66.607,19.823,Sweden,Northern Europe,reindeerherder,1,,hand-placed
+prince-kronborg,A brooding prince,"Kronborg, Helsingør",56.039,12.621,Denmark,Northern Europe,scholar,1,,hand-placed
+stonetrolls-reynis,Trolls turned to stone,"Reynisdrangar, Iceland",63.404,-19.0445,Iceland,Northern Europe,stonetrolls,1,sea,hand-placed
+viking-thingvellir,At the Law Rock,"Þingvellir, Iceland",64.256,-21.125,Iceland,Northern Europe,vikingfoot,1,,hand-placed
+herder-rovaniemi,Herder by the Arctic Circle,"Rovaniemi, Lapland",66.51,25.73,Finland,Northern Europe,reindeerherder,1,,hand-placed
+dragon-wawel,The Wawel dragon,"Wawel Hill, Kraków",50.053,19.9335,Poland,Central and Eastern Europe,wawel,1,,hand-placed
+knight-malbork,Knight of the castle on the Nogat,"Malbork Castle, Poland",54.04,19.027,Poland,Central and Eastern Europe,knight,1,,hand-placed
+miner-kutna,Silver miner of Kuttenberg,"Kutná Hora, Bohemia",49.948,15.268,Czechia,Central and Eastern Europe,miner,1,,hand-placed
+minstrel-charles,Minstrel on the bridge,"Charles Bridge, Prague",50.0865,14.411,Czechia,Central and Eastern Europe,minstrel,1,,hand-placed
+jester-krumlov,The jester of Krumlov,"Český Krumlov, Bohemia",48.812,14.315,Czechia,Central and Eastern Europe,jester,1,,hand-placed
+archer-hortobagy,Horse archer of the puszta,"The Hortobágy, Hungary",47.583,21.15,Hungary,Central and Eastern Europe,horsearcher_hu,1,,hand-placed
+shepherd-carpathians,Shepherd in the Carpathians,"Bucegi Mountains, Romania",45.405,25.46,Romania,Central and Eastern Europe,shepherd,1,,hand-placed
+monk-rila,Monk of Rila,"Rila Monastery, Bulgaria",42.134,23.341,Bulgaria,Central and Eastern Europe,monk,1,,hand-placed
+merchant-dubrovnik,Merchant of Ragusa,Dubrovnik,42.641,18.108,Croatia,Central and Eastern Europe,merchant,1,,hand-placed
+pedlar-mostar,At the old bridge,"Stari Most, Mostar",43.3375,17.815,Bosnia and Herzegovina,Central and Eastern Europe,pedlar,1,,hand-placed
+babayaga,Baba Yaga's hut,"Forest near Sergiyev Posad, Russia",56.35,38.05,Russia,Central and Eastern Europe,babahut,1,,hand-placed
+firebird-suzdal,The firebird,"Suzdal, Russia",56.419,40.449,Russia,Central and Eastern Europe,firebird,1,,hand-placed
+sledge-kizhi,Sledge to Kizhi,"Kizhi Island, Lake Onega",62.067,35.224,Russia,Central and Eastern Europe,sledge,1,,hand-placed
+cossack-khortytsia,Cossack of the island,"Khortytsia, Zaporizhzhia",47.83,35.09,Ukraine,Central and Eastern Europe,cossack,1,,hand-placed
+monk-lavra,Monk of the caves,Kyiv Pechersk Lavra,50.4345,30.5575,Ukraine,Central and Eastern Europe,monk,1,,hand-placed
+knight-valletta,Knight of Malta,"Valletta, Malta",35.8985,14.5135,Malta,Southern Europe,knight,1,,hand-placed
+caravan-sultanhani,Caravan at Sultanhanı,"Sultanhanı caravanserai, Anatolia",38.2475,33.5475,Turkey,Middle East and North Africa,caravan,1,,hand-placed
+watch-trakai,At the island castle,"Trakai Island Castle, Lithuania",54.652,24.933,Lithuania,Northern Europe,watchman,1,,hand-placed
+merchant-tallinn,Hanseatic merchant,"Old Town, Tallinn",59.437,24.745,Estonia,Northern Europe,merchant,1,,hand-placed
+samurai-himeji,Samurai on the castle road,"Himeji Castle, Hyōgo",34.836,134.692,Japan,East Asia,samurai,1,,hand-placed
+ninja-iga,Ninja on the roof,"Iga Ueno Castle, Mie",34.7715,136.125,Japan,East Asia,ninja,1,,hand-placed
+pilgrim-kumano,Pilgrim on the Kumano Kodo,"Kumano Hongū Taisha, Wakayama",33.841,135.772,Japan,East Asia,jp_pilgrim,1,,hand-placed
+farmer-kyoto,Rice farmer near Kyoto,"Ōhara, Kyoto",35.119,135.834,Japan,East Asia,jp_farmer,1,,hand-placed
+scholar-suzhou,Scholar on the bridge,The canals of Suzhou,31.317,120.629,China,East Asia,cn_scholar,1,,hand-placed
+watch-mutianyu,Watch on the Great Wall,The Great Wall at Mutianyu,40.433,116.565,China,East Asia,watchman_cn,1,,hand-placed
+farmer-longji,Rice terraces of Longji,"Longji rice terraces, Guangxi",25.755,110.115,China,East Asia,rice,1,,hand-placed
+merchant-dunhuang,Merchant on the Silk Road,"Dunhuang, Gansu",40.042,94.804,China,East Asia,ca_merchant,1,,hand-placed
+fisher-lijiang,Boatman on the Li,"The Li River at Xingping, Guangxi",24.923,110.513,China,East Asia,sampan,1,river,hand-placed
+archer-karakorum,Mongol horse archer,"Kharkhorin (Karakorum), Mongolia",47.2,102.846,Mongolia,Central Asia and the Caucasus,mongol,1,,hand-placed
+scholar-gyeongbok,Scholar of Seoul,"Gyeongbokgung, Seoul",37.578,126.977,South Korea,East Asia,kr_scholar,1,,hand-placed
+kayak-ilulissat,Hunter in a kayak,"Disko Bay, off Ilulissat, Greenland",69.225,-51.15,Greenland,North America,kayak,1,sea,hand-placed
+waka-waitangi,Waka crew,"Bay of Islands, Aotearoa New Zealand",-35.26,174.105,New Zealand,Oceania,waka,1,sea,hand-placed
+runner-tenochtitlan,Runner on the causeway,Mexico City (Tenochtitlan),19.43,-99.133,Mexico,"Mexico, Central America and the Caribbean",aztec,1,,hand-placed
+canoe-xochimilco,On the chinampas,"Xochimilco, Mexico City",19.257,-99.104,Mexico,"Mexico, Central America and the Caribbean",dugout_mx,1,canal,hand-placed
+chasqui-machupicchu,Chasqui on the Inca road,The Inca Trail near Machu Picchu,-13.165,-72.54,Peru,South America,chasqui,1,,hand-placed
+llama-cusco,Llama herder at Cusco,"Sacsayhuamán, Cusco",-13.509,-71.982,Peru,South America,llamaherder,1,,hand-placed
+reedboat-titicaca,Reed boat on Titicaca,"Lake Titicaca, near Isla del Sol",-16.03,-69.16,Bolivia,South America,reedboat,1,lake,hand-placed
+caravan-isfahan,Persian caravan,"Maranjab caravanserai, Iran",34.299,51.824,Iran,Middle East and North Africa,caravan,1,,hand-placed
+felucca-luxor,Felucca on the Nile,The Nile at Luxor,25.70254,32.6338,Egypt,Middle East and North Africa,felucca,1,river,hand-placed
+elephant-amber,Elephant procession,"Amber Fort, Jaipur",26.984,75.853,India,South Asia,elephant,1,,hand-placed
+tuareg-ahaggar,Tuareg caravan,"The Ahaggar, near Tamanrasset",22.79,5.53,Algeria,Middle East and North Africa,tuareg,1,,hand-placed
+zulu-kzn,Warriors in the hills,"The Valley of a Thousand Hills, KwaZulu-Natal",-29.74,30.69,South Africa,Sub-Saharan Africa,zulu,1,,hand-placed
+nguni-kzn,Herder with Nguni cattle,"Near Eshowe, KwaZulu-Natal",-28.89,31.47,South Africa,Sub-Saharan Africa,nguni,1,,hand-placed
+basotho-lesotho,Basotho horseman,"Near Semonkong, Lesotho",-29.845,28.05,Lesotho,Sub-Saharan Africa,basotho,1,,hand-placed
+maasai-mara,Herder in the Mara,"Maasai Mara, Kenya",-1.49,35.14,Kenya,Sub-Saharan Africa,maasai,1,,hand-placed
+dhow-zanzibar,Dhow off Stone Town,"Off Stone Town, Zanzibar",-6.1593,39.17738,United Republic of Tanzania,Sub-Saharan Africa,dhow,1,sea,hand-placed
+pilgrim-lalibela,Pilgrim at Lalibela,"Lalibela, Ethiopia",12.0315,39.042,Ethiopia,Sub-Saharan Africa,et_pilgrim,1,,hand-placed
+scholar-timbuktu,Scholar of Timbuktu,"Timbuktu, Mali",16.775,-3.007,Mali,Sub-Saharan Africa,scholar_tk,1,,hand-placed
+market-djenne,Market at Djenné,"Djenné, Mali",13.906,-4.555,Mali,Sub-Saharan Africa,marketwoman,1,,hand-placed
+horseman-kano,Horseman of Kano,"Kano, Nigeria",12.0,8.517,Nigeria,Sub-Saharan Africa,sahel_horseman,1,,hand-placed
+griot-saintlouis,A griot,"Saint-Louis, Senegal",16.028,-16.504,Mauritania,Sub-Saharan Africa,griot,1,,hand-placed
+mokoro-okavango,Mokoro in the delta,"Okavango Delta, Botswana",-19.25,22.9,Botswana,Sub-Saharan Africa,dugout,1,delta,hand-placed
+dugout-congo,Dugout on the Congo,The Congo River at Kisangani,0.50207,25.18636,Democratic Republic of the Congo,Sub-Saharan Africa,dugout,1,river,hand-placed
+zebu-madagascar,Zebu herder,"Near Ambalavao, Madagascar",-21.83,46.93,Madagascar,Sub-Saharan Africa,zebuherder,1,,hand-placed
+ankole-rwanda,Herder with long-horned cattle,"Near Nyanza, Rwanda",-2.35,29.74,Rwanda,Sub-Saharan Africa,ankole,1,,hand-placed
+felucca-aswan,Boatman at Aswan,The Nile at Aswan,24.09527,32.87702,Egypt,Middle East and North Africa,felucca,1,river,hand-placed
+bedouin-petra,Bedouin at Petra,"Petra, Jordan",30.327,35.444,Jordan,Middle East and North Africa,bedouin,1,,hand-placed
+falconer-liwa,Falconer of the desert,"Liwa Oasis, Abu Dhabi",23.133,53.77,United Arab Emirates,Middle East and North Africa,falconer_ar,1,,hand-placed
+caravan-samarkand,At the Registan,"Registan, Samarkand",39.6545,66.975,Uzbekistan,Central Asia and the Caucasus,ca_merchant,1,,hand-placed
+eagle-issykkul,Eagle hunter,"Near Bokonbayevo, Issyk-Kul, Kyrgyzstan",42.11,76.99,Kyrgyzstan,Central Asia and the Caucasus,eaglehunter,1,,hand-placed
+monk-angkor,Monk at Angkor Wat,"Angkor Wat, Cambodia",13.411,103.865,Cambodia,South-East Asia,monk_saffron,1,,hand-placed
+monk-bagan,Monk of Bagan,"Bagan, Myanmar",21.172,94.86,Myanmar,South-East Asia,monk_saffron,1,,hand-placed
+porter-namche,Porter on the trail,"Namche Bazaar, Nepal",27.806,86.712,Nepal,South Asia,porter,1,,hand-placed
+monk-taktsang,Monk at the Tiger's Nest,"Paro Taktsang, Bhutan",27.49,89.36,Bhutan,South Asia,monk_saffron,1,,hand-placed
+pilgrim-varanasi,Pilgrim at the ghats,"Dashashwamedh Ghat, Varanasi",25.307,83.011,India,South Asia,in_pilgrim,1,,hand-placed
+sari-agra,By the river at Agra,"Mehtab Bagh, Agra",27.1795,78.042,India,South Asia,in_sari,1,,hand-placed
+kayak-quebec,Voyageurs on the river,The Ottawa River near Mattawa,46.33645,-78.69416,Canada,North America,voyageurs,1,river,hand-placed
+norse-lanse,Norse at L'Anse aux Meadows,"L'Anse aux Meadows, Newfoundland",51.596,-55.533,Canada,North America,norse,1,,hand-placed
+haida-gwaii,Canoe off Haida Gwaii,"Off Skidegate, Haida Gwaii",53.24,-131.97,Canada,North America,haida,1,sea,hand-placed
+rip-catskills,A long nap in the mountains,"The Catskill Mountains, New York",42.13,-74.22,United States of America,North America,sleeper,1,,hand-placed
+giant-bemidji,The giant logger and the blue ox,"Bemidji, Minnesota",47.472,-94.88,United States of America,North America,giantox,1,,hand-placed
+headless-sleepyhollow,The headless horseman,"Sleepy Hollow, New York",41.094,-73.862,United States of America,North America,headless,1,,hand-placed
+surveyor-grandcanyon,Surveying the canyon,"South Rim, Grand Canyon",36.058,-112.11,United States of America,North America,cartographer_world,1,,hand-placed
+wildman-olympic,The wild man of the woods,"The Hoh Rain Forest, Washington",47.86,-123.935,United States of America,North America,wildman,1,,hand-placed
+dutch-hartog,Dutch sailor with a pewter plate,"Cape Inscription, Dirk Hartog Island",-25.479,112.978,Australia,Oceania,dutchsailor,1,,hand-placed
+drover-outback,Drover in the outback,"Near Alice Springs, Northern Territory",-23.69,133.87,Australia,Oceania,drover,1,,hand-placed
+gaucho-pampas,Gaucho on the pampas,"San Antonio de Areco, Buenos Aires",-34.247,-59.47,Argentina,South America,gaucho,1,,hand-placed
+eldorado-guatavita,The gilded one,"Lake Guatavita, Colombia",4.9775,-73.7765,Colombia,South America,eldorado,1,lake,hand-placed
+canoe-manaus,Canoe at the meeting of the waters,"Meeting of the Waters, near Manaus",-3.13728,-59.90474,Brazil,South America,dugout,1,river,hand-placed
+maya-palenque,Scribe at Palenque,"Palenque, Chiapas",17.484,-92.046,Mexico,"Mexico, Central America and the Caribbean",maya,1,,hand-placed
+pirates-portroyal,Pirates at Port Royal,"Off Port Royal, Jamaica",17.93,-76.85,Jamaica,"Mexico, Central America and the Caribbean",pirates,1,sea,hand-placed
+outrigger-anakena,Canoe at Rapa Nui,"Anakena, Rapa Nui (Easter Island)",-27.07,-109.322,Chile,South America,outrigger,1,sea,hand-placed
+apprentice-ross,The Cartographer's apprentice,"Ross Island, Antarctica",-77.845,166.76,Antarctica,Antarctica,cartographer_apprentice,1,,hand-placed
+frostgiant-antarctica,The sleeping frost giant,The Antarctic Peninsula,-64.825,-62.86,Antarctica,Antarctica,frostgiant,1,,hand-placed
+explorer-penguins,Explorer with penguins,"Cape Adare, Antarctica",-71.305,170.23,Antarctica,Antarctica,explorer_penguins,1,,hand-placed
+angler-albert-bridge,Angler at Albert Bridge,"Albert Bridge, Kensington and Chelsea",51.4837,-0.16602,United Kingdom,Britain and Ireland,fisher,0,,Wikidata via the map's heritage layer (Q1972207)
+monk-fountains-abbey,Monk at Fountains Abbey,"Fountains Abbey, North Yorkshire",54.10872,-1.58077,United Kingdom,Britain and Ireland,monk,0,,holy-islands study (Wikidata Q540237)
+market-stall-alexandra-palace,Market stall at Alexandra Palace,"Alexandra Palace, Haringey",51.59486,-0.13201,United Kingdom,Britain and Ireland,stall,0,,Wikidata via the map's heritage layer (Q254650)
+monk-tintern-abbey,Monk at Tintern Abbey,"Tintern Abbey, Monmouthshire",51.69645,-2.6776,United Kingdom,Britain and Ireland,monk,0,,holy-islands study (Wikidata Q1439379)
+swineherd-alnwick-castle,Swineherd at Alnwick Castle,"Alnwick Castle, Northumberland",55.41645,-1.70565,United Kingdom,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q1320427)
+nun-iona-abbey,Nun at Iona Abbey,"Iona Abbey, United Kingdom",56.3346,-6.39129,United Kingdom,Britain and Ireland,nun,0,,holy-islands study (Wikidata Q198409)
+falconer-althorp,Falconer at Althorp,"Althorp, Northamptonshire",52.28013,-1.00101,United Kingdom,Britain and Ireland,falconer,0,,Wikidata via the map's heritage layer (Q441079)
+goose-girl-malmesbury-abbey,Goose girl at Malmesbury Abbey,"Malmesbury Abbey, Wiltshire",51.58612,-2.09889,United Kingdom,Britain and Ireland,goosegirl,0,,holy-islands study (Wikidata Q550064)
+cockatrice-antonine-wall,Cockatrice at Antonine Wall,"Antonine Wall, North Lanarkshire",55.96728,-4.06894,United Kingdom,Britain and Ireland,cockatrice,0,,Wikidata via the map's heritage layer (Q210957)
+ploughman-dunfermline-abbey,Ploughman at Dunfermline Abbey,"Dunfermline Abbey, Fife",56.0704,-3.46246,United Kingdom,Britain and Ireland,ploughman,0,,holy-islands study (Wikidata Q2044924)
+knight-arundel-castle,Knight at Arundel Castle,"Arundel Castle, West Sussex",50.85568,-0.55178,United Kingdom,Britain and Ireland,knight,0,,Wikidata via the map's heritage layer (Q716667)
+friar-melrose-abbey,Friar at Melrose Abbey,"Melrose Abbey, Scottish Borders",55.60028,-2.71952,United Kingdom,Britain and Ireland,friar,0,,holy-islands study (Wikidata Q1919732)
+merchant-baitul-futuh-mosque,Merchant at Baitul Futuh Mosque,"Baitul Futuh Mosque, Merton",51.39496,-0.19981,United Kingdom,Britain and Ireland,merchant,0,,Wikidata via the map's heritage layer (Q788652)
+friar-battle-abbey,Friar at Battle Abbey,"Battle Abbey, East Sussex",50.9154,0.48792,United Kingdom,Britain and Ireland,friar,0,,holy-islands study (Wikidata Q810981)
+swineherd-balmoral-castle,Swineherd at Balmoral Castle,"Balmoral Castle, Aberdeenshire",57.04193,-3.23098,United Kingdom,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q42049)
+ploughman-the-deserted-village-of-holme-,Ploughman at the deserted village of Holme in Sudbrook,"The deserted village of Holme in Sudbrook, Lincolnshire",53.27207,-0.43569,United Kingdom,Britain and Ireland,ploughman,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+wolf-pack-bannau-brycheiniog-national-pa,Wolf pack at Bannau Brycheiniog National Park,"Bannau Brycheiniog National Park, Powys",51.8829,-3.3984,United Kingdom,Britain and Ireland,wolves,0,,Wikidata via the map's heritage layer (Q15052206)
+swineherd-the-deserted-village-of-polton,Swineherd at the deserted village of Polton,"The deserted village of Polton, Kent",51.12473,1.24712,United Kingdom,Britain and Ireland,swineherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+swineherd-beaumaris-castle,Swineherd at Beaumaris Castle,"Beaumaris Castle, Anglesey",53.26552,-4.08939,United Kingdom,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q756815)
+swineherd-the-deserted-village-of-bylaug,Swineherd at the deserted village of Bylaugh,"The deserted village of Bylaugh, Norfolk",52.72306,1.01507,United Kingdom,Britain and Ireland,swineherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+swineherd-beeston-castle,Swineherd at Beeston Castle,"Beeston Castle, Cheshire West and Chester",53.12989,-2.69498,United Kingdom,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q539538)
+milkmaid-the-deserted-village-of-henley,Milkmaid at the deserted village of Henley,"The deserted village of Henley, Coventry",52.42887,-1.46495,United Kingdom,Britain and Ireland,milkmaid,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+shepherd-blaenavon-industrial-landscape,Shepherd at Blaenavon Industrial Landscape,"Blaenavon Industrial Landscape, Torfaen",51.76952,-3.09078,United Kingdom,Britain and Ireland,shepherd,0,,Wikidata via the map's heritage layer (Q23818211)
+minstrel-bletchley-park,Minstrel at Bletchley Park,"Bletchley Park, Milton Keynes",51.99884,-0.74161,United Kingdom,Britain and Ireland,minstrel,0,,Wikidata via the map's heritage layer (Q155921)
+ploughman-the-deserted-village-of-crofto,Ploughman at the deserted village of Crofton,"The deserted village of Crofton, Lincolnshire",52.94746,-0.43284,United Kingdom,Britain and Ireland,ploughman,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+knight-bodiam-castle,Knight at Bodiam Castle,"Bodiam Castle, East Sussex",51.0017,0.54433,United Kingdom,Britain and Ireland,knight,0,,Wikidata via the map's heritage layer (Q639208)
+ox-cart-the-deserted-village-of-north-ki,Ox cart at the deserted village of North Kilvington,"The deserted village of North Kilvington, North Yorkshire",54.26239,-1.35024,United Kingdom,Britain and Ireland,oxcart,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+market-stall-bristol-cathedral,Market stall at Bristol Cathedral,Bristol Cathedral,51.45217,-2.60202,United Kingdom,Britain and Ireland,stall,0,,Wikidata via the map's heritage layer (Q917917)
+milkmaid-the-deserted-village-of-bickers,Milkmaid at the deserted village of Bickerston,"The deserted village of Bickerston, Norfolk",52.63532,1.08329,United Kingdom,Britain and Ireland,milkmaid,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+falconer-burghley-house,Falconer at Burghley House,"Burghley House, Lincolnshire",52.64145,-0.45326,United Kingdom,Britain and Ireland,falconer,0,,Wikidata via the map's heritage layer (Q1015079)
+milkmaid-the-deserted-village-of-barcote,Milkmaid at the deserted village of Barcote,"The deserted village of Barcote, Oxfordshire",51.68028,-1.53744,United Kingdom,Britain and Ireland,milkmaid,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+watchman-caerphilly-castle,Watchman at Caerphilly Castle,Caerphilly Castle,51.57501,-3.22118,United Kingdom,Britain and Ireland,watchman,0,,Wikidata via the map's heritage layer (Q682601)
+shepherd-the-deserted-village-of-dowthor,Shepherd at the deserted village of Dowthorpe,"The deserted village of Dowthorpe, East Riding of Yorkshire",53.82539,-0.24934,United Kingdom,Britain and Ireland,shepherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+goose-girl-cairngorms-national-park,Goose girl at Cairngorms National Park,"Cairngorms National Park, Aberdeenshire",57.08234,-3.66605,United Kingdom,Britain and Ireland,goosegirl,0,,Wikidata via the map's heritage layer (Q1025953)
+swineherd-the-deserted-village-of-ranby,Swineherd at the deserted village of Ranby,"The deserted village of Ranby, Lincolnshire",53.29137,-0.1524,United Kingdom,Britain and Ireland,swineherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+messenger-cardiff-castle,Messenger at Cardiff Castle,Cardiff Castle,51.48154,-3.1817,United Kingdom,Britain and Ireland,messenger,0,,Wikidata via the map's heritage layer (Q1035742)
+goose-girl-the-deserted-village-of-stowe,Goose girl at the deserted village of Stowell,"The deserted village of Stowell, Gloucestershire",51.81605,-1.87676,United Kingdom,Britain and Ireland,goosegirl,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+swineherd-carisbrooke-castle,Swineherd at Carisbrooke Castle,"Carisbrooke Castle, Isle of Wight",50.68749,-1.31161,United Kingdom,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q328595)
+milkmaid-the-deserted-village-of-north-m,Milkmaid at the deserted village of North Marefield,"The deserted village of North Marefield, Leicestershire",52.67184,-0.88702,United Kingdom,Britain and Ireland,milkmaid,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+archer-carlisle-castle,Archer at Carlisle Castle,"Carlisle Castle, Cumbria",54.89671,-2.94014,United Kingdom,Britain and Ireland,archer,0,,Wikidata via the map's heritage layer (Q614836)
+milkmaid-the-deserted-village-of-great-b,Milkmaid at the deserted village of Great Bavington,"The deserted village of Great Bavington, Northumberland",55.1182,-2.02568,United Kingdom,Britain and Ireland,milkmaid,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+goose-girl-chequers,Goose girl at Chequers,"Chequers, Buckinghamshire",51.7427,-0.78277,United Kingdom,Britain and Ireland,goosegirl,0,,Wikidata via the map's heritage layer (Q1070192)
+goose-girl-the-deserted-village-of-keyth,Goose girl at the deserted village of Keythorpe,"The deserted village of Keythorpe, Leicestershire",52.58888,-0.87224,United Kingdom,Britain and Ireland,goosegirl,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+merchant-chester-cathedral,Merchant at Chester Cathedral,"Chester Cathedral, Cheshire West and Chester",53.19114,-2.89073,United Kingdom,Britain and Ireland,merchant,0,,Wikidata via the map's heritage layer (Q2559480)
+ploughman-the-deserted-village-of-rycote,Ploughman at the deserted village of Rycote Magna,"The deserted village of Rycote Magna, Oxfordshire",51.7372,-1.03688,United Kingdom,Britain and Ireland,ploughman,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+minstrel-chichester-cathedral,Minstrel at Chichester Cathedral,"Chichester Cathedral, West Sussex",50.83544,-0.78159,United Kingdom,Britain and Ireland,minstrel,0,,Wikidata via the map's heritage layer (Q1736182)
+goose-girl-the-deserted-village-of-marls,Goose girl at the deserted village of Marlston,"The deserted village of Marlston, West Berkshire",51.44455,-1.23999,United Kingdom,Britain and Ireland,goosegirl,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+merchant-crucible-theatre,Merchant at Crucible Theatre,"Crucible Theatre, Sheffield",53.38128,-1.46818,United Kingdom,Britain and Ireland,merchant,0,,Wikidata via the map's heritage layer (Q1141915)
+goose-girl-the-deserted-village-of-aleby,Goose girl at the deserted village of Aleby,"The deserted village of Aleby, Lincolnshire",53.27168,0.15384,United Kingdom,Britain and Ireland,goosegirl,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+ox-cart-derwent-valley-mills,Ox cart at Derwent Valley Mills,"Derwent Valley Mills, Derbyshire",53.10668,-1.55687,United Kingdom,Britain and Ireland,oxcart,0,,Wikidata via the map's heritage layer (Q646076)
+lost-sheep-the-deserted-village-of-thorn,Lost sheep at the deserted village of Thornton le Moor,"The deserted village of Thornton le Moor, Lincolnshire",53.45365,-0.42065,United Kingdom,Britain and Ireland,lostsheep,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+goose-girl-dolbadarn-castle,Goose girl at Dolbadarn Castle,"Dolbadarn Castle, Gwynedd",53.11621,-4.11557,United Kingdom,Britain and Ireland,goosegirl,0,,Wikidata via the map's heritage layer (Q2078555)
+swineherd-the-deserted-village-of-badsad,Swineherd at the deserted village of Badsaddle,"The deserted village of Badsaddle, Northamptonshire",52.3479,-0.7769,United Kingdom,Britain and Ireland,swineherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+ploughman-the-deserted-village-of-bettes,Ploughman at the deserted village of Betteshanger,"The deserted village of Betteshanger, Kent",51.22703,1.31358,United Kingdom,Britain and Ireland,ploughman,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+merchant-dunadd,Merchant at Dunadd,"Dunadd, Argyll and Bute",56.08478,-5.48004,United Kingdom,Britain and Ireland,merchant,0,,Wikidata via the map's heritage layer (Q233579)
+shepherd-the-deserted-village-of-langham,Shepherd at the deserted village of Langham,"The deserted village of Langham, Suffolk",52.28307,0.90039,United Kingdom,Britain and Ireland,shepherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+ploughman-the-deserted-village-of-great-,Ploughman at the deserted village of Great Snareshill,"The deserted village of Great Snareshill, Norfolk",52.4157,0.78129,United Kingdom,Britain and Ireland,ploughman,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+knight-dunrobin-castle,Knight at Dunrobin Castle,"Dunrobin Castle, Highland",57.98077,-3.94397,United Kingdom,Britain and Ireland,knight,0,,Wikidata via the map's heritage layer (Q946702)
+ox-cart-the-deserted-village-of-risby,Ox cart at the deserted village of Risby,"The deserted village of Risby, East Riding of Yorkshire",53.80029,-0.46682,United Kingdom,Britain and Ireland,oxcart,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+knight-dunstanburgh-castle,Knight at Dunstanburgh Castle,"Dunstanburgh Castle, Northumberland",55.48789,-1.59453,United Kingdom,Britain and Ireland,knight,0,,Wikidata via the map's heritage layer (Q515105)
+swineherd-the-deserted-village-of-boyatt,Swineherd at the deserted village of Boyatt,"The deserted village of Boyatt, Hampshire",50.98456,-1.35757,United Kingdom,Britain and Ireland,swineherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+watchman-dunvegan-castle,Watchman at Dunvegan Castle,"Dunvegan Castle, Highland",57.4492,-6.59009,United Kingdom,Britain and Ireland,watchman,0,,Wikidata via the map's heritage layer (Q1266330)
+swineherd-the-deserted-village-of-bitchf,Swineherd at the deserted village of Bitchfield,"The deserted village of Bitchfield, Northumberland",55.08823,-1.85848,United Kingdom,Britain and Ireland,swineherd,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+goose-girl-ely-cathedral,Goose girl at Ely Cathedral,"Ely Cathedral, Cambridgeshire",52.39747,0.26422,United Kingdom,Britain and Ireland,goosegirl,0,,Wikidata via the map's heritage layer (Q579004)
+ox-cart-the-deserted-village-of-stretton,Ox cart at the deserted village of Stretton Magna,"The deserted village of Stretton Magna, Leicestershire",52.59837,-1.02977,United Kingdom,Britain and Ireland,oxcart,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+market-stall-exeter-cathedral,Market stall at Exeter Cathedral,"Exeter Cathedral, Devon",50.72149,-3.53048,United Kingdom,Britain and Ireland,stall,0,,Wikidata via the map's heritage layer (Q1131208)
+ox-cart-the-deserted-village-of-bridmore,Ox cart at the deserted village of Bridmore,"The deserted village of Bridmore, Wiltshire",50.99795,-2.05669,United Kingdom,Britain and Ireland,oxcart,0,,"Beresford's gazetteer of deserted medieval villages, via the ghost-towns study"
+brownie-blarney-castle,Brownie at Blarney Castle,"Blarney Castle, Cork",51.93012,-8.57049,Ireland,Britain and Ireland,brownie,0,,Wikidata via the map's heritage layer (Q881739)
+monk-clonmacnoise,Monk at Clonmacnoise,"Clonmacnoise, Offaly",53.32454,-7.99129,Ireland,Britain and Ireland,monk,0,,holy-islands study (Wikidata Q927223)
+minstrel-christ-church-cathedral-dublin,"Minstrel at Christ Church Cathedral, Dublin","Christ Church Cathedral, Dublin",53.34399,-6.27159,Ireland,Britain and Ireland,minstrel,0,,Wikidata via the map's heritage layer (Q1067803)
+shepherd-kylemore-abbey,Shepherd at Kylemore Abbey,"Kylemore Abbey, Galway",53.56244,-9.88961,Ireland,Britain and Ireland,shepherd,0,,holy-islands study (Wikidata Q132220)
+nun-abbey-of-kells,Nun at Abbey of Kells,"Abbey of Kells, Meath",53.72491,-6.87822,Ireland,Britain and Ireland,nun,0,,holy-islands study (Wikidata Q2363280)
+monk-muckross-abbey,Monk at Muckross Abbey,"Muckross Abbey, Kerry",52.02697,-9.4962,Ireland,Britain and Ireland,monk,0,,holy-islands study (Wikidata Q1758442)
+swineherd-glenveagh-national-park,Swineherd at Glenveagh National Park,"Glenveagh National Park, Donegal",55.01716,-8.05089,Ireland,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q140033)
+monk-clonard-abbey,Monk at Clonard Abbey,"Clonard Abbey, Meath",53.44986,-7.00771,Ireland,Britain and Ireland,monk,0,,holy-islands study (Wikidata Q1785643)
+fairy-ring-hill-of-tara,Fairy ring at Hill of Tara,"Hill of Tara, Meath",53.57626,-6.61172,Ireland,Britain and Ireland,fairyring,0,,Wikidata via the map's heritage layer (Q543155)
+nun-jerpoint-abbey,Nun at Jerpoint Abbey,"Jerpoint Abbey, Kilkenny",52.51176,-7.15745,Ireland,Britain and Ireland,nun,0,,holy-islands study (Wikidata Q1687774)
+fairy-ring-poulnabrone-dolmen,Fairy ring at Poulnabrone dolmen,"Poulnabrone dolmen, Clare",53.0491,-9.14206,Ireland,Britain and Ireland,fairyring,0,,Wikidata via the map's heritage layer (Q153645)
+nun-boyle-abbey,Nun at Boyle Abbey,"Boyle Abbey, Roscommon",53.97492,-8.29784,Ireland,Britain and Ireland,nun,0,,holy-islands study (Wikidata Q896003)
+shepherd-wild-nephin-national-park,Shepherd at Wild Nephin National Park,"Wild Nephin National Park, Mayo",54.01639,-9.70131,Ireland,Britain and Ireland,shepherd,0,,Wikidata via the map's heritage layer (Q805409)
+friar-fore-priory-of-sts-taurin-and-fech,Friar at Fore Priory of Sts Taurin and Fechin,"Fore Priory of Sts Taurin and Fechin, Westmeath",53.68393,-7.22533,Ireland,Britain and Ireland,friar,0,,holy-islands study (Wikidata Q669303)
+falconer-bunratty-castle,Falconer at Bunratty Castle,"Bunratty Castle, Clare",52.69663,-8.81428,Ireland,Britain and Ireland,falconer,0,,Wikidata via the map's heritage layer (Q599132)
+knight-kilkenny-castle,Knight at Kilkenny Castle,Kilkenny Castle,52.6508,-7.24824,Ireland,Britain and Ireland,knight,0,,Wikidata via the map's heritage layer (Q2453267)
+brownie-cahir-castle,Brownie at Cahir Castle,"Cahir Castle, South Tipperary",52.3732,-7.92752,Ireland,Britain and Ireland,brownie,0,,Wikidata via the map's heritage layer (Q764573)
+brownie-gallarus-oratory,Brownie at Gallarus Oratory,"Gallarus Oratory, Kerry",52.17131,-10.34834,Ireland,Britain and Ireland,brownie,0,,Wikidata via the map's heritage layer (Q1492262)
+woodcutter-powerscourt-waterfall,Woodcutter at Powerscourt Waterfall,"Powerscourt Waterfall, Wicklow",53.14724,-6.21001,Ireland,Britain and Ireland,woodcutter,0,,Wikidata via the map's heritage layer (Q552906)
+archer-ashford-castle-county-mayo,"Archer at Ashford Castle, County Mayo","Ashford Castle, County Mayo, Galway",53.53442,-9.28417,Ireland,Britain and Ireland,archer,0,,Wikidata via the map's heritage layer (Q725274)
+market-stall-the-ghosts,Market stall at 'The Ghosts',"'The Ghosts', Aisne",49.21406,3.40741,France,Western Europe,stall,0,,Wikidata via the map's heritage layer (Q3232521)
+monk-cluny-abbey,Monk at Cluny Abbey,"Cluny Abbey, Saône-et-Loire",46.43299,4.65935,France,Western Europe,monk,0,,holy-islands study (Wikidata Q220301)
+cockatrice-28th-brigade-la-ferme-des-wac,Cockatrice at 28th Brigade - La Ferme des Wacques Nati,"28th Brigade - La Ferme des Wacques Nati, Marne",49.18275,4.50891,France,Western Europe,cockatrice,0,,Wikidata via the map's heritage layer (Q21570189)
+pilgrims-abbey-of-fontenay,Pilgrims at Abbey of Fontenay,"Abbey of Fontenay, Côte-d'Or",47.639,4.39064,France,Western Europe,pilgrims,0,,holy-islands study (Wikidata Q464918)
+pedlar-29th-division-memorial,Pedlar at 29th Division Memorial,"29th Division Memorial, Somme",50.07145,2.64821,France,Western Europe,pedlar,0,,Wikidata via the map's heritage layer (Q122784272)
+monk-royal-abbey-of-fontevraud,Monk at Royal abbey of Fontevraud,"Royal abbey of Fontevraud, Maine-et-Loire",47.18223,0.05142,France,Western Europe,monk,0,,holy-islands study (Wikidata Q283254)
+vintner-abbey-church-of-saint-savin-sur-,Vintner at Abbey Church of Saint-Savin-sur-Gartempe,"Abbey Church of Saint-Savin-sur-Gartempe, Vienne",46.56575,0.86587,France,Western Europe,vintner,0,,Wikidata via the map's heritage layer (Q1774129)
+monk-clairvaux-abbey,Monk at Clairvaux Abbey,"Clairvaux Abbey, Aube",48.14728,4.78707,France,Western Europe,monk,0,,holy-islands study (Wikidata Q647070)
+monk-c-teaux-abbey,Monk at Cîteaux Abbey,"Cîteaux Abbey, Côte-d'Or",47.12896,5.09194,France,Western Europe,monk,0,,holy-islands study (Wikidata Q843261)
+minstrel-albi-cathedral,Minstrel at Albi Cathedral,"Albi Cathedral, Tarn",43.92884,2.14163,France,Western Europe,minstrel,0,,Wikidata via the map's heritage layer (Q94744)
+vintner-port-royal-des-champs,Vintner at Port-Royal-des-Champs,"Port-Royal-des-Champs, Yvelines",48.74415,2.01579,France,Western Europe,vintner,0,,holy-islands study (Wikidata Q652981)
+merchant-amphitheater-of-n-mes,Merchant at Amphitheater of Nîmes,"Amphitheater of Nîmes, Gard",43.8344,4.35872,France,Western Europe,merchant,0,,Wikidata via the map's heritage layer (Q179656)
+monk-basilica-of-st-sernin,Monk at Basilica of St. Sernin,"Basilica of St. Sernin, Haute-Garonne",43.60834,1.44036,France,Western Europe,monk,0,,holy-islands study (Wikidata Q1010268)
+cockatrice-apremont-german-military-ceme,Cockatrice at Apremont German military cemetery,"Apremont German military cemetery, Ardennes",49.25694,4.96918,France,Western Europe,cockatrice,0,,Wikidata via the map's heritage layer (Q59592141)
+monk-grande-chartreuse,Monk at Grande Chartreuse,"Grande Chartreuse, Isère",45.36323,5.79256,France,Western Europe,monk,0,,holy-islands study (Wikidata Q180709)
+vintner-arles-roman-and-romanesque-monum,"Vintner at Arles, Roman and Romanesque Monuments","Arles, Roman and Romanesque Monuments, Bouches-du-Rhône",43.67711,4.63006,France,Western Europe,vintner,0,,Wikidata via the map's heritage layer (Q1279597)
+nun-fleury-abbey,Nun at Fleury Abbey,"Fleury Abbey, Loiret",47.80846,2.30487,France,Western Europe,nun,0,,holy-islands study (Wikidata Q956741)
+vintner-arras-flying-services-memorial,Vintner at Arras Flying Services Memorial,"Arras Flying Services Memorial, Pas-de-Calais",50.28807,2.76131,France,Western Europe,vintner,0,,Wikidata via the map's heritage layer (Q2674251)
+monk-royal-abbey-of-hautecombe,Monk at Royal Abbey of Hautecombe,"Royal Abbey of Hautecombe, Savoie",45.75244,5.83795,France,Western Europe,monk,0,,holy-islands study (Wikidata Q63524)
+scholar-assevent-french-german-war-cemet,Scholar at Assevent French-German War Cemetery,"Assevent French-German War Cemetery, Nord",50.29115,4.01696,France,Western Europe,scholar,0,,Wikidata via the map's heritage layer (Q2292418)
+pilgrims-autun-cathedral,Pilgrims at Autun Cathedral,"Autun Cathedral, Saône-et-Loire",46.94418,4.29991,France,Western Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q611944)
+nun-avignon-cathedral,Nun at Avignon Cathedral,"Avignon Cathedral, Vaucluse",43.9512,4.80819,France,Western Europe,nun,0,,Wikidata via the map's heritage layer (Q1200500)
+vintner-basilica-of-notre-dame-de-fourvi,Vintner at Basilica of Notre-Dame de Fourvière,"Basilica of Notre-Dame de Fourvière, Rhône",45.7632,4.82272,France,Western Europe,vintner,0,,Wikidata via the map's heritage layer (Q1516)
+monk-basilica-of-saint-remi,Monk at Basilica of Saint-Remi,"Basilica of Saint-Remi, Marne",49.24172,4.04242,France,Western Europe,monk,0,,Wikidata via the map's heritage layer (Q334233)
+pedlar-aachen-cathedral,Pedlar at Aachen Cathedral,"Aachen Cathedral, Nordrhein-Westfalen",50.77347,6.08272,Germany,Western Europe,pedlar,0,,Wikidata via the map's heritage layer (Q5908)
+skaters-maulbronn-monastery,Skaters at Maulbronn Monastery,"Maulbronn Monastery, Baden-Württemberg",49.00239,8.81353,Germany,Western Europe,skaters,0,,holy-islands study (Wikidata Q157886)
+skaters-abbey-and-altenm-nster-of-lorsch,Skaters at Abbey and Altenmünster of Lorsch,"Abbey and Altenmünster of Lorsch, Hessen",49.65415,8.56721,Germany,Western Europe,skaters,0,,Wikidata via the map's heritage layer (Q157550)
+woodcutter-abbey-of-reichenau,Woodcutter at Abbey of Reichenau,"Abbey of Reichenau, Baden-Württemberg",47.69888,9.06264,Germany,Western Europe,woodcutter,0,,Wikidata via the map's heritage layer (Q679114)
+woodcutter-princely-abbey-of-corvey,Woodcutter at Princely Abbey of Corvey,"Princely Abbey of Corvey, Nordrhein-Westfalen",51.77869,9.40942,Germany,Western Europe,woodcutter,0,,holy-islands study (Wikidata Q56004)
+swineherd-altes-museum,Swineherd at Altes Museum,"Altes Museum, Berlin",52.52059,13.39832,Germany,Western Europe,swineherd,0,,Wikidata via the map's heritage layer (Q156722)
+monk-st-michaels-church,Monk at St. Michael's Church,"St. Michael's Church, Niedersachsen",52.15202,9.94341,Germany,Western Europe,monk,0,,holy-islands study (Wikidata Q158324)
+woodcutter-archaeological-border-complex,Woodcutter at Archaeological Border complex of Hedeby,"Archaeological Border complex of Hedeby, Schleswig-Holstein",54.46077,9.45353,Germany,Western Europe,woodcutter,0,,Wikidata via the map's heritage layer (Q55312553)
+nun-quedlinburg-abbey,Nun at Quedlinburg Abbey,"Quedlinburg Abbey, Sachsen-Anhalt",51.78555,11.13532,Germany,Western Europe,nun,0,,holy-islands study (Wikidata Q829708)
+woodcutter-artists-colony-in-darmstadt,Woodcutter at Artists' Colony in Darmstadt,"Artists' Colony in Darmstadt, Hessen",49.87664,8.66589,Germany,Western Europe,woodcutter,0,,Wikidata via the map's heritage layer (Q314730)
+monk-maria-laach-abbey,Monk at Maria Laach Abbey,"Maria Laach Abbey, Rheinland-Pfalz",50.40266,7.25077,Germany,Western Europe,monk,0,,holy-islands study (Wikidata Q334032)
+market-stall-asam-church,Market stall at Asam Church,"Asam Church, Bayern",48.13623,11.56797,Germany,Western Europe,stall,0,,Wikidata via the map's heritage layer (Q152973)
+nun-fulda-monastery,Nun at Fulda monastery,"Fulda monastery, Hessen",50.55369,9.67278,Germany,Western Europe,nun,0,,holy-islands study (Wikidata Q661240)
+skaters-augsburg-cathedral,Skaters at Augsburg Cathedral,"Augsburg Cathedral, Bayern",48.37232,10.89816,Germany,Western Europe,skaters,0,,Wikidata via the map's heritage layer (Q279089)
+shepherd-augustusburg-and-falkenlust-pal,Shepherd at Augustusburg and Falkenlust Palaces,"Augustusburg and Falkenlust Palaces, Nordrhein-Westfalen",50.82621,6.90689,Germany,Western Europe,shepherd,0,,Wikidata via the map's heritage layer (Q156292)
+monk-ettal-abbey,Monk at Ettal Abbey,"Ettal Abbey, Bayern",47.57002,11.09568,Germany,Western Europe,monk,0,,holy-islands study (Wikidata Q253359)
+goose-girl-aula-palatina,Goose girl at Aula Palatina,"Aula Palatina, Rheinland-Pfalz",49.75418,6.64194,Germany,Western Europe,goosegirl,0,,Wikidata via the map's heritage layer (Q686773)
+nun-weltenburg-abbey,Nun at Weltenburg Abbey,"Weltenburg Abbey, Bayern",48.90018,11.82007,Germany,Western Europe,nun,0,,holy-islands study (Wikidata Q260108)
+skaters-bamberg-cathedral,Skaters at Bamberg Cathedral,"Bamberg Cathedral, Bayern",49.8896,10.88257,Germany,Western Europe,skaters,0,,Wikidata via the map's heritage layer (Q5924)
+swineherd-18th-century-royal-palace-at-c,Swineherd at 18th-Century Royal Palace at Caserta wit,18th-Century Royal Palace at Caserta wit,41.07438,14.32665,Italy,Southern Europe,swineherd,0,,Wikidata via the map's heritage layer (Q16962666)
+vintner-basilica-of-saint-anthony-of-pad,Vintner at Basilica of Saint Anthony of Padua,"Basilica of Saint Anthony of Padua, Padova",45.40082,11.87877,Italy,Southern Europe,vintner,0,,holy-islands study (Wikidata Q810139)
+pilgrims-abbey-of-monte-cassino,Pilgrims at Abbey of Monte Cassino,"Abbey of Monte Cassino, Frosinone",41.49027,13.81203,Italy,Southern Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q334051)
+monk-basilica-of-santapollinare-in-class,Monk at Basilica of Sant'Apollinare in Classe,"Basilica of Sant'Apollinare in Classe, Ravenna",44.38148,12.23172,Italy,Southern Europe,monk,0,,holy-islands study (Wikidata Q744552)
+vintner-adria,Vintner at Adria,"Adria, Rovigo",45.04925,12.0518,Italy,Southern Europe,vintner,0,,Wikidata via the map's heritage layer (Q34615)
+nun-certosa-di-pavia,Nun at Certosa di Pavia,Certosa di Pavia,45.25842,9.14905,Italy,Southern Europe,nun,0,,holy-islands study (Wikidata Q654443)
+scholar-aeolian-islands,Scholar at Aeolian Islands,"Aeolian Islands, Messina",38.49705,14.93721,Italy,Southern Europe,scholar,0,,Wikidata via the map's heritage layer (Q179883)
+monk-sacra-di-san-michele,Monk at Sacra di San Michele,"Sacra di San Michele, Turin",45.09705,7.34176,Italy,Southern Europe,monk,0,,holy-islands study (Wikidata Q19881)
+goblins-agrigento,Goblins at Agrigento,"Agrigento, Italy",37.31095,13.57769,Italy,Southern Europe,goblins,0,,Wikidata via the map's heritage layer (Q13678)
+vintner-alba-longa,Vintner at Alba Longa,"Alba Longa, Roma",41.74585,12.64953,Italy,Southern Europe,vintner,0,,Wikidata via the map's heritage layer (Q335070)
+monk-santo-spirito,Monk at Santo Spirito,"Santo Spirito, Firenze",43.76587,11.24842,Italy,Southern Europe,monk,0,,holy-islands study (Wikidata Q1519975)
+goblins-arab-norman-palermo-and-the-cath,Goblins at Arab-Norman Palermo and the Cathedral Ch,Arab-Norman Palermo and the Cathedral Ch,38.10962,13.35243,Italy,Southern Europe,goblins,0,,Wikidata via the map's heritage layer (Q20963672)
+monk-certosa-di-padula,Monk at Certosa di Padula,"Certosa di Padula, Salerno",40.33834,15.65208,Italy,Southern Europe,monk,0,,holy-islands study (Wikidata Q1051820)
+cockatrice-archaeological-area-and-the-p,Cockatrice at Archaeological Area and the Patriarchal,"Archaeological Area and the Patriarchal, Udine",45.76901,13.3681,Italy,Southern Europe,cockatrice,0,,Wikidata via the map's heritage layer (Q3575761)
+nun-certosa-di-san-martino,Nun at Certosa di San Martino,"Certosa di San Martino, Napoli",40.84369,14.24194,Italy,Southern Europe,nun,0,,holy-islands study (Wikidata Q859732)
+swineherd-archaeological-areas-of-pompei,"Swineherd at Archaeological Areas of Pompei, Herculan","Archaeological Areas of Pompei, Herculan, Napoli",40.74864,14.48307,Italy,Southern Europe,swineherd,0,,Wikidata via the map's heritage layer (Q16920958)
+vintner-bobbio-abbey,Vintner at Bobbio Abbey,"Bobbio Abbey, Piacenza",44.76657,9.38815,Italy,Southern Europe,vintner,0,,holy-islands study (Wikidata Q333844)
+woodcutter-arcipelago-di-la-maddalena-na,Woodcutter at Arcipelago di La Maddalena National Park,"Arcipelago di La Maddalena National Park, Olbia-Tempio",41.24645,9.41202,Italy,Southern Europe,woodcutter,0,,Wikidata via the map's heritage layer (Q536703)
+wolf-pack-aspromonte-national-park,Wolf pack at Aspromonte National Park,"Aspromonte National Park, Reggio Calabria",38.16972,15.98837,Italy,Southern Europe,wolves,0,,Wikidata via the map's heritage layer (Q778921)
+vintner-abbey-of-santa-mar-a-la-real-de-,Vintner at Abbey of Santa María la Real de Las Huel,"Abbey of Santa María la Real de Las Huel, Burgos",42.33496,-3.71977,Spain,Southern Europe,vintner,0,,Wikidata via the map's heritage layer (Q1539949)
+vintner-royal-monastery-of-san-lorenzo-d,Vintner at Royal Monastery of San Lorenzo de El Escorial,"Royal Monastery of San Lorenzo de El Escorial, Madrid",40.58851,-4.14751,Spain,Southern Europe,vintner,0,,holy-islands study (Wikidata Q28471)
+hermit-abrigo-de-los-toros-del-prado-del,Hermit at Abrigo de los Toros del Prado del Navazo,"Abrigo de los Toros del Prado del Navazo, Teruel",40.3942,-1.40188,Spain,Southern Europe,hermit,0,,Wikidata via the map's heritage layer (Q43148439)
+monk-poblet-monastery,Monk at Poblet Monastery,"Poblet Monastery, Tarragona",41.38181,1.08375,Spain,Southern Europe,monk,0,,holy-islands study (Wikidata Q645157)
+swineherd-aig-estortes-i-estany-de-sant-,Swineherd at Aigüestortes i Estany de Sant Maurici Na,"Aigüestortes i Estany de Sant Maurici Na, Lérida",42.57651,0.94798,Spain,Southern Europe,swineherd,0,,Wikidata via the map's heritage layer (Q1470066)
+monk-santa-maria-de-montserrat,Monk at Santa Maria de Montserrat,"Santa Maria de Montserrat, Barcelona",41.59405,1.83721,Spain,Southern Europe,monk,0,,holy-islands study (Wikidata Q771935)
+pedlar-alcazaba-of-m-laga,Pedlar at Alcazaba of Málaga,Alcazaba of Málaga,36.722,-4.4169,Spain,Southern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q3127243)
+vintner-royal-monastery-of-saint-mary-of,Vintner at Royal Monastery of Saint Mary of Guadalupe,"Royal Monastery of Saint Mary of Guadalupe, Cáceres",39.45201,-5.32867,Spain,Southern Europe,vintner,0,,holy-islands study (Wikidata Q750248)
+minstrel-alcazaba-y-murallas-del-cerro-d,Minstrel at Alcazaba y Murallas del Cerro de San Cri,"Alcazaba y Murallas del Cerro de San Cri, Almería",36.84171,-2.47347,Spain,Southern Europe,minstrel,0,,Wikidata via the map's heritage layer (Q24024872)
+vintner-loarre-castle,Vintner at Loarre Castle,"Loarre Castle, Huesca",42.32421,-0.61204,Spain,Southern Europe,vintner,0,,holy-islands study (Wikidata Q1049259)
+angler-alc-ntara-bridge,Angler at Alcántara Bridge,"Alcántara Bridge, Cáceres",39.72219,-6.89359,Spain,Southern Europe,fisher,0,,Wikidata via the map's heritage layer (Q996197)
+monk-monasteries-of-san-mill-n-de-la-cog,Monk at Monasteries of San Millán de la Cogolla,"Monasteries of San Millán de la Cogolla, La Rioja",42.32673,-2.86655,Spain,Southern Europe,monk,0,,holy-islands study (Wikidata Q2284354)
+merchant-alc-zar-de-jerez-de-la-frontera,Merchant at Alcázar de Jerez de la Frontera,"Alcázar de Jerez de la Frontera, Cádiz",36.68133,-6.14039,Spain,Southern Europe,merchant,0,,Wikidata via the map's heritage layer (Q2832233)
+nun-monastery-of-yuste,Nun at Monastery of Yuste,"Monastery of Yuste, Cáceres",40.11437,-5.74019,Spain,Southern Europe,nun,0,,holy-islands study (Wikidata Q936453)
+pilgrims-alc-zar-de-los-reyes-cristianos,Pilgrims at Alcázar de los Reyes Cristianos,"Alcázar de los Reyes Cristianos, Córdoba",37.87758,-4.7815,Spain,Southern Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q212625)
+merchant-aljafer-a,Merchant at Aljafería,"Aljafería, Zaragoza",41.65727,-0.89713,Spain,Southern Europe,merchant,0,,Wikidata via the map's heritage layer (Q1354033)
+monk-alcoba-a-monastery,Monk at Alcobaça Monastery,"Alcobaça Monastery, Leiria",39.54775,-8.97826,Portugal,Southern Europe,monk,0,,Wikidata via the map's heritage layer (Q593147)
+pilgrims-alminhas-da-ponte,Pilgrims at Alminhas da Ponte,"Alminhas da Ponte, Porto",41.14169,-8.61117,Portugal,Southern Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q665878)
+monk-convent-of-christ,Monk at Convent of Christ,"Convent of Christ, Santarém",39.60321,-8.41767,Portugal,Southern Europe,monk,0,,holy-islands study (Wikidata Q736692)
+vintner-alto-douro-wine-region,Vintner at Alto Douro Wine Region,"Alto Douro Wine Region, Viseu",41.16573,-7.51638,Portugal,Southern Europe,vintner,0,,Wikidata via the map's heritage layer (Q649738)
+nun-palace-of-mafra,Nun at Palace of Mafra,"Palace of Mafra, Lisboa",38.93561,-9.32607,Portugal,Southern Europe,nun,0,,holy-islands study (Wikidata Q599223)
+market-stall-bom-jesus-do-monte,Market stall at Bom Jesus do Monte,"Bom Jesus do Monte, Braga",41.55481,-8.37831,Portugal,Southern Europe,stall,0,,Wikidata via the map's heritage layer (Q2707216)
+pilgrims-broeira,Pilgrims at Broeira,"Broeira, Guarda",41.05315,-7.09845,Portugal,Southern Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q64686787)
+skaters-alphen-aan-den-rijn,Skaters at Alphen aan den Rijn,"Alphen aan den Rijn, Zuid-Holland",52.13397,4.64978,Netherlands,Western Europe,skaters,0,,Wikidata via the map's heritage layer (Q213246)
+monk-koningshoeven-abbey,Monk at Koningshoeven Abbey,"Koningshoeven Abbey, Noord-Brabant",51.54331,5.12821,Netherlands,Western Europe,monk,0,,holy-islands study (Wikidata Q2572101)
+skaters-colonies-of-benevolence,Skaters at Colonies of Benevolence,"Colonies of Benevolence, Drenthe",53.04257,6.39354,Netherlands,Western Europe,skaters,0,,Wikidata via the map's heritage layer (Q64590591)
+skaters-susteren-abbey,Skaters at Susteren Abbey,"Susteren Abbey, Limburg",51.06169,5.85257,Netherlands,Western Europe,skaters,0,,holy-islands study (Wikidata Q334319)
+goblins-dorestad,Goblins at Dorestad,"Dorestad, Utrecht",51.97645,5.33946,Netherlands,Western Europe,goblins,0,,Wikidata via the map's heritage layer (Q739353)
+skaters-antwerp-city-hall,Skaters at Antwerp City Hall,Antwerp City Hall,51.22191,4.4008,Belgium,Western Europe,skaters,0,,Wikidata via the map's heritage layer (Q2005868)
+monk-li-ge-cathedral,Monk at Liège Cathedral,"Liège Cathedral, Liege",50.64053,5.57272,Belgium,Western Europe,monk,0,,holy-islands study (Wikidata Q1573417)
+shepherd-arlon,Shepherd at Arlon,"Arlon, Luxembourg",49.68328,5.81495,Belgium,Western Europe,shepherd,0,,Wikidata via the map's heritage layer (Q675960)
+merchant-orval-abbey,Merchant at Orval Abbey,"Orval Abbey, Luxembourg",49.63908,5.34951,Belgium,Western Europe,merchant,0,,holy-islands study (Wikidata Q334099)
+horn-player-aare-gorge,Horn player at Aare Gorge,"Aare Gorge, Bern",46.71779,8.21172,Switzerland,Western Europe,alphorn,0,,Wikidata via the map's heritage layer (Q301191)
+friar-abbey-of-saint-gall,Friar at Abbey of Saint Gall,"Abbey of Saint Gall, Sankt Gallen",47.42328,9.37552,Switzerland,Western Europe,friar,0,,holy-islands study (Wikidata Q155699)
+shepherd-saint-john-abbey,Shepherd at Saint John Abbey,"Saint John Abbey, Graubünden",46.63001,10.44642,Switzerland,Western Europe,shepherd,0,,holy-islands study (Wikidata Q757067)
+pilgrim-on-a-mule-albula-pass,Pilgrim on a mule at Albula Pass,"Albula Pass, Graubünden",46.58371,9.83816,Switzerland,Western Europe,pilgrimhorse,0,,Wikidata via the map's heritage layer (Q685235)
+monk-muri-abbey,Monk at Muri Abbey,"Muri Abbey, Aargau",47.27503,8.33676,Switzerland,Western Europe,monk,0,,holy-islands study (Wikidata Q162573)
+friar-admont-abbey,Friar at Admont Abbey,"Admont Abbey, Steiermark",47.57485,14.46093,Austria,Western Europe,friar,0,,Wikidata via the map's heritage layer (Q667615)
+nun-melk-abbey,Nun at Melk Abbey,"Melk Abbey, Niederösterreich",48.22757,15.331,Austria,Western Europe,nun,0,,holy-islands study (Wikidata Q660082)
+falconer-ambras-castle,Falconer at Ambras Castle,"Ambras Castle, Tirol",47.25595,11.43405,Austria,Western Europe,falconer,0,,Wikidata via the map's heritage layer (Q700764)
+monk-heiligenkreuz-abbey,Monk at Heiligenkreuz Abbey,"Heiligenkreuz Abbey, Niederösterreich",48.05418,16.13284,Austria,Western Europe,monk,0,,holy-islands study (Wikidata Q697221)
+horn-player-ancient-and-primeval-beech-f,Horn player at Ancient and Primeval Beech Forests of th,"Ancient and Primeval Beech Forests of th, Niederösterreich",48.99889,14.99934,Austria,Western Europe,alphorn,0,,Wikidata via the map's heritage layer (Q156011)
+minstrel-gardens-and-castle-at-krom,Minstrel at Gardens and Castle at Kroměříž,"Gardens and Castle at Kroměříž, Zlínský",49.29832,17.38282,Czechia,Central and Eastern Europe,minstrel,0,,Wikidata via the map's heritage layer (Q64642132)
+friar-s-zava-monastery,Friar at Sázava Monastery,"Sázava Monastery, Středočeský",49.87666,14.89692,Czechia,Central and Eastern Europe,friar,0,,holy-islands study (Wikidata Q369547)
+cockatrice-historic-centre-of-tel,Cockatrice at Historic Centre of Telč,"Historic Centre of Telč, Vysočina",49.18462,15.45076,Czechia,Central and Eastern Europe,cockatrice,0,,Wikidata via the map's heritage layer (Q64640311)
+monk-st-thomass-abbey-in-brno,Monk at St Thomas's Abbey in Brno,"St Thomas's Abbey in Brno, Jihomoravský",49.19266,16.59368,Czechia,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q334311)
+pedlar-archcathedral-basilica-of-st-pete,Pedlar at Archcathedral Basilica of St. Peter and,"Archcathedral Basilica of St. Peter and, Greater Poland",52.41219,16.94938,Poland,Central and Eastern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q2064095)
+sledge-jasna-g-ra-monastery,Sledge at Jasna Góra Monastery,"Jasna Góra Monastery, Silesian",50.81248,19.09604,Poland,Central and Eastern Europe,sledge,0,,holy-islands study (Wikidata Q573920)
+scholar-auschwitz,Scholar at Auschwitz,"Auschwitz, Silesian",50.03616,19.17971,Poland,Central and Eastern Europe,scholar,0,,Wikidata via the map's heritage layer (Q7341)
+monk-niepokalan-w,Monk at Niepokalanów,"Niepokalanów, Masovian",52.20467,20.41905,Poland,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q1283855)
+knight-babia-g-ra-national-park,Knight at Babia Góra National Park,"Babia Góra National Park, Lesser Poland",49.58861,19.53962,Poland,Central and Eastern Europe,knight,0,,Wikidata via the map's heritage layer (Q606000)
+knight-krzesz-w-abbey,Knight at Krzeszów Abbey,"Krzeszów Abbey, Lower Silesian",50.73185,16.06808,Poland,Central and Eastern Europe,knight,0,,holy-islands study (Wikidata Q1457087)
+friar-basilica-of-our-lady-of-liche,Friar at Basilica of Our Lady of Licheń,"Basilica of Our Lady of Licheń, Greater Poland",52.32435,18.35811,Poland,Central and Eastern Europe,friar,0,,Wikidata via the map's heritage layer (Q810129)
+monk-lubi-abbey,Monk at Lubiąż Abbey,"Lubiąż Abbey, Lower Silesian",51.26136,16.46934,Poland,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q1775543)
+minstrel-belweder,Minstrel at Belweder,"Belweder, Masovian",52.21311,21.02617,Poland,Central and Eastern Europe,minstrel,0,,Wikidata via the map's heritage layer (Q645474)
+sledge-dominican-church-and-convent-of-s,Sledge,"Dominican Church and Convent of St. James in Sandomierz, Świętokrzyskie",50.67631,21.74451,Poland,Central and Eastern Europe,sledge,0,,holy-islands study (Wikidata Q1415136)
+sledge-abisko-national-park,Sledge at Abisko National Park,"Abisko National Park, Norrbotten",68.3233,18.67961,Sweden,Northern Europe,sledge,0,,Wikidata via the map's heritage layer (Q953092)
+friar-varnhem-abbey,Friar at Varnhem Abbey,"Varnhem Abbey, Västra Götaland",58.38515,13.65545,Sweden,Northern Europe,friar,0,,holy-islands study (Wikidata Q860739)
+scholar-birka,Scholar at Birka,"Birka, Stockholm",59.33665,17.54579,Sweden,Northern Europe,scholar,0,,Wikidata via the map's heritage layer (Q208177)
+monk-vadstena-abbey,Monk at Vadstena Abbey,"Vadstena Abbey, Östergötland",58.44988,14.89102,Sweden,Northern Europe,monk,0,,holy-islands study (Wikidata Q513949)
+woodcutter-bj-rnlandet-national-park,Woodcutter at Björnlandet National Park,"Björnlandet National Park, Västerbotten",63.9735,18.01385,Sweden,Northern Europe,woodcutter,0,,Wikidata via the map's heritage layer (Q119150)
+archer-borgholm-castle,Archer at Borgholm Castle,"Borgholm Castle, Kalmar",56.87121,16.64291,Sweden,Northern Europe,archer,0,,Wikidata via the map's heritage layer (Q1589230)
+norseman-vreta-abbey,Norseman at Vreta Abbey,"Vreta Abbey, Östergötland",58.48255,15.51537,Sweden,Northern Europe,vikingfoot,0,,holy-islands study (Wikidata Q860536)
+knight-akershus-fortress,Knight at Akershus Fortress,"Akershus Fortress, Oslo",59.90622,10.73746,Norway,Northern Europe,knight,0,,Wikidata via the map's heritage layer (Q644464)
+monk-tautra-abbey,Monk at Tautra Abbey,"Tautra Abbey, Norway",63.58385,10.62272,Norway,Northern Europe,monk,0,,holy-islands study (Wikidata Q1477839)
+pilgrims-bergen-cathedral,Pilgrims at Bergen Cathedral,"Bergen Cathedral, Hordaland",60.39341,5.33192,Norway,Northern Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q819531)
+monk-rein-abbey,Monk at Rein Abbey,"Rein Abbey, Sør-Trøndelag",63.56575,9.92031,Norway,Northern Europe,monk,0,,holy-islands study (Wikidata Q1361362)
+goblins-bl-cher,Goblins at Blücher,"Blücher, Akershus",59.69902,10.59128,Norway,Northern Europe,goblins,0,,Wikidata via the map's heritage layer (Q161346)
+friar-halsn-y-abbey,Friar at Halsnøy Abbey,"Halsnøy Abbey, Norway",59.79653,5.65452,Norway,Northern Europe,friar,0,,holy-islands study (Wikidata Q4580749)
+merchant-amalienborg,Merchant at Amalienborg,"Amalienborg, Hovedstaden",55.68455,12.59151,Denmark,Northern Europe,merchant,0,,Wikidata via the map's heritage layer (Q211053)
+nun-sor-abbey,Nun at Sorø Abbey,"Sorø Abbey, Sjaælland",55.43013,11.55542,Denmark,Northern Europe,nun,0,,holy-islands study (Wikidata Q4992573)
+cockatrice-christiansfeld,Cockatrice at Christiansfeld,"Christiansfeld, Syddanmark",55.35747,9.48279,Denmark,Northern Europe,cockatrice,0,,Wikidata via the map's heritage layer (Q3197288)
+friar-belholt-abbey,Friar at Æbelholt Abbey,"Æbelholt Abbey, Hovedstaden",55.94505,12.21019,Denmark,Northern Europe,friar,0,,holy-islands study (Wikidata Q9063641)
+monk-finlandia-hall,Monk at Finlandia Hall,"Finlandia Hall, Uusimaa",60.17647,24.93481,Finland,Northern Europe,monk,0,,Wikidata via the map's heritage layer (Q1142522)
+friar-new-valamo,Friar at New Valamo,"New Valamo, Southern Savonia",62.56255,28.78845,Finland,Northern Europe,friar,0,,holy-islands study (Wikidata Q1776224)
+swineherd-helvetinj-rvi-national-park,Swineherd at Helvetinjärvi National Park,"Helvetinjärvi National Park, Pirkanmaa",62.03238,23.85065,Finland,Northern Europe,swineherd,0,,Wikidata via the map's heritage layer (Q937131)
+monk-n-dendal-abbey,Monk at Nådendal Abbey,"Nådendal Abbey, Finland",60.4713,22.01569,Finland,Northern Europe,monk,0,,holy-islands study (Wikidata Q6305302)
+wolf-pack-hiidenportti-national-park,Wolf pack at Hiidenportti National Park,"Hiidenportti National Park, Kainuu",63.87388,29.0571,Finland,Northern Europe,wolves,0,,Wikidata via the map's heritage layer (Q2658641)
+monk-achilleion,Monk at Achilleion,"Achilleion, Ionioi Nisoi",39.56273,19.90564,Greece,Southern Europe,monk,0,,Wikidata via the map's heritage layer (Q56240051)
+monk-daphni-monastery,Monk at Daphni Monastery,"Daphni Monastery, Attiki",38.01284,23.63499,Greece,Southern Europe,monk,0,,holy-islands study (Wikidata Q500444)
+knight-acrocorinth,Knight at Acrocorinth,"Acrocorinth, Peloponnisos",37.89021,22.87018,Greece,Southern Europe,knight,0,,Wikidata via the map's heritage layer (Q420810)
+nun-hosios-loukas,Nun at Hosios Loukas,"Hosios Loukas, Stereá Elláda",38.39578,22.74807,Greece,Southern Europe,nun,0,,holy-islands study (Wikidata Q844841)
+merchant-agios-minas-cathedral,Merchant at Agios Minas Cathedral,"Agios Minas Cathedral, Kriti",35.33641,25.12956,Greece,Southern Europe,merchant,0,,Wikidata via the map's heritage layer (Q2942217)
+monk-nea-moni-of-chios,Monk at Nea Moni of Chios,"Nea Moni of Chios, Voreio Aigaio",38.37438,26.05391,Greece,Southern Europe,monk,0,,holy-islands study (Wikidata Q740076)
+monk-agiou-panteleimonos-monastery,Monk at Agiou Panteleimonos monastery,"Agiou Panteleimonos monastery, Ayion Oros",40.23833,24.19948,Greece,Southern Europe,monk,0,,Wikidata via the map's heritage layer (Q588387)
+shepherd-aggtelek-national-park,Shepherd at Aggtelek National Park,"Aggtelek National Park, Borsod-Abaúj-Zemplén",48.46546,20.48275,Hungary,Central and Eastern Europe,shepherd,0,,Wikidata via the map's heritage layer (Q516668)
+nun-pannonhalma-archabbey,Nun at Pannonhalma Archabbey,"Pannonhalma Archabbey, Gyor-Moson-Sopron",47.55275,17.76304,Hungary,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q936285)
+horse-archer-aquincum,Horse archer at Aquincum,"Aquincum, Budapest",47.56474,19.04782,Hungary,Central and Eastern Europe,horsearcher_hu,0,,Wikidata via the map's heritage layer (Q623345)
+monk-tihany-abbey,Monk at Tihany Abbey,"Tihany Abbey, Veszprém",46.9137,17.89087,Hungary,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q334331)
+knight-baba-vida,Knight at Baba Vida,"Baba Vida, Dolj",43.99433,22.88776,Romania,Central and Eastern Europe,knight,0,,Wikidata via the map's heritage layer (Q59893)
+woodcutter-horezu-monastery,Woodcutter at Horezu monastery,"Horezu monastery, Vâlcea",45.16786,24.00849,Romania,Central and Eastern Europe,woodcutter,0,,holy-islands study (Wikidata Q733069)
+monk-black-church,Monk at Black Church,"Black Church, Brasov",45.64088,25.5866,Romania,Central and Eastern Europe,monk,0,,Wikidata via the map's heritage layer (Q910124)
+nun-vorone-monastery,Nun at Voroneț Monastery,"Voroneț Monastery, Suceava",47.51624,25.86436,Romania,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q384463)
+shepherd-b-ile-herculane,Shepherd at Băile Herculane,"Băile Herculane, Caras-Severin",44.87716,22.41851,Romania,Central and Eastern Europe,shepherd,0,,Wikidata via the map's heritage layer (Q650981)
+monk-putna-monastery,Monk at Putna Monastery,"Putna Monastery, Suceava",47.86656,25.59488,Romania,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q1088525)
+scholar-alexander-nevsky-cathedral,Scholar at Alexander Nevsky Cathedral,"Alexander Nevsky Cathedral, Grad Sofiya",42.69545,23.33383,Bulgaria,Central and Eastern Europe,scholar,0,,Wikidata via the map's heritage layer (Q43282)
+nun-bachkovo-monastery,Nun at Bachkovo Monastery,"Bachkovo Monastery, Plovdiv",41.94326,24.84934,Bulgaria,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q47020)
+nun-troyan-monastery,Nun at Troyan Monastery,"Troyan Monastery, Lovech",42.8631,24.78022,Bulgaria,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q573222)
+monk-bjelovar-cathedral,Monk at Bjelovar Cathedral,"Bjelovar Cathedral, Bjelovarsko-bilogorska",45.89859,16.84387,Croatia,Central and Eastern Europe,monk,0,,Wikidata via the map's heritage layer (Q2585366)
+friar-krka-monastery,Friar at Krka monastery,"Krka monastery, Zadarska",43.96239,15.99089,Croatia,Central and Eastern Europe,friar,0,,holy-islands study (Wikidata Q1283927)
+merchant-croatian-national-theatre-in-za,Merchant at Croatian National Theatre in Zagreb,"Croatian National Theatre in Zagreb, Grad Zagreb",45.80926,15.97101,Croatia,Central and Eastern Europe,merchant,0,,Wikidata via the map's heritage layer (Q268151)
+monk-blaca,Monk at Blaca,"Blaca, Splitsko-Dalmatinska",43.29218,16.52886,Croatia,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q1349993)
+scholar-avala-tower,Scholar at Avala Tower,"Avala Tower, Grad Beograd",44.69494,20.51382,Republic of Serbia,Central and Eastern Europe,scholar,0,,Wikidata via the map's heritage layer (Q1258275)
+friar-studenica-monastery,Friar at Studenica monastery,"Studenica monastery, Raški",43.48568,20.53159,Republic of Serbia,Central and Eastern Europe,friar,0,,holy-islands study (Wikidata Q143042)
+swineherd-deliblato-sands,Swineherd at Deliblato sands,"Deliblato sands, Južno-Banatski",44.96576,21.01433,Republic of Serbia,Central and Eastern Europe,swineherd,0,,Wikidata via the map's heritage layer (Q129979)
+nun-visoki-de-ani,Nun at Visoki Dečani,Visoki Dečani,42.54796,20.26687,Kosovo,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q849517)
+monk-armenian-cathedral-of-lviv,Monk at Armenian Cathedral of Lviv,"Armenian Cathedral of Lviv, L'viv",49.84331,24.02951,Ukraine,Central and Eastern Europe,monk,0,,Wikidata via the map's heritage layer (Q684239)
+monk-sviatohirsk-lavra,Monk at Sviatohirsk Lavra,"Sviatohirsk Lavra, Donets'k",49.02771,37.56699,Ukraine,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q1472360)
+wolf-pack-azov-syvash-national-nature-pa,Wolf pack at Azov-Syvash National Nature Park,"Azov-Syvash National Nature Park, Kherson",46.10313,34.38504,Ukraine,Central and Eastern Europe,wolves,0,,Wikidata via the map's heritage layer (Q3743102)
+cossack-rider-pochayiv-lavra,Cossack rider at Pochayiv Lavra,"Pochayiv Lavra, Ternopil'",50.005,25.50472,Ukraine,Central and Eastern Europe,cossack,0,,holy-islands study (Wikidata Q1595364)
+watchman-bilhorod-dnistrovskyi-fortress,Watchman at Bilhorod-Dnistrovskyi Fortress,"Bilhorod-Dnistrovskyi Fortress, Odessa",46.20023,30.35045,Ukraine,Central and Eastern Europe,watchman,0,,Wikidata via the map's heritage layer (Q1968086)
+merchant-akhmad-kadyrov-mosque,Merchant at Akhmad Kadyrov Mosque,"Akhmad Kadyrov Mosque, Chechnya",43.31692,45.69463,Russia,Central and Eastern Europe,merchant,0,,Wikidata via the map's heritage layer (Q340549)
+nun-novodevichy-convent,Nun at Novodevichy Convent,"Novodevichy Convent, Moskva",55.72656,37.55503,Russia,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q270725)
+wolf-pack-alaniya-national-park,Wolf pack at Alaniya National Park,"Alaniya National Park, North Ossetia",42.8988,43.73348,Russia,Central and Eastern Europe,wolves,0,,Wikidata via the map's heritage layer (Q4060505)
+monk-ferapontov-monastery,Monk at Ferapontov Monastery,"Ferapontov Monastery, Vologda",59.9551,38.56602,Russia,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q838256)
+skaters-alexander-nevsky-cathedral-novos,"Skaters at Alexander Nevsky Cathedral, Novosibirsk","Alexander Nevsky Cathedral, Novosibirsk",55.01921,82.92498,Russia,Central and Eastern Europe,skaters,0,,Wikidata via the map's heritage layer (Q603289)
+nun-solovetsky-monastery,Nun at Solovetsky Monastery,"Solovetsky Monastery, Russia",65.02412,35.70998,Russia,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q1140434)
+hut-on-bird-legs-alexander-nevsky-lavra,Hut on bird legs at Alexander Nevsky Lavra,"Alexander Nevsky Lavra, City of St. Petersburg",59.92069,30.3862,Russia,Central and Eastern Europe,babahut,0,,Wikidata via the map's heritage layer (Q946428)
+falconer-alexander-palace,Falconer at Alexander Palace,"Alexander Palace, City of St. Petersburg",59.7222,30.39391,Russia,Central and Eastern Europe,falconer,0,,Wikidata via the map's heritage layer (Q1519034)
+hut-on-bird-legs-valaam-monastery,Hut on bird legs at Valaam Monastery,"Valaam Monastery, Karelia",61.38972,30.94389,Russia,Central and Eastern Europe,babahut,0,,holy-islands study (Wikidata Q1421396)
+merchant-architectural-residential-and-c,"Merchant at Architectural, Residential and Cultural","Architectural, Residential and Cultural, Minsk",53.22308,26.69328,Belarus,Central and Eastern Europe,merchant,0,,Wikidata via the map's heritage layer (Q15278712)
+nun-church-of-the-assumption-of-mary-in-,Nun at Church of the Assumption of Mary in Budslaŭ,"Church of the Assumption of Mary in Budslaŭ, Minsk",54.78615,27.4502,Belarus,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q4235752)
+archer-belavezhskaya-pushcha-national-pa,Archer at Belavezhskaya Pushcha National Park,"Belavezhskaya Pushcha National Park, Brest",52.43961,23.81876,Belarus,Central and Eastern Europe,archer,0,,Wikidata via the map's heritage layer (Q13469680)
+wolf-pack-auk-taitija-national-park,Wolf pack at Aukštaitija National Park,"Aukštaitija National Park, Utenos",55.34435,26.05923,Lithuania,Northern Europe,wolves,0,,Wikidata via the map's heritage layer (Q400200)
+friar-pa-aislis-monastery,Friar at Pažaislis Monastery,"Pažaislis Monastery, Kauno",54.87609,24.02268,Lithuania,Northern Europe,friar,0,,holy-islands study (Wikidata Q1775811)
+knight-freedom-monument,Knight at Freedom Monument,"Freedom Monument, Riga",56.95077,24.11148,Latvia,Northern Europe,knight,0,,Wikidata via the map's heritage layer (Q337179)
+monk-monastery-of-the-holy-spirit-in-j-k,Monk at Monastery of the Holy Spirit in Jēkabpils,"Monastery of the Holy Spirit in Jēkabpils, Jekabpils",56.50044,25.85977,Latvia,Northern Europe,monk,0,,holy-islands study (Wikidata Q3801693)
+wolf-pack-gauja-national-park,Wolf pack at Gauja National Park,"Gauja National Park, Priekulu",57.41764,25.41505,Latvia,Northern Europe,wolves,0,,Wikidata via the map's heritage layer (Q743754)
+falconer-haapsalu-castle,Falconer at Haapsalu Castle,"Haapsalu Castle, Lääne",58.9471,23.54068,Estonia,Northern Europe,falconer,0,,Wikidata via the map's heritage layer (Q866154)
+sledge-padise-abbey,Sledge at Padise Abbey,"Padise Abbey, Harju",59.22847,24.14129,Estonia,Northern Europe,sledge,0,,holy-islands study (Wikidata Q1435315)
+swineherd-bardejov-town-conservation-res,Swineherd at Bardejov Town Conservation Reserve,"Bardejov Town Conservation Reserve, Prešov",49.29225,21.27857,Slovakia,Central and Eastern Europe,swineherd,0,,Wikidata via the map's heritage layer (Q17634781)
+friar-erven-kl-tor,Friar at Červený Kláštor,"Červený Kláštor, Lesser Poland",49.39741,20.41833,Poland,Central and Eastern Europe,friar,0,,holy-islands study (Wikidata Q340005)
+falconer-bojnice-castle,Falconer at Bojnice Castle,"Bojnice Castle, Trenciansky",48.77914,18.57588,Slovakia,Central and Eastern Europe,falconer,0,,Wikidata via the map's heritage layer (Q1520849)
+knight-bled-castle,Knight at Bled Castle,Bled Castle,46.36914,14.10166,Slovenia,Central and Eastern Europe,knight,0,,Wikidata via the map's heritage layer (Q2049047)
+friar-sti-na-abbey,Friar at Stična abbey,"Stična abbey, Ivancna Gorica",45.95767,14.80563,Slovenia,Central and Eastern Europe,friar,0,,holy-islands study (Wikidata Q506046)
+merchant-dragon-bridge,Merchant at Dragon Bridge,"Dragon Bridge, Ljubljana",46.05133,14.51211,Slovenia,Central and Eastern Europe,merchant,0,,Wikidata via the map's heritage layer (Q660029)
+merchant-ali-pashas-mosque,Merchant at Ali Pasha's Mosque,"Ali Pasha's Mosque, Sarajevo",43.85869,18.41109,Bosnia and Herzegovina,Central and Eastern Europe,merchant,0,,Wikidata via the map's heritage layer (Q1246674)
+angler-aldeyjarfoss,Angler at Aldeyjarfoss,"Aldeyjarfoss, Norðurland eystra",65.3672,-17.3483,Iceland,Northern Europe,fisher,0,,Wikidata via the map's heritage layer (Q1827108)
+watchman-dwejra-tower,Watchman at Dwejra Tower,"Dwejra Tower, San Lawrenz",36.04923,14.19391,Malta,Southern Europe,watchman,0,,Wikidata via the map's heritage layer (Q19401632)
+cockatrice-amathus,Cockatrice at Amathus,"Amathus, Limassol",34.71111,33.13075,Cyprus,Southern Europe,cockatrice,0,,Wikidata via the map's heritage layer (Q2343313)
+nun-kykkos-monastery,Nun at Kykkos Monastery,"Kykkos Monastery, Nicosia",34.98303,32.74264,Cyprus,Southern Europe,nun,0,,holy-islands study (Wikidata Q225373)
+goblins-apollonia,Goblins at Apollonia,"Apollonia, Fier",40.71769,19.46738,Albania,Central and Eastern Europe,goblins,0,,Wikidata via the map's heritage layer (Q505703)
+shepherd-berat,Shepherd at Berat,"Berat, Albania",40.70438,19.94885,Albania,Central and Eastern Europe,shepherd,0,,Wikidata via the map's heritage layer (Q170244)
+minstrel-church-of-st-john-at-kaneo,Minstrel at Church of St. John at Kaneo,"Church of St. John at Kaneo, Ohrid",41.11101,20.78818,North Macedonia,Central and Eastern Europe,minstrel,0,,Wikidata via the map's heritage layer (Q164664)
+monk-monastery-of-saint-naum,Monk at Monastery of Saint Naum,"Monastery of Saint Naum, Ohrid",40.91276,20.74022,North Macedonia,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q164216)
+woodcutter-biogradska-gora,Woodcutter at Biogradska Gora,"Biogradska Gora, Mojkovac",42.89898,19.6013,Montenegro,Central and Eastern Europe,woodcutter,0,,Wikidata via the map's heritage layer (Q1258880)
+monk-ostrog-monastery,Monk at Ostrog monastery,"Ostrog monastery, Danilovgrad",42.67434,19.02799,Montenegro,Central and Eastern Europe,monk,0,,holy-islands study (Wikidata Q1257434)
+pilgrims-nativity-of-christ-cathedral,Pilgrims at Nativity of Christ Cathedral,"Nativity of Christ Cathedral, Chişinău",47.02519,28.83286,Moldova,Central and Eastern Europe,pilgrims,0,,Wikidata via the map's heritage layer (Q5813126)
+nun-c-priana-monastery,Nun at Căpriana monastery,"Căpriana monastery, Străşeni",47.11602,28.50965,Moldova,Central and Eastern Europe,nun,0,,holy-islands study (Wikidata Q1692322)
+archer-berg-castle,Archer at Berg Castle,"Berg Castle, Luxembourg",49.8131,6.087,Luxembourg,Western Europe,archer,0,,Wikidata via the map's heritage layer (Q615735)
+watchman-point-of-ayre-lighthouse,Watchman at Point of Ayre Lighthouse,"Point of Ayre Lighthouse, Isle of Man",54.41634,-4.36827,Isle of Man,Britain and Ireland,watchman,0,,Wikidata via the map's heritage layer (Q15267248)
+swineherd-little-chapel,Swineherd at Little Chapel,"Little Chapel, Sark",49.44177,-2.58746,Guernsey,Britain and Ireland,swineherd,0,,Wikidata via the map's heritage layer (Q15242494)
+field-fall-of-constantinople,On the field of Fall of Constantinople,"Fall of Constantinople (1453), Istanbul",41.02942,28.93612,Turkey,Middle East and North Africa,ghostknight,0,,every-battle study (Wikidata Q160077)
+field-grunwald,On the field of Grunwald,"Battle of Grunwald (1410), Warmian-Masurian",53.48711,20.12401,Poland,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q33570)
+field-moh-cs,On the field of Mohács,"Battle of Mohács (1526), Baranya",45.94086,18.64836,Hungary,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q178510)
+field-agincourt,On the field of Agincourt,"Battle of Agincourt (1415), Pas-de-Calais",50.46402,2.14126,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q188495)
+field-kosovo,On the field of Kosovo,"Battle of Kosovo (1389), Priština",42.63022,21.12063,Kosovo,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q179288)
+field-kulikovo,On the field of Kulikovo,"Battle of Kulikovo (1380), Tula",53.60862,38.66923,Russia,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q210354)
+field-poitiers,On the field of Poitiers,"Battle of Poitiers (1356), Vienne",46.52234,0.40379,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q201692)
+field-cr-cy,On the field of Crécy,"Battle of Crécy (1346), Somme",50.25698,1.88757,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q27759)
+field-the-kalka-river,On the field of the Kalka River,"Battle of the Kalka River (1223), Donets'k",47.25132,37.49372,Ukraine,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q570204)
+field-the-ice,On the field of the Ice,"Battle of the Ice (1242), Pskov",58.23394,27.49796,Russia,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q14689)
+field-nicopolis,On the field of Nicopolis,"Battle of Nicopolis (1396), Pleven",43.70515,24.89682,Bulgaria,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q212220)
+field-varna,On the field of Varna,"Battle of Varna (1444), Varna",43.21768,27.88331,Bulgaria,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q32832)
+field-las-navas-de-tolosa,On the field of Las Navas de Tolosa,"Battle of Las Navas de Tolosa (1212), Jaén",38.34333,-3.5498,Spain,Southern Europe,ghostknight,0,,every-battle study (Wikidata Q219697)
+field-sagrajas,On the field of Sagrajas,"Battle of Sagrajas (1086), Badajoz",38.92349,-6.9,Spain,Southern Europe,ghostknight,0,,every-battle study (Wikidata Q392538)
+field-the-golden-spurs,On the field of the Golden Spurs,"Battle of the Golden Spurs (1302), West Flanders",50.82911,3.27376,Belgium,Western Europe,ghostknight,0,,every-battle study (Wikidata Q44732)
+field-mohi,On the field of Mohi,"Battle of Mohi (1241), Borsod-Abaúj-Zemplén",47.9778,20.91351,Hungary,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q705874)
+field-siege-of-orl-ans,On the field of Siege of Orléans,"Siege of Orléans (1428), Loiret",47.90274,1.90731,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q392213)
+field-siege-of-rhodes,On the field of Siege of Rhodes,"Siege of Rhodes (1522), Notio Aigaio",36.16685,27.99971,Greece,Southern Europe,ghostknight,0,,every-battle study (Wikidata Q767935)
+field-kleidion,On the field of Kleidion,"Battle of Kleidion (1014), Blagoevgrad",41.36798,23.0169,Bulgaria,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q584047)
+field-saule,On the field of Saule,"Battle of Saule (1236), Šiauliai",56.11415,23.51514,Lithuania,Northern Europe,ghostknight,0,,every-battle study (Wikidata Q853754)
+field-bouvines,On the field of Bouvines,"Battle of Bouvines (1214), Nord",50.57893,3.22338,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q830626)
+field-castillon,On the field of Castillon,"Battle of Castillon (1453), Gironde",44.85155,-0.01779,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q932613)
+field-legnano,On the field of Legnano,"Battle of Legnano (1176), Milano",45.60212,8.90962,Italy,Southern Europe,ghostknight,0,,every-battle study (Wikidata Q283364)
+field-dyrrhachium,On the field of Dyrrhachium,"Battle of Dyrrhachium (1081), Durrës",41.30012,19.50086,Albania,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q1987213)
+field-great-stand-on-the-ugra-river,On the field of Great stand on the Ugra river,"Great stand on the Ugra river (1480), Kaluga",54.56787,36.04819,Russia,Central and Eastern Europe,ghostknight,0,,every-battle study (Wikidata Q25628)
+field-nancy,On the field of Nancy,"Battle of Nancy (1476), Meurthe-et-Moselle",48.69567,6.18329,France,Western Europe,ghostknight,0,,every-battle study (Wikidata Q316877)
+travelling-mapmaker-arikok-national-park,Travelling mapmaker at Arikok National Park,"Arikok National Park, Aruba",12.49969,-69.92659,Aruba,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q2028082)
+silk-road-merchant-ai-khanoum,Silk Road merchant at Ai-Khanoum,"Ai-Khanoum, Takhar",37.16621,69.4121,Afghanistan,Central Asia and the Caucasus,ca_merchant,0,,Wikidata via the map's heritage layer (Q857845)
+zebu-herder-bicuari-national-park,Zebu herder at Bicuari National Park,"Bicuari National Park, Huíla",-15.33464,14.83247,Angola,Sub-Saharan Africa,zebuherder_af,0,,Wikidata via the map's heritage layer (Q3123455)
+pedlar-kastelholm-castle,Pedlar at Kastelholm Castle,"Kastelholm Castle, Aland",60.23262,20.08396,Aland,Northern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q1735335)
+pedlar-casa-de-la-vall,Pedlar at Casa de la Vall,"Casa de la Vall, Andorra la Vella",42.50508,1.51931,Andorra,Southern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q1046548)
+horseman-barit-national-park,Horseman at Baritú National Park,"Baritú National Park, Salta",-22.58365,-64.6159,Argentina,South America,gaucho,0,,Wikidata via the map's heritage layer (Q829128)
+monk-amberd,Monk at Amberd,"Amberd, Aragatsotn",40.38919,44.22791,Armenia,Central Asia and the Caucasus,monk_ol,0,,Wikidata via the map's heritage layer (Q457057)
+travelling-mapmaker-antigua-naval-dockya,Travelling mapmaker at Antigua Naval Dockyard and Related Archa,"Antigua Naval Dockyard and Related Archa, Saint Paul",17.00423,-61.76094,Antigua and Barbuda,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q124402010)
+travelling-mapmaker-auburn-gallipoli-mos,Travelling mapmaker at Auburn Gallipoli Mosque,"Auburn Gallipoli Mosque, New South Wales",-33.86438,151.02247,Australia,Oceania,cartographer_world,0,,Wikidata via the map's heritage layer (Q1492495)
+travelling-mapmaker-australian-fossil-ma,Travelling mapmaker at Australian Fossil Mammal Sites (Riversle,"Australian Fossil Mammal Sites (Riversle, Queensland",-19.08139,138.71723,Australia,Oceania,cartographer_world,0,,Wikidata via the map's heritage layer (Q15933552)
+caravan-absheron-national-park,Caravan at Absheron National Park,"Absheron National Park, Bakı",40.283,50.35718,Azerbaijan,Central Asia and the Caucasus,caravan,0,,Wikidata via the map's heritage layer (Q4068343)
+herder-kibira-national-park,Herder at Kibira National Park,"Kibira National Park, Cibitoke",-2.91371,29.43428,Burundi,Sub-Saharan Africa,ankole,0,,Wikidata via the map's heritage layer (Q3084668)
+market-trader-pendjari-national-park,Market trader at Pendjari National Park,"Pendjari National Park, Atakora",11.05006,1.51774,Benin,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q1474363)
+griot-ancient-ferrous-metallurgy-sites-o,Griot at Ancient ferrous metallurgy sites of Burk,"Ancient ferrous metallurgy sites of Burk, Mou Houn",12.58856,-3.32734,Burkina Faso,Sub-Saharan Africa,griot,0,,Wikidata via the map's heritage layer (Q65685157)
+water-carrier-baitul-mukarram-national-m,Water carrier at Baitul Mukarram National Mosque,"Baitul Mukarram National Mosque, Dhaka",23.72931,90.41399,Bangladesh,South Asia,in_sari,0,,Wikidata via the map's heritage layer (Q804009)
+falconer-al-fateh-grand-mosque,Falconer at Al Fateh Grand Mosque,"Al Fateh Grand Mosque, Al Manāmah",26.21861,50.60026,Bahrain,Middle East and North Africa,falconer_ar,0,,Wikidata via the map's heritage layer (Q2086076)
+fisher-st-francis-xavier-cathedral-nassa,"Fisher at St. Francis Xavier Cathedral, Nassau","St. Francis Xavier Cathedral, Nassau, New Providence",25.07713,-77.34784,The Bahamas,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q23754896)
+scribe-altun-ha,Scribe at Altun Ha,"Altun Ha, Belize",17.76417,-88.3461,Belize,"Mexico, Central America and the Caribbean",maya,0,,Wikidata via the map's heritage layer (Q446176)
+fisher-st-george-and-related-fortificati,Fisher at St George and Related Fortifications,"St George and Related Fortifications, City of Saint George",32.37815,-64.67717,Bermuda,North America,fisher_beach_eu,0,,Wikidata via the map's heritage layer (Q7865260)
+horseman-anavilhanas-national-park,Horseman at Anavilhanas National Park,"Anavilhanas National Park, Amazonas",-2.39457,-60.91926,Brazil,South America,gaucho,0,,Wikidata via the map's heritage layer (Q392877)
+travelling-mapmaker-aparados-da-serra-na,Travelling mapmaker at Aparados da Serra National Park,"Aparados da Serra National Park, Santa Catarina",-29.19191,-50.09606,Brazil,South America,cartographer_world,0,,Wikidata via the map's heritage layer (Q617635)
+horseman-atlantic-forest-south-east-rese,Horseman at Atlantic Forest South-East Reserves,"Atlantic Forest South-East Reserves, São Paulo",-24.16738,-48.00192,Brazil,South America,gaucho,0,,Wikidata via the map's heritage layer (Q2521895)
+travelling-mapmaker-garrison-historic-ar,Travelling mapmaker at Garrison Historic Area,"Garrison Historic Area, Saint Michael",13.09665,-59.61231,Barbados,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q629210)
+fisher-st-johns-church-kuala-belait,"Fisher at St John's Church, Kuala Belait","St John's Church, Kuala Belait",4.58216,114.19222,Brunei,South-East Asia,fisher_beach,0,,Wikidata via the map's heritage layer (Q108770702)
+market-trader-manovo-gounda-st-floris-na,Market trader at Manovo-Gounda St. Floris National Park,"Manovo-Gounda St. Floris National Park, Bamingui-Bangoran",8.50025,21.49904,Central African Republic,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q503835)
+travelling-mapmaker-anticosti,Travelling mapmaker at Anticosti,"Anticosti, Québec",49.53866,-63.2429,Canada,North America,cartographer_world,0,,Wikidata via the map's heritage layer (Q122707293)
+horseman-alberto-de-agostini-national-pa,Horseman at Alberto de Agostini National Park,"Alberto de Agostini National Park, Magallanes y Antártica Chilena",-54.74965,-70.44194,Chile,South America,gaucho,0,,Wikidata via the map's heritage layer (Q1759349)
+scholar-on-a-bridge-ancient-building-com,Scholar on a bridge at Ancient Building Complex in the Wudang M,"Ancient Building Complex in the Wudang M, Hubei",32.44329,111.05976,China,East Asia,cn_scholar,0,,Wikidata via the map's heritage layer (Q11124244)
+market-trader-basilica-of-our-lady-of-pe,Market trader at Basilica of Our Lady of Peace of Yamouss,"Basilica of Our Lady of Peace of Yamouss, Lacs",6.81116,-5.29804,Ivory Coast,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q815584)
+horseman-b-nou-national-park,Horseman at Bénoué National Park,"Bénoué National Park, Nord",8.33238,13.83156,Cameroon,Sub-Saharan Africa,sahel_horseman,0,,Wikidata via the map's heritage layer (Q1019469)
+market-trader-garamba-national-park,Market trader at Garamba National Park,"Garamba National Park, Orientale",4.00103,29.24949,Democratic Republic of the Congo,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q308893)
+market-trader-livingstone-falls,Market trader at Livingstone Falls,"Livingstone Falls, Pool",-4.83387,14.50185,Republic of the Congo,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q559340)
+llama-herder-chiribiquete-national-park,Llama herder at Chiribiquete National Park,"Chiribiquete National Park, Caquetá",0.69955,-72.80613,Colombia,South America,llamaherder,0,,Wikidata via the map's heritage layer (Q2603196)
+travelling-mapmaker-palais-du-peuple,Travelling mapmaker at Palais du Peuple,"Palais du Peuple, Andjazîdja",-11.71962,43.24562,Comoros,Sub-Saharan Africa,cartographer_world,0,,Wikidata via the map's heritage layer (Q120488124)
+fisher-cidade-velha,Fisher at Cidade Velha,"Cidade Velha, Ribeira Grande de Santiago",14.91584,-23.60426,Cabo Verde,Sub-Saharan Africa,fisher_beach_af,0,,Wikidata via the map's heritage layer (Q464913)
+fisher-carara-national-park,Fisher at Carara National Park,"Carara National Park, Puntarenas",9.74894,-84.62872,Costa Rica,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q1968766)
+fisher-historic-centre-of-camag-ey,Fisher at Historic Centre of Camagüey,"Historic Centre of Camagüey, Cienfuegos",22.14108,-80.4519,Cuba,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q65122987)
+travelling-mapmaker-fortkerk,Travelling mapmaker at Fortkerk,"Fortkerk, Curaçao",12.10377,-68.93308,Curaçao,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q113501274)
+pedlar-apostolos-andreas-monastery,Pedlar at Apostolos Andreas Monastery,"Apostolos Andreas Monastery, Northern Cyprus",35.65834,34.57151,Northern Cyprus,Southern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q2578745)
+caravan-day-forest-national-park,Caravan at Day Forest National Park,"Day Forest National Park, Tadjourah",11.7996,42.68525,Djibouti,Sub-Saharan Africa,caravan_af,0,,Wikidata via the map's heritage layer (Q141549)
+travelling-mapmaker-morne-trois-pitons-n,Travelling mapmaker at Morne Trois Pitons National Park,"Morne Trois Pitons National Park, Saint Patrick",15.26614,-61.2814,Dominica,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q629436)
+fisher-colonial-city-of-santo-domingo,Fisher at Colonial City of Santo Domingo,"Colonial City of Santo Domingo, Distrito Nacional",18.47188,-69.88426,Dominican Republic,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q2470834)
+caravan-abdallah-ibn-salam-mosque,Caravan at Abdallah Ibn Salam Mosque,"Abdallah Ibn Salam Mosque, Oran",35.69935,-0.65223,Algeria,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q1153491)
+llama-herder-cotopaxi-national-park,Llama herder at Cotopaxi National Park,Cotopaxi National Park,-0.68429,-78.43601,Ecuador,South America,llamaherder,0,,Wikidata via the map's heritage layer (Q1851352)
+pilgrim-adulis,Pilgrim at Adulis,"Adulis, Debub",15.26408,39.65906,Eritrea,Sub-Saharan Africa,et_pilgrim,0,,Wikidata via the map's heritage layer (Q378940)
+pilgrim-abijatta-shalla-national-park,Pilgrim at Abijatta-Shalla National Park,"Abijatta-Shalla National Park, Oromiya",7.50049,38.4987,Ethiopia,Sub-Saharan Africa,et_pilgrim,0,,Wikidata via the map's heritage layer (Q321200)
+fisher-sacred-heart-cathedral-suva,"Fisher at Sacred Heart Cathedral, Suva","Sacred Heart Cathedral, Suva, Central",-18.14012,178.44212,Fiji,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q18416905)
+shepherd-christ-church-cathedral,Shepherd at Christ Church Cathedral,"Christ Church Cathedral, Falkland Islands",-51.69272,-57.86021,Falkland Islands,South America,shepherd,0,,Wikidata via the map's heritage layer (Q3320132)
+pedlar-t-rshavn-cathedral,Pedlar at Tórshavn Cathedral,"Tórshavn Cathedral, Eysturoyar",62.01073,-6.7735,Faroe Islands,Northern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q1072725)
+fisher-leluh,Fisher at Leluh,"Leluh, Kosrae",5.33123,163.02486,Federated States of Micronesia,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q17366581)
+market-trader-ecosystem-and-relict-cultu,Market trader at Ecosystem and Relict Cultural Landscape,"Ecosystem and Relict Cultural Landscape, Ogooué-Ivindo",-0.50131,11.49987,Gabon,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q14223008)
+shepherd-alaverdi-monastery,Shepherd at Alaverdi Monastery,"Alaverdi Monastery, Kakheti",42.03369,45.37498,Georgia,Central Asia and the Caucasus,shepherd_ol,0,,Wikidata via the map's heritage layer (Q1749204)
+market-trader-asante-traditional-buildin,Market trader at Asante Traditional Buildings,"Asante Traditional Buildings, Ashanti",6.40074,-1.62495,Ghana,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q1141003)
+griot-mount-nimba-strict-nature-reserve,Griot at Mount Nimba Strict Nature Reserve,"Mount Nimba Strict Nature Reserve, Lola",7.60422,-8.39046,Guinea,Sub-Saharan Africa,griot,0,,Wikidata via the map's heritage layer (Q924276)
+griot-abuko-nature-reserve,Griot at Abuko Nature Reserve,"Abuko Nature Reserve, Banjul",13.39581,-16.64745,Gambia,Sub-Saharan Africa,griot,0,,Wikidata via the map's heritage layer (Q335818)
+market-trader-the-cathedral-of-bissau,Market trader at The Cathedral of Bissau,The Cathedral of Bissau,11.86145,-15.58078,Guinea-Bissau,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q10280205)
+market-trader-altos-de-nsork-national-pa,Market trader at Altos de Nsork National Park,"Altos de Nsork National Park, Wele-Nzás",1.16016,11.12106,Equatorial Guinea,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q4736972)
+travelling-mapmaker-tufton-hall-waterfal,Travelling mapmaker at Tufton Hall Waterfall,"Tufton Hall Waterfall, Saint John",12.17207,-61.69148,Grenada,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q7851528)
+scribe-antigua-guatemala,Scribe at Antigua Guatemala,"Antigua Guatemala, Sacatepéquez",14.55799,-90.73259,Guatemala,"Mexico, Central America and the Caribbean",maya,0,,Wikidata via the map's heritage layer (Q65130425)
+fisher-brickdam-cathedral,Fisher at Brickdam Cathedral,"Brickdam Cathedral, East Berbice-Corentyne",6.80872,-58.16188,Guyana,South America,fisher_beach_am,0,,Wikidata via the map's heritage layer (Q4256289)
+farmer-with-buckets-kowloon-mosque-and-i,Farmer with buckets at Kowloon Mosque and Islamic Centre,"Kowloon Mosque and Islamic Centre, Yau Tsim Mong",22.29868,114.17326,Hong Kong S.A.R.,East Asia,cn_farmer,0,,Wikidata via the map's heritage layer (Q2326446)
+scribe-cop-n,Scribe at Copán,"Copán, Honduras",14.83673,-89.14388,Honduras,"Mexico, Central America and the Caribbean",maya,0,,Wikidata via the map's heritage layer (Q214827)
+fisher-national-palace,Fisher at National Palace,"National Palace, Ouest",18.54288,-72.33991,Haiti,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q509638)
+rice-farmer-alas-purwo-national-park,Rice farmer at Alas Purwo National Park,"Alas Purwo National Park, Jawa Timur",-8.68409,114.46737,Indonesia,South-East Asia,rice,0,,Wikidata via the map's heritage layer (Q678744)
+rice-farmer-baiturrahman-grand-mosque,Rice farmer at Baiturrahman Grand Mosque,"Baiturrahman Grand Mosque, Aceh",5.55435,95.31683,Indonesia,South-East Asia,rice,0,,Wikidata via the map's heritage layer (Q1548318)
+rice-farmer-baluran-national-park,Rice farmer at Baluran National Park,"Baluran National Park, Jawa Timur",-7.83257,114.36498,Indonesia,South-East Asia,rice,0,,Wikidata via the map's heritage layer (Q181737)
+elephant-procession-aga-khan-palace,Elephant procession at Aga Khan Palace,"Aga Khan Palace, Maharashtra",18.55302,73.90075,India,South Asia,elephant,0,,Wikidata via the map's heritage layer (Q2344976)
+pilgrim-aihole,Pilgrim at Aihole,"Aihole, Karnataka",16.01921,75.88393,India,South Asia,in_pilgrim,0,,Wikidata via the map's heritage layer (Q404851)
+water-carrier-airavatesvara-temple,Water carrier at Airavatesvara Temple,"Airavatesvara Temple, Tamil Nadu",10.94904,79.35728,India,South Asia,in_sari,0,,Wikidata via the map's heritage layer (Q3437182)
+caravan-alamut-castle,Caravan at Alamut Castle,"Alamut Castle, Qazvin",36.44436,50.58453,Iran,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q4706020)
+caravan-abu-hanifa-mosque,Caravan at Abu Hanifa Mosque,"Abu Hanifa Mosque, Baghdad",33.37168,44.35995,Iraq,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q334716)
+pilgrims-abdah,Pilgrims at Abdah,"Abdah, HaDarom",30.79594,34.77453,Israel,Middle East and North Africa,pilgrims,0,,Wikidata via the map's heritage layer (Q791665)
+silk-road-merchant-aktobe,Silk Road merchant at Aktobe,"Aktobe, Aqtöbe",50.28449,57.22893,Kazakhstan,Central Asia and the Caucasus,ca_merchant,0,,Wikidata via the map's heritage layer (Q477232)
+silk-road-merchant-altyn-emel-national-p,Silk Road merchant at Altyn-Emel National Park,"Altyn-Emel National Park, Almaty",43.99927,78.79783,Kazakhstan,Central Asia and the Caucasus,ca_merchant,0,,Wikidata via the map's heritage layer (Q447047)
+herder-aberdare-national-park,Herder at Aberdare National Park,"Aberdare National Park, Central",-0.37916,36.69905,Kenya,Sub-Saharan Africa,maasai,0,,Wikidata via the map's heritage layer (Q319356)
+fisher-our-lady-of-the-rosary-church-koi,"Fisher at Our Lady of the Rosary Church, Koinawa","Our Lady of the Rosary Church, Koinawa, Kiribati",1.86385,172.98888,Kiribati,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q24266004)
+travelling-mapmaker-brimstone-hill-fortr,Travelling mapmaker at Brimstone Hill Fortress National Park,"Brimstone Hill Fortress National Park, Saint Anne Sandy Point",17.34613,-62.83507,Saint Kitts and Nevis,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q200521)
+falconer-grand-mosque,Falconer at Grand Mosque,"Grand Mosque, Al Asimah",29.36869,47.97992,Kuwait,Middle East and North Africa,falconer_ar,0,,Wikidata via the map's heritage layer (Q1432832)
+monk-champasak-cultural-landscape,Monk at Champasak cultural landscape,Champasak cultural landscape,14.83173,105.79992,Laos,South-East Asia,monk_saffron,0,,Wikidata via the map's heritage layer (Q3888860)
+merchant-anjar,Merchant at Anjar,"Anjar, Beqaa",33.72718,35.92826,Lebanon,Middle East and North Africa,merchant_ol,0,,Wikidata via the map's heritage layer (Q60977)
+market-trader-sapo-national-park,Market trader at Sapo National Park,"Sapo National Park, Sinoe",5.3692,-8.50406,Liberia,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q1969043)
+tuareg-caravan-archaeological-site-of-sa,Tuareg caravan at Archaeological Site of Sabratha,"Archaeological Site of Sabratha, An Nuqat al Khams",32.80433,12.48616,Libya,Middle East and North Africa,tuareg,0,,Wikidata via the map's heritage layer (Q15052130)
+travelling-mapmaker-pitons,Travelling mapmaker at Pitons,"Pitons, Soufrière",13.80579,-61.06933,Saint Lucia,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q639487)
+pedlar-gutenberg-castle,Pedlar at Gutenberg Castle,"Gutenberg Castle, Balzers",47.06437,9.50063,Liechtenstein,Western Europe,pedlar,0,,Wikidata via the map's heritage layer (Q1012141)
+monk-abhayagiri-vih-ra,Monk at Abhayagiri vihāra,"Abhayagiri vihāra, Anurādhapura",8.37006,80.39563,Sri Lanka,South Asia,monk_saffron,0,,Wikidata via the map's heritage layer (Q320543)
+scholar-on-a-bridge-a-ma-temple,Scholar on a bridge at A-Ma Temple,"A-Ma Temple, Macau",22.18547,113.53047,Macao S.A.R,East Asia,cn_scholar,0,,Wikidata via the map's heritage layer (Q2149114)
+caravan-a-t-benhaddou,Caravan at Aït Benhaddou,"Aït Benhaddou, Souss - Massa - Draâ",31.04911,-7.13473,Morocco,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q309436)
+market-trader-chellah,Market trader at Chellah,"Chellah, Rabat - Salé - Zemmour - Zaer",34.00621,-6.81839,Morocco,Middle East and North Africa,marketwoman_mena,0,,Wikidata via the map's heritage layer (Q2314811)
+pedlar-tropaeum-alpium,Pedlar at Tropaeum Alpium,"Tropaeum Alpium, Monaco",43.7437,7.40401,Monaco,Western Europe,pedlar,0,,Wikidata via the map's heritage layer (Q747588)
+fisher-mal,Fisher at Malé,"Malé, Maldives",4.16701,73.5016,Maldives,South Asia,fisher_beach,0,,Natural Earth populated places
+fisher-cathedral-of-the-assumption-majur,"Fisher at Cathedral of the Assumption, Majuro","Cathedral of the Assumption, Majuro, Ratak Chain",7.10158,171.37889,Marshall Islands,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q16825920)
+horse-archer-burkhan-khaldun,Horse archer at Burkhan Khaldun,"Burkhan Khaldun, Hentiy",48.78461,109.16577,Mongolia,Central Asia and the Caucasus,mongol,0,,Wikidata via the map's heritage layer (Q1010335)
+market-trader-gorongosa-national-park,Market trader at Gorongosa National Park,"Gorongosa National Park, Sofala",-18.76765,34.50095,Mozambique,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q113952)
+fisher-aapravasi-ghat,Fisher at Aapravasi Ghat,"Aapravasi Ghat, Port Louis city",-20.15894,57.50156,Mauritius,Oceania,fisher_beach_af,0,,Wikidata via the map's heritage layer (Q9276)
+market-trader-chongoni-rock-art-area,Market trader at Chongoni Rock Art Area,"Chongoni Rock Art Area, Dedza",-14.29319,34.27795,Malawi,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q832262)
+fisher-a-famosa,Fisher at A Famosa,"A Famosa, Melaka",2.1928,102.24883,Malaysia,South-East Asia,fisher_beach,0,,Wikidata via the map's heritage layer (Q1955098)
+fisher-bako-national-park,Fisher at Bako National Park,"Bako National Park, Sarawak",1.71858,110.46658,Malaysia,South-East Asia,fisher_beach,0,,Wikidata via the map's heritage layer (Q370159)
+zebu-herder-epupa-falls,Zebu herder at Epupa Falls,"Epupa Falls, Kunene",-16.99969,13.24879,Namibia,Sub-Saharan Africa,zebuherder_af,0,,Wikidata via the map's heritage layer (Q187918)
+fisher-noum-a-cathedral,Fisher at Nouméa Cathedral,"Nouméa Cathedral, Sud",-22.2738,166.44401,New Caledonia,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q2942368)
+tuareg-caravan-a-r-and-t-n-r-national-na,Tuareg caravan at Aïr and Ténéré National Nature Reserve,"Aïr and Ténéré National Nature Reserve, Agadez",18.00086,8.99923,Niger,Sub-Saharan Africa,tuareg,0,,Wikidata via the map's heritage layer (Q794643)
+horseman-abuja-national-mosque,Horseman at Abuja National Mosque,"Abuja National Mosque, Federal Capital Territory",9.06172,7.49145,Nigeria,Sub-Saharan Africa,sahel_horseman,0,,Wikidata via the map's heritage layer (Q1430127)
+fisher-cayos-miskitos,Fisher at Cayos Miskitos,"Cayos Miskitos, Atlántico Norte",14.38236,-82.76673,Nicaragua,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q1052045)
+fisher-moqua-caves,Fisher at Moqua Caves,"Moqua Caves, Yaren",-0.54743,166.92073,Nauru,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q3489116)
+shepherd-abel-tasman-national-park,Shepherd at Abel Tasman National Park,"Abel Tasman National Park, Tasman District",-40.89997,172.96988,New Zealand,Oceania,shepherd,0,,Wikidata via the map's heritage layer (Q318357)
+falconer-aflaj-irrigation-system-of-oman,Falconer at Aflaj Irrigation System of Oman,"Aflaj Irrigation System of Oman, Ad Dakhliyah",22.99985,57.53517,Oman,Middle East and North Africa,falconer_ar,0,,Wikidata via the map's heritage layer (Q25495)
+caravan-alexandria-bucephalous,Caravan at Alexandria Bucephalous,"Alexandria Bucephalous, Punjab",32.93157,73.73263,Pakistan,South Asia,caravan_in,0,,Wikidata via the map's heritage layer (Q786725)
+porter-badshahi-mosque,Porter at Badshahi Mosque,"Badshahi Mosque, Punjab",31.58763,74.30807,Pakistan,South Asia,porter,0,,Wikidata via the map's heritage layer (Q330872)
+fisher-archaeological-site-of-panam-viej,Fisher at Archaeological Site of Panamá Viejo and,"Archaeological Site of Panamá Viejo and, Panama",8.94997,-79.54046,Panama,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q16886870)
+rice-farmer-baroque-churches-of-the-phil,Rice farmer at Baroque Churches of the Philippines,"Baroque Churches of the Philippines, Iloilo",10.64288,122.23392,Philippines,South-East Asia,rice,0,,Wikidata via the map's heritage layer (Q808563)
+fisher-maria-cristina-falls,Fisher at Maria Cristina Falls,"Maria Cristina Falls, Lanao del Norte",8.18377,124.19526,Philippines,South-East Asia,fisher_beach,0,,Wikidata via the map's heritage layer (Q38221)
+fisher-rock-islands-southern-lagoon,Fisher at Rock Islands Southern Lagoon,"Rock Islands Southern Lagoon, Koror",7.24677,134.35446,Palau,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q17215490)
+fisher-kilu-cave,Fisher at Kilu Cave,"Kilu Cave, North Solomons",-5.334,154.68802,Papua New Guinea,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q28225102)
+watchman-castillo-san-crist-bal,Watchman at Castillo San Cristóbal,"Castillo San Cristóbal, Puerto Rico",18.46602,-66.11049,Puerto Rico,"Mexico, Central America and the Caribbean",watchman_es,0,,Wikidata via the map's heritage layer (Q3748608)
+scholar-arch-of-reunification,Scholar at Arch of Reunification,"Arch of Reunification, P'yŏngyang",38.96528,125.71492,North Korea,East Asia,kr_scholar,0,,Wikidata via the map's heritage layer (Q94731)
+horseman-friendship-bridge,Horseman at Friendship Bridge,"Friendship Bridge, Alto Paraná",-25.50864,-54.60174,Paraguay,South America,gaucho,0,,Wikidata via the map's heritage layer (Q1140475)
+pilgrims-birthplace-of-jesus-church-of-t,Pilgrims at Birthplace of Jesus: Church of the Nativ,"Birthplace of Jesus: Church of the Nativ, West Bank",31.70524,35.20811,Palestine,Middle East and North Africa,pilgrims,0,,Wikidata via the map's heritage layer (Q79395074)
+fisher-vaipo-waterfall,Fisher at Vaipo Waterfall,"Vaipo Waterfall, Marquesas Islands",-8.90525,-140.16693,French Polynesia,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q37318)
+falconer-zubarah,Falconer at Zubarah,"Zubarah, Madinat ach Shamal",25.98234,51.02902,Qatar,Middle East and North Africa,falconer_ar,0,,Wikidata via the map's heritage layer (Q2727469)
+tuareg-caravan-bir-lehlou,Tuareg caravan at Bir Lehlou,"Bir Lehlou, Western Sahara",26.1185,-9.65139,Western Sahara,Middle East and North Africa,tuareg,0,,Natural Earth populated places
+bedouin-uruq-bani-maarid,Bedouin at 'Uruq Bani Ma'arid,"'Uruq Bani Ma'arid, Ar Riyad",19.33552,45.90279,Saudi Arabia,Middle East and North Africa,bedouin,0,,Wikidata via the map's heritage layer (Q21994709)
+caravan-al-naslaa,Caravan at Al Naslaa,"Al Naslaa, Tabuk",27.22901,38.57012,Saudi Arabia,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q108586048)
+caravan-alodia,Caravan at Alodia,"Alodia, River Nile",17.65044,33.98205,Sudan,Middle East and North Africa,caravan_af,0,,Wikidata via the map's heritage layer (Q449639)
+travelling-mapmaker-boma-national-park,Travelling mapmaker at Boma National Park,"Boma National Park, Jonglei",6.48979,33.91267,South Sudan,Sub-Saharan Africa,cartographer_world,0,,Wikidata via the map's heritage layer (Q891743)
+griot-african-renaissance-monument,Griot at African Renaissance Monument,"African Renaissance Monument, Dakar",14.72386,-17.49498,Senegal,Sub-Saharan Africa,griot,0,,Wikidata via the map's heritage layer (Q470763)
+fisher-masjid-sultan,Fisher at Masjid Sultan,"Masjid Sultan, Central Singapore",1.30302,103.85856,Singapore,South-East Asia,fisher_beach,0,,Wikidata via the map's heritage layer (Q1907146)
+fisher-east-rennell,Fisher at East Rennell,"East Rennell, Rennell and Bellona",-11.68402,160.332,Solomon Islands,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q852433)
+market-trader-gola-national-park,Market trader at Gola National Park,"Gola National Park, Eastern",7.50092,-10.98373,Sierra Leone,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q1512159)
+scribe-joya-de-cer-n,Scribe at Joya de Cerén,"Joya de Cerén, La Libertad",13.8261,-89.35576,El Salvador,"Mexico, Central America and the Caribbean",maya,0,,Wikidata via the map's heritage layer (Q27985)
+pedlar-basilica-di-san-marino,Pedlar at Basilica di San Marino,"Basilica di San Marino, Domagnano",43.93904,12.44661,San Marino,Southern Europe,pedlar,0,,Wikidata via the map's heritage layer (Q810102)
+caravan-laas-gaal,Caravan at Laas Gaal,"Laas Gaal, Somaliland",9.78017,44.44428,Somaliland,Sub-Saharan Africa,caravan_af,0,,Wikidata via the map's heritage layer (Q1799347)
+caravan-mogadishu-cathedral,Caravan at Mogadishu Cathedral,"Mogadishu Cathedral, Banaadir",2.03588,45.3404,Somalia,Sub-Saharan Africa,caravan_af,0,,Wikidata via the map's heritage layer (Q962672)
+travelling-mapmaker-s-o-tom-and-pr-ncipe,Travelling mapmaker at São Tomé and Príncipe,São Tomé and Príncipe,0.31782,6.60112,São Tomé and Principe,Sub-Saharan Africa,cartographer_world,0,,Wikidata via the map's heritage layer (Q1039)
+travelling-mapmaker-central-suriname-nat,Travelling mapmaker at Central Suriname Nature Reserve,"Central Suriname Nature Reserve, Sipaliwini",4.00101,-56.5009,Suriname,South America,cartographer_world,0,,Wikidata via the map's heritage layer (Q189934)
+herder-hlane-royal-national-park,Herder at Hlane Royal National Park,"Hlane Royal National Park, Lubombo",-26.25143,31.88149,eSwatini,Sub-Saharan Africa,nguni,0,,Wikidata via the map's heritage layer (Q9067090)
+travelling-mapmaker-mary-star-of-the-sea,Travelling mapmaker at Mary Star of the Sea Church,"Mary Star of the Sea Church, Sint Maarten",18.03737,-63.09653,Sint Maarten,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q23712889)
+fisher-aldabra,Fisher at Aldabra,"Aldabra, Outer Islands",-9.41712,46.41584,Seychelles,Oceania,fisher_beach_af,0,,Wikidata via the map's heritage layer (Q272768)
+caravan-al-azm-palace,Caravan at Al-Azm Palace,"Al-Azm Palace, Damascus",33.50872,36.30655,Syria,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q793784)
+horseman-ennedi-plateau,Horseman at Ennedi Plateau,Ennedi Plateau,16.99854,22.99971,Chad,Sub-Saharan Africa,sahel_horseman,0,,Wikidata via the map's heritage layer (Q1343339)
+market-trader-koutammakou,Market trader at Koutammakou,"Koutammakou, Kara",10.06647,1.13419,Togo,Sub-Saharan Africa,marketwoman,0,,Wikidata via the map's heritage layer (Q508040)
+monk-ban-chiang,Monk at Ban Chiang,"Ban Chiang, Sakon Nakhon",17.54968,103.35997,Thailand,South-East Asia,monk_saffron,0,,Wikidata via the map's heritage layer (Q584125)
+rice-farmer-burapha-withi-expressway,Rice farmer at Burapha Withi Expressway,"Burapha Withi Expressway, Bangkok Metropolis",13.65854,100.66436,Thailand,South-East Asia,rice,0,,Wikidata via the map's heritage layer (Q806452)
+silk-road-merchant-alexandria-eschate,Silk Road merchant at Alexandria Eschate,"Alexandria Eschate, Leninabad",40.28669,69.61616,Tajikistan,Central Asia and the Caucasus,ca_merchant,0,,Wikidata via the map's heritage layer (Q2280882)
+silk-road-merchant-ertu-rul-gazi-mosque,Silk Road merchant at Ertuğrul Gazi Mosque,"Ertuğrul Gazi Mosque, Ahal",37.93393,58.39777,Turkmenistan,Central Asia and the Caucasus,ca_merchant,0,,Wikidata via the map's heritage layer (Q993863)
+fisher-immaculate-conception-cathedral,Fisher at Immaculate Conception Cathedral,"Immaculate Conception Cathedral, Dili",-8.55791,125.56685,East Timor,South-East Asia,fisher_beach,0,,Wikidata via the map's heritage layer (Q1736176)
+travelling-mapmaker-nuku-alofa-tonga-tem,Travelling mapmaker at Nukuʻalofa Tonga Temple,"Nukuʻalofa Tonga Temple, Tongatapu",-21.16335,-175.27337,Tonga,Oceania,cartographer_world,0,,Wikidata via the map's heritage layer (Q3845259)
+fisher-cathedral-of-the-immaculate-conce,"Fisher at Cathedral of the Immaculate Conception,","Cathedral of the Immaculate Conception,, Port of Spain",10.66186,-61.52945,Trinidad and Tobago,"Mexico, Central America and the Caribbean",fisher_beach_am,0,,Wikidata via the map's heritage layer (Q16825924)
+caravan-al-zaytunah-mosque,Caravan at Al-Zaytunah Mosque,"Al-Zaytunah Mosque, Tunis",36.79583,10.17146,Tunisia,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q1291779)
+caravan-aizanoi,Caravan at Aizanoi,"Aizanoi, Kütahya",39.19802,29.61973,Turkey,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q411571)
+fisher-funafuti,Fisher at Funafuti,"Funafuti, Tuvalu",-8.51665,179.21543,Tuvalu,Oceania,fisher_beach_pac,0,,Natural Earth populated places
+farmer-with-buckets-chiang-kai-shek-memo,Farmer with buckets at Chiang Kai-shek Memorial Hall,"Chiang Kai-shek Memorial Hall, Taipei City",25.03287,121.52104,Taiwan,East Asia,cn_farmer,0,,Wikidata via the map's heritage layer (Q540794)
+herder-arusha-national-park,Herder at Arusha National Park,Arusha National Park,-3.24817,36.83289,United Republic of Tanzania,Sub-Saharan Africa,maasai,0,,Wikidata via the map's heritage layer (Q716801)
+herder-bwindi-impenetrable-national-park,Herder at Bwindi Impenetrable National Park,"Bwindi Impenetrable National Park, Kanungu",-1.04986,29.71791,Uganda,Sub-Saharan Africa,ankole,0,,Wikidata via the map's heritage layer (Q500397)
+horseman-church-of-cristo-obrero-y-nuest,Horseman at Church of Cristo Obrero y Nuestra Señora,"Church of Cristo Obrero y Nuestra Señora, Canelones",-34.74423,-55.76758,Uruguay,South America,gaucho,0,,Wikidata via the map's heritage layer (Q26721344)
+travelling-mapmaker-acadia-national-park,Travelling mapmaker at Acadia National Park,"Acadia National Park, Maine",44.3512,-68.21492,United States of America,North America,cartographer_world,0,,Wikidata via the map's heritage layer (Q337396)
+wild-man-of-the-woods-acomita-lake,Wild man of the woods at Acomita Lake,"Acomita Lake, New Mexico",35.06579,-107.6217,United States of America,North America,wildman,0,,Wikidata via the map's heritage layer (Q342064)
+travelling-mapmaker-assumption-cathedral,"Travelling mapmaker at Assumption Cathedral, Kingstown","Assumption Cathedral, Kingstown, Saint George",13.15791,-61.22708,Saint Vincent and the Grenadines,"Mexico, Central America and the Caribbean",cartographer_world,0,,Wikidata via the map's heritage layer (Q28653599)
+horseman-canaima-national-park,Horseman at Canaima National Park,"Canaima National Park, Bolívar",5.31965,-61.79421,Venezuela,South America,gaucho,0,,Wikidata via the map's heritage layer (Q1244337)
+farmer-with-buckets-citadel-of-the-h-dyn,Farmer with buckets at Citadel of the Hồ Dynasty,"Citadel of the Hồ Dynasty, Thanh Hóa",20.07895,105.60558,Vietnam,South-East Asia,cn_farmer,0,,Wikidata via the map's heritage layer (Q190060)
+farmer-with-buckets-c-t-b-island,Farmer with buckets at Cát Bà Island,"Cát Bà Island, Quảng Ninh",20.79957,107.00066,Vietnam,South-East Asia,cn_farmer,0,,Wikidata via the map's heritage layer (Q993402)
+fisher-chief-roi-mata-s-domain,Fisher at Chief Roi Mata’s Domain,"Chief Roi Mata’s Domain, Shefa",-17.69453,168.23439,Vanuatu,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q1072369)
+fisher-immaculate-conception-cathedral-a,"Fisher at Immaculate Conception Cathedral, Apia","Immaculate Conception Cathedral, Apia, Tuamasaga",-13.83213,-171.76829,Samoa,Oceania,fisher_beach_pac,0,,Wikidata via the map's heritage layer (Q18416912)
+caravan-landmarks-of-the-ancient-kingdom,Caravan at Landmarks of the Ancient Kingdom of Saba,"Landmarks of the Ancient Kingdom of Saba, Ma'rib",15.42817,45.33444,Yemen,Middle East and North Africa,caravan,0,,Wikidata via the map's heritage layer (Q116943542)
+zebu-herder-kafue-national-park,Zebu herder at Kafue National Park,"Kafue National Park, Central",-15.28111,25.70119,Zambia,Sub-Saharan Africa,zebuherder_af,0,,Wikidata via the map's heritage layer (Q1721097)
+zebu-herder-hwange-national-park,Zebu herder at Hwange National Park,"Hwange National Park, Matabeleland North",-18.73511,26.95346,Zimbabwe,Sub-Saharan Africa,zebuherder_af,0,,Wikidata via the map's heritage layer (Q1571380)
+sea-sailors-solent,Sailors in a jolly boat,"The Solent off Cowes, Isle of Wight",50.7745,-1.2985,,The seas and oceans,sailors,1,sea,"hand-placed (round 3, at sea)"
+sea-sailors-bosphorus,Boatmen on the Bosphorus,"The Bosphorus, Istanbul",41.0835,29.056,,The seas and oceans,sailors,1,sea,"hand-placed (round 3, at sea)"
+sea-sailors-sydney,Sailors in Sydney Harbour,"Port Jackson, Sydney",-33.8515,151.242,,The seas and oceans,sailors,1,sea,"hand-placed (round 3, at sea)"
+sea-sailors-newyork,Sailors in the Upper Bay,Upper New York Bay,40.675,-74.042,,The seas and oceans,sailors,1,sea,"hand-placed (round 3, at sea)"
+sea-captain-whitby,A captain rowing out of Whitby,"Whitby harbour mouth, North Yorkshire",54.4935,-0.6098,,The seas and oceans,captain,1,sea,"hand-placed (round 3, at sea)"
+sea-ferryman-mersey,The Mersey ferryman,"The River Mersey off Pier Head, Liverpool",53.4045,-3.001,,The seas and oceans,ferryman,1,sea,"hand-placed (round 3, at sea)"
+sea-viking-scapa,Norse rowers in Scapa Flow,"Scapa Flow, Orkney",58.89,-3.08,,The seas and oceans,viking,1,sea,"hand-placed (round 3, at sea)"
+sea-castaway-rockall,The castaway of Rockall,"Rockall, North Atlantic",57.596,-13.688,,The seas and oceans,castaway,1,sea,"hand-placed (round 3, at sea)"
+sea-castaway-juanfernandez,A castaway on Juan Fernández,"Off Robinson Crusoe Island, Chile",-33.642,-78.855,,The seas and oceans,castaway,1,sea,"hand-placed (round 3, at sea)"
+sea-castaway-scilly,A castaway in the Scillies,"Western Rocks, Isles of Scilly",49.877,-6.418,,The seas and oceans,castaway,1,sea,"hand-placed (round 3, at sea)"
+sea-castaway-tobago,A castaway on a sandy cay,"Tobago Cays, Grenadines",12.634,-61.356,,The seas and oceans,castaway,1,sea,"hand-placed (round 3, at sea)"
+sea-castaway-maldives,A castaway on a coral islet,"North Malé Atoll, Maldives",4.301,73.425,,The seas and oceans,castaway,1,sea,"hand-placed (round 3, at sea)"
+sea-castaway-fiji,A castaway in the Mamanucas,"Mamanuca Islands, Fiji",-17.668,177.115,,The seas and oceans,castaway,1,sea,"hand-placed (round 3, at sea)"
+sea-fisher-galway,A lone fisherman in Galway Bay,"Galway Bay, Ireland",53.235,-9.12,,The seas and oceans,fisher,1,sea,"hand-placed (round 3, at sea)"
+sea-fisher-lofoten,A cod fisherman off Lofoten,"Off Reine, Lofoten",67.92,13.1,,The seas and oceans,fisher,1,sea,"hand-placed (round 3, at sea)"
+sea-fisher-dingle,A fisherman in Dingle harbour,"Dingle harbour mouth, Kerry",52.125,-10.262,,The seas and oceans,fisher,1,sea,"hand-placed (round 3, at sea)"
+sea-fisher-sagami,A fisherman under the great wave,"Off Kanagawa, Sagami Bay",35.29,139.6,,The seas and oceans,fisher,1,sea,"hand-placed (round 3, at sea)"
+sea-fisher-nazare,A fisherman of Nazaré,"Off Nazaré, Portugal",39.6,-9.09,,The seas and oceans,fisher,1,sea,"hand-placed (round 3, at sea)"
+sea-fisher-galilee,A fisherman on the lake,Sea of Galilee,32.83,35.585,,The seas and oceans,fisher,1,sea,"hand-placed (round 3, at sea)"
+sea-pearl-diver,A pearl diver's dhow,"Pearl banks off Muharraq, Bahrain",26.315,50.68,,The seas and oceans,pearl,1,sea,"hand-placed (round 3, at sea)"
+sea-navigator-tahiti,A navigator's outrigger,"Matavai Bay, Tahiti",-17.495,-149.505,,The seas and oceans,navigator,1,sea,"hand-placed (round 3, at sea)"
+sea-dhow-zanzibar,A dhow off Stone Town,"Off Stone Town, Zanzibar",-6.158,39.178,,The seas and oceans,dhow,1,sea,"hand-placed (round 3, at sea)"
+sea-sampan-hongkong,A sampan in the harbour,"Victoria Harbour, Hong Kong",22.288,114.172,,The seas and oceans,sampan,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-skagen,A bottle where two seas meet,"Off Grenen, Skagen, Denmark",57.756,10.645,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-capehorn,A bottle off the Horn,Off Cape Horn,-56.02,-67.25,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-capecod,A bottle off the Cape,"Off Cape Cod, Massachusetts",41.67,-69.92,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-bermuda,A bottle near Bermuda,"Off St George's, Bermuda",32.39,-64.65,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-gibraltar,A bottle in the Strait,Strait of Gibraltar,35.97,-5.5,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-dover,A bottle in the Strait of Dover,"Strait of Dover, off the white cliffs",51.095,1.395,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-goodwin,A bottle on the Goodwin Sands,"Goodwin Sands, Kent",51.255,1.55,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"
+sea-bottle-hebrides,A bottle in the Minch,"The Minch, off Stornoway",58.195,-6.33,,The seas and oceans,bottle,1,sea,"hand-placed (round 3, at sea)"

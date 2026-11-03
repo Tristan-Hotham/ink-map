@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><title>Sea folk</title>
+<style>body{background:#F3E5BF;font:11px monospace;margin:10px}div{display:inline-block;margin:6px;text-align:center;vertical-align:bottom;background:#efe0b6}canvas{display:block}</style>
+<body><script src="../../js/ink-folk-art.js"></script><script src="../../js/ink-sea-art.js"></script>
+<script>
+fetch('../../data/folk/folk.json').then(r=>r.json()).then(d=>{ for (const f of d.folk.filter(f=>f.id.startsWith('sea-'))) { const c=InkFolkArt.render(f.art,3); c.style.width=(c.width/3*4)+'px'; const e=document.createElement('div'); e.appendChild(c); e.appendChild(document.createTextNode(f.id.slice(4))); document.body.appendChild(e);} window.__done=true; });
+</script>

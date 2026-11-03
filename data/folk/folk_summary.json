@@ -1,0 +1,38 @@
+{
+ "total": 742,
+ "hand_placed": 251,
+ "countries": 217,
+ "regions": {
+  "Britain and Ireland": 180,
+  "Southern Europe": 75,
+  "Western Europe": 93,
+  "Northern Europe": 44,
+  "Central and Eastern Europe": 94,
+  "Middle East and North Africa": 29,
+  "East Asia": 15,
+  "Central Asia and the Caucasus": 12,
+  "North America": 13,
+  "Oceania": 22,
+  "Mexico, Central America and the Caribbean": 27,
+  "South America": 20,
+  "South Asia": 13,
+  "Sub-Saharan Africa": 54,
+  "South-East Asia": 17,
+  "Antarctica": 3,
+  "The seas and oceans": 31
+ },
+ "continents": {
+  "Europe": 483,
+  "Asia": 78,
+  "North America": 40,
+  "Oceania": 20,
+  "South America": 20,
+  "Africa": 64,
+  "Antarctica": 3,
+  "Seven seas (open ocean)": 3
+ },
+ "trails": 5,
+ "missing_countries": [],
+ "bytes": 431307,
+ "at_sea": 31
+}
