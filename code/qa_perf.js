@@ -11,7 +11,9 @@ const ROOT = path.resolve(process.env.ROOT || path.join(__dirname, '..'));
 const SCR = process.env.SCR || '/tmp', BASE = process.env.BASE || 'http://127.0.0.1:8791';
 const ML = process.env.MAPLIBRE_DIST || '/tmp/ml/node_modules/maplibre-gl/dist';
 const ALL = { world: '25,10,1.6', europe: '52,10,3.8', gb: null, lakes12: '54.50,-3.10,12', lakes15: '54.4521,-3.2072,15' };
-const VIEWS = (process.argv[4] ? process.argv[4].split(',') : Object.keys(ALL)).map(k => [k, ALL[k]]);
+// dense cities (round 7): only when named, and only with saved tiles to zoom 14 there (a tilejson with maxzoom 14 in SCR)
+const MORE = { kyoto13: '35.0036,135.7681,13.5', kyoto15: '35.0036,135.7681,15.3', paris14: '48.8566,2.3522,14.2' };
+const VIEWS = (process.argv[4] ? process.argv[4].split(',') : Object.keys(ALL)).map(k => [k, k in ALL ? ALL[k] : MORE[k]]);
 const med = a => { const s = a.filter(v => v != null).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
 (async () => {
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });

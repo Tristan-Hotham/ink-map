@@ -159,13 +159,22 @@ LANDMARKS = [
     ('Space Needle', -122.3493, 47.6205, 'needle', 6, 'Space Needle'),
     ('Gateway Arch', -90.1848, 38.6247, 'arch', 6, 'Gateway Arch'),
     ('Chichen Itza', -88.5686, 20.6843, 'chichen', 4.5, 'Chichen Itza'),
-    ('Teotihuacan', -98.8438, 19.6925, 'mesoamerica', 5, 'Teotihuacan'),
-    ('Tikal', -89.6233, 17.2220, 'mesoamerica', 5.5, 'Tikal'),
-    ('Palenque', -92.0464, 17.4840, 'mesoamerica', 6.5, 'Palenque'),
+    # round 7: the great Mesoamerican and Andean sites each get a drawing of their own (js/ink-icons.js)
+    ('Teotihuacan', -98.8438, 19.6925, 'teotihuacan', 4.5, 'Teotihuacan'),
+    ('Tikal', -89.6233, 17.2220, 'tikal', 5, 'Tikal'),
+    ('Palenque', -92.0464, 17.4840, 'palenque', 5.5, 'Palenque'),
+    ('Uxmal', -89.7714, 20.3594, 'uxmal', 6, 'Uxmal'),
+    ('Monte Albán', -96.7678, 17.0436, 'montealban', 6, 'Monte Albán'),
+    ('Templo Mayor', -99.1314, 19.4351, 'templomayor', 6, 'Templo Mayor'),
+    ('Copán', -89.1414, 14.8378, 'copan', 6, 'Copán'),
+    ('Calakmul', -89.8106, 18.1053, 'calakmul', 6.5, 'Calakmul'),
+    ('Caral', -77.5203, -10.8933, 'caral', 6, 'Caral'),
+    ('Chan Chan', -79.0747, -8.1060, 'chanchan', 6, 'Chan Chan'),
+    ('Tiwanaku', -68.6733, -16.5547, 'tiwanaku', 6, 'Tiwanaku'),
     ('CN Tower', -79.3871, 43.6426, 'cntower', 5, 'CN Tower'),
     ('Château Frontenac', -71.2054, 46.8118, 'palace', 6.5, 'Château Frontenac'),
     ('Machu Picchu', -72.5450, -13.1631, 'machupicchu', 4.5, 'Machu Picchu'),
-    ('Sacsayhuamán, Cusco', -71.9820, -13.5086, 'ruins', 7, 'Sacsayhuamán'),
+    ('Sacsayhuamán', -71.9820, -13.5086, 'sacsayhuaman', 6.5, 'Sacsayhuamán'),
     ('Nazca Lines', -75.1300, -14.7390, 'nazca', 6, 'Nazca Lines'),
     ('Christ the Redeemer', -43.2105, -22.9519, 'christ', 4, 'Christ the Redeemer (statue)'),
     ('Easter Island moai', -109.3497, -27.1127, 'moai', 4, 'Moai'),
@@ -182,6 +191,11 @@ LANDMARKS = [
     ('Milford Sound', 167.9248, -44.6414, 'fjord', 6.5, 'Milford Sound'),
     ('Victoria Falls', 25.8572, -17.9243, 'waterfall_big', 5, 'Victoria Falls'),
 ]
+
+# round 7: heritage rows that are the very building a landmark drawing shows, under another name (dropped from the heritage
+# grid with the landmark names themselves, code/02d_features.py and code/02o_landmarks.py)
+LANDMARK_ALIASES = ['Pyramid of the Sun', 'Temple of Kukulcan', 'Tikal Temple I', 'Temple of the Inscriptions', 'Pyramid of the Magician',
+                    'Pre-Hispanic Town of Uxmal', 'Structure II of Calakmul', 'Saqsaywaman']
 
 # famous summits and many national high points: (name, lon, lat, elevation m, min zoom, Wikipedia title)
 PEAKS = [

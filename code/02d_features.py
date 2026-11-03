@@ -44,7 +44,7 @@ summary = {}
 lm = [feat(lon, lat, {'n': n, 'i': ic, 'z': z, 'w': w}) for n, lon, lat, ic, z, w in C.LANDMARKS]
 dump({'type': 'FeatureCollection', 'features': lm}, os.path.join(DATA, 'landmarks.geojson'))
 summary['landmarks'] = len(lm)
-LM_NAMES = {n.lower() for n, *_ in C.LANDMARKS}
+LM_NAMES = {n.lower() for n, *_ in C.LANDMARKS} | {n.lower() for n in getattr(C, 'LANDMARK_ALIASES', [])}
 
 # ---- famous peaks with snow caps
 pk = [feat(lon, lat, {'n': n, 'e': e, 'z': z, 'w': w}) for n, lon, lat, e, z, w in C.PEAKS]

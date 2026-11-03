@@ -418,7 +418,6 @@
     add('l-petra', 46, 48, p => { const gy = 45; p.poly([[0, gy], [0, 4], [46, 2], [46, gy]], '#E8C9A0', 1.2); p.hatch([[0, gy], [0, 4], [46, 2], [46, gy]], 75, 2.6, 0.5); p.rect(9, gy - 32, 28, 32, PAPER, 1.4); for (let i = 0; i < 6; i++) p.rect(11 + i * 4.4, gy - 15, 1.8, 15, PAPER, 0.9); p.poly([[9, gy - 17], [23, gy - 21], [37, gy - 17]], PAPER, 1.1); p.ell(23, gy - 26, 3.4, 5, PAPER, 1.1); p.rect(12, gy - 30, 22, 2, PAPER, 0.9); });
     add('l-moai', 44, 40, p => { const gy = 37; for (const [mx, s] of [[9, 0.85], [22, 1], [35, 0.9]]) { const h = 28 * s; p.poly([[mx - 4.5 * s, gy], [mx - 5 * s, gy - h * 0.7], [mx - 4 * s, gy - h], [mx + 4 * s, gy - h], [mx + 5.5 * s, gy - h * 0.62], [mx + 3.8 * s, gy - h * 0.55], [mx + 4 * s, gy]], PAPER, 1.5); p.line([[mx - 3 * s, gy - h * 0.72], [mx + 2 * s, gy - h * 0.72]], 1.1); p.hatch([[mx + 1 * s, gy - h], [mx + 4 * s, gy - h], [mx + 4 * s, gy], [mx + 1 * s, gy]], 85, 1.7, 0.6); } G(p, gy, 44); });
     add('l-forbidden', 60, 36, p => { const gy = 33; p.rect(2, gy - 6, 56, 6, '#E8C9A0', 1.3); p.rect(10, gy - 15, 40, 9, '#B23A2E', 1.3); for (let i = 0; i < 8; i++) p.line([[12 + i * 5, gy - 15], [12 + i * 5, gy - 6]], 0.8, 0); p.poly([[5, gy - 15], [9, gy - 19], [51, gy - 19], [55, gy - 15], [57, gy - 17]], '#C9A24A', 1.3); p.poly([[14, gy - 19], [18, gy - 25], [42, gy - 25], [46, gy - 19]], '#C9A24A', 1.3); p.line([[1, gy - 13], [5, gy - 15]], 1); });
-    add('l-chichen', 54, 40, p => { const gy = 37; for (let k = 0; k < 5; k++) { const w = 48 - k * 8; p.rect(27 - w / 2, gy - (k + 1) * 5, w, 5, PAPER, 1.3); } p.rect(21, gy - 31, 12, 6, PAPER, 1.4); p.line([[24, gy], [26, gy - 25]], 0.9); p.line([[30, gy], [28, gy - 25]], 0.9); p.hatch([[27, gy - 25], [51, gy], [27, gy]], 100, 2, 0.6); G(p, gy, 54); });
     add('l-cntower', 24, 70, p => { const gy = 67; p.poly([[8, gy], [11, gy - 44], [13, gy - 44], [16, gy]], PAPER, 1.4); p.ell(12, gy - 46, 5, 3, PAPER, 1.4); p.rect(10.8, gy - 58, 2.4, 10, PAPER, 1.1); p.line([[12, gy - 58], [12, gy - 68]], 1.1); G(p, gy, 24); });
     add('l-petronas', 36, 66, p => { const gy = 63; for (const tx of [9, 27]) { p.poly([[tx - 5, gy], [tx - 5, gy - 34], [tx - 4, gy - 42], [tx - 2.5, gy - 48], [tx - 1, gy - 52], [tx, gy - 62], [tx + 1, gy - 52], [tx + 2.5, gy - 48], [tx + 4, gy - 42], [tx + 5, gy - 34], [tx + 5, gy]], PAPER, 1.4); for (let y = gy - 6; y > gy - 46; y -= 6) p.line([[tx - 4, y], [tx + 4, y]], 0.6); } p.rect(14, gy - 30, 8, 2.2, PAPER, 1); G(p, gy, 36); });
     add('l-marinabay', 56, 38, p => { const gy = 35; for (const tx of [12, 28, 44]) { p.rect(tx - 4, gy - 26, 8, 26, PAPER, 1.4); p.hatch([[tx, gy - 26], [tx + 4, gy - 26], [tx + 4, gy], [tx, gy]], 90, 1.8, 0.6); } p.poly([[4, gy - 26], [6, gy - 30], [54, gy - 30], [52, gy - 26]], PAPER, 1.4); p.col(BLUE).line([[0, gy + 2], [56, gy + 2]], 1).col(INK); });
@@ -575,6 +574,104 @@
     add('l-buddha', 34, 42, p => { const gy = 39; p.poly([[0, gy], [0, 3], [34, 3], [34, gy]], '#E8C9A0', 1.2); p.hatch([[0, gy], [0, 3], [34, 3], [34, gy]], 75, 2.8, 0.5); p.ell(17, 13, 6, 7, PAPER, 1.4); p.poly([[6, gy], [8, 22], [17, 19], [26, 22], [28, gy]], PAPER, 1.4); p.line([[14, 13], [16, 13]], 0.7); p.line([[18, 13], [20, 13]], 0.7); });
     add('l-warriors', 50, 30, p => { const gy = 27; for (let r = 0; r < 2; r++) for (let i = 0; i < 6; i++) { const cx = 5 + i * 8 + r * 4, y = gy - r * 9; p.ell(cx, y - 13, 1.8, 2, PAPER, 0.9); p.poly([[cx - 2.4, y], [cx - 2.6, y - 11], [cx + 2.6, y - 11], [cx + 2.4, y]], PAPER, 1); } });
     add('l-mesoamerica', 46, 40, p => { const gy = 37; for (let k = 0; k < 4; k++) { const w = 40 - k * 8; p.rect(23 - w / 2, gy - (k + 1) * 6, w, 6, PAPER, 1.3); } p.rect(17, gy - 32, 12, 8, PAPER, 1.4); p.line([[21, gy], [22, gy - 24]], 0.8); p.line([[25, gy], [24, gy - 24]], 0.8); G(p, gy, 46); });
+    // round 7: the great sites of Mesoamerica and the Andes, each drawn in its own way (original drawings, simplified as an
+    // engraver might). Stepped pyramids are built tier by tier with sloping (talud) faces, the stairway on the front, the side
+    // away from the light hatched; jungle crowns where the site rises from the forest
+    const MGRN = '#8FA66C', ADOBE = '#D9B07A', STONE = '#E4D2AE';
+    // n tiers from base width wb to top width wt, th high each, centred on cx; returns the y of the top
+    const tiers = (p, cx, gy, wb, wt, n, th, inset, fill) => {
+      inset = inset === undefined ? 1.2 : inset;
+      for (let k = 0; k < n; k++) { const w = wb - (wb - wt) * k / Math.max(1, n - 1), y = gy - k * th; p.poly([[cx - w / 2, y], [cx - w / 2 + inset, y - th], [cx + w / 2 - inset, y - th], [cx + w / 2, y]], fill || PAPER, 1.1); }
+      const top = gy - n * th;
+      p.hatch([[cx + wt * 0.18, top], [cx + wt / 2, top], [cx + wb / 2, gy], [cx + wb * 0.3, gy]], 100, 1.9, 0.6);
+      return top;
+    };
+    // a stairway up the front, from bottom width wb to top width wt
+    const stair = (p, cx, gy, top, wb, wt) => {
+      p.poly([[cx - wb / 2, gy], [cx - wt / 2, top], [cx + wt / 2, top], [cx + wb / 2, gy]], PAPER, 1.1);
+      for (let y = gy - 2; y > top + 0.8; y -= 2) { const f = (gy - y) / (gy - top), hw = (wb + (wt - wb) * f) / 2; p.line([[cx - hw + 0.4, y], [cx + hw - 0.4, y]], 0.5); }
+    };
+    // a small temple house on a platform top, with doorways
+    const shrine = (p, cx, top, w, h, doors, fill, roof) => {
+      p.rect(cx - w / 2, top - h, w, h, fill || PAPER, 1.3);
+      for (let i = 0; i < doors; i++) { const dx = cx - w / 2 + (i + 0.5) * w / doors; p.rect(dx - 0.9, top - h * 0.62, 1.8, h * 0.62, INK, 0); }
+      if (roof) p.poly([[cx - w / 2 - 1, top - h], [cx - w / 2 + 1.5, top - h - roof], [cx + w / 2 - 1.5, top - h - roof], [cx + w / 2 + 1, top - h]], fill || PAPER, 1.2);
+    };
+    const crowns = (p, xs, gy, r) => { for (const [cx, s] of xs) { const rr = r * s; p.ell(cx, gy - rr * 0.8, rr, rr * 0.8, MGRN, 1); p.line([[cx - rr * 0.3, gy - rr * 0.9], [cx + rr * 0.2, gy - rr * 1.2]], 0.5); } };
+    // Teotihuacan: the Pyramid of the Sun, and the Pyramid of the Moon beyond it up the Avenue of the Dead
+    add('l-teotihuacan', 66, 40, p => { const gy = 37;
+      const tm = tiers(p, 14, gy - 3, 22, 7, 4, 4.4, 1.2, STONE); stair(p, 14, gy - 3, tm, 4, 2.5);
+      p.line([[20, gy - 1.5], [27, gy - 1.5]], 0.8); p.line([[18, gy - 0.5], [27, gy - 0.5]], 0.6);
+      const ts = tiers(p, 44, gy, 40, 10, 5, 5.4, 1.5, STONE); stair(p, 44, gy, ts, 6, 3.5); p.rect(39, ts - 1.4, 10, 1.4, STONE, 0.9);
+      G(p, gy, 66); });
+    // Chichen Itza: El Castillo, nine terraces, the stairway with its feathered serpents' heads at the foot, the temple above
+    add('l-chichen', 54, 44, p => { const gy = 41; const top = tiers(p, 27, gy, 46, 17, 9, 3, 0.9); stair(p, 27, gy, top, 10, 7);
+      for (const sx of [21.5, 32.5]) { p.ell(sx, gy - 1.3, 2, 1.3, PAPER, 0.9); p.dot(sx + (sx < 27 ? -1 : 1), gy - 1.6, 0.4); }
+      shrine(p, 27, top, 14, 7, 3, PAPER, 2); p.rect(18.5, top - 10.6, 17, 1.4, PAPER, 0.9); G(p, gy, 54); });
+    // Tikal: Temple I, steep and narrow, its temple crowned by a tall roof comb, rising out of the forest
+    add('l-tikal', 42, 64, p => { const gy = 61; const top = tiers(p, 21, gy, 28, 13, 9, 3.8, 0.7); stair(p, 21, gy, top, 6, 5);
+      shrine(p, 21, top, 11, 8, 1); p.rect(16.5, top - 20, 9, 12, PAPER, 1.3); for (let y = top - 18; y < top - 9; y += 3) p.line([[17.5, y], [24.5, y]], 0.5); p.ell(21, top - 15, 1.8, 1.6, PAPER, 0.7);
+      crowns(p, [[3, 1], [8, 0.8], [35, 0.9], [40, 1.05]], gy, 5); G(p, gy, 42); });
+    // Palenque: the Temple of the Inscriptions (five doorways under a mansard roof) and the palace with its four-storey tower
+    add('l-palenque', 62, 46, p => { const gy = 43;
+      p.rect(2, gy - 7, 28, 7, STONE, 1.2); p.rect(4, gy - 13, 24, 6, PAPER, 1.2); for (let i = 0; i < 6; i++) p.rect(5.5 + i * 3.8, gy - 12, 1.6, 4.6, INK, 0);
+      p.poly([[3.5, gy - 13], [6, gy - 16], [26, gy - 16], [28.5, gy - 13]], PAPER, 1.1);
+      for (let k = 0; k < 4; k++) p.rect(13 - (5 - k * 0.6) / 2 + 2.5, gy - 16 - (k + 1) * 4.4, 5 - k * 0.6, 4.4, PAPER, 1.1); p.poly([[15, gy - 33.6], [15.5, gy - 35.5], [16.4, gy - 35.5], [16.9, gy - 33.6]], PAPER, 1);
+      const top = tiers(p, 46, gy, 28, 15, 8, 2.9, 0.7); stair(p, 46, gy, top, 6, 5); shrine(p, 46, top, 16, 6, 5, PAPER, 3.4); p.rect(43.5, top - 12, 5, 2.6, PAPER, 0.9);
+      crowns(p, [[59, 0.8]], gy, 5); G(p, gy, 62); });
+    // Uxmal: the Pyramid of the Magician, oval in plan, so its ends round off; a steep stair and the temple at the top
+    add('l-uxmal', 48, 50, p => { const gy = 47, h = 36, cx = 24; const L = [], Rr = [];
+      for (let i = 0; i <= 12; i++) { const t = i / 12, y = gy - t * h, hw = 18 - 7 * t - 2.2 * Math.sin(Math.PI * t); L.push([cx - hw, y]); Rr.unshift([cx + hw, y]); }
+      p.poly(L.concat(Rr), STONE, 1.5); p.hatch([[cx + 4, gy - h], [cx + 11, gy - h], [cx + 18, gy], [cx + 8, gy]], 100, 1.9, 0.6);
+      for (let k = 1; k < 6; k++) { const t = k / 6, y = gy - t * h, hw = 18 - 7 * t - 2.2 * Math.sin(Math.PI * t); p.line([[cx - hw + 1, y], [cx - 4, y]], 0.5); p.line([[cx + 4, y], [cx + hw - 1, y]], 0.5); }
+      stair(p, cx, gy, gy - h, 8, 5); shrine(p, cx, gy - h, 13, 6, 1, PAPER); p.rect(cx - 7, gy - h - 7.2, 14, 1.2, PAPER, 0.9); G(p, gy, 48); });
+    // Monte Albán: the levelled mountain top above the valley of Oaxaca, platforms round its great plaza
+    add('l-montealban', 66, 36, p => { const gy = 33;
+      p.poly([[0, gy], [8, gy - 8], [14, gy - 13], [52, gy - 13], [58, gy - 8], [66, gy]], PAPER, 1.5); p.hatch([[40, gy - 13], [52, gy - 13], [58, gy - 8], [66, gy], [36, gy]], 110, 2.2, 0.6); for (let i = 0; i < 6; i++) p.line([[6 + i * 10, gy - 1], [9 + i * 10, gy - 5]], 0.5);
+      const t1 = tiers(p, 20, gy - 13, 12, 6, 3, 3, 0.8, STONE); stair(p, 20, gy - 13, t1, 3, 2);
+      const t2 = tiers(p, 46, gy - 13, 11, 5, 3, 3.3, 0.8, STONE); stair(p, 46, gy - 13, t2, 3, 2); shrine(p, 46, t2, 5, 3, 1);
+      p.rect(29, gy - 17, 8, 4, STONE, 1.1); p.rect(31, gy - 20, 4, 3, STONE, 1); });
+    // Templo Mayor, Tenochtitlan (Mexico City): one pyramid with twin stairways and twin shrines, Tlaloc's blue and white,
+    // Huitzilopochtli's red
+    add('l-templomayor', 56, 46, p => { const gy = 43; const top = tiers(p, 28, gy, 50, 32, 4, 5.6, 1.4); stair(p, 21, gy, top, 9, 7); stair(p, 35, gy, top, 9, 7);
+      p.line([[28, gy], [28, top]], 1);
+      p.rect(15, top - 9, 12, 9, '#9DB4C8', 1.3); for (let y = top - 7; y < top; y += 2.4) p.line([[15, y], [27, y]], 0.6); p.rect(19.6, top - 5, 2.8, 5, INK, 0); for (let i = 0; i < 4; i++) p.ell(16.5 + i * 3, top - 10.4, 1.3, 1.3, SNOW, 0.8);
+      p.rect(29, top - 9, 12, 9, RED, 1.3); p.rect(33.6, top - 5, 2.8, 5, INK, 0); for (let i = 0; i < 4; i++) p.poly([[29.2 + i * 3, top - 9], [30.7 + i * 3, top - 12], [32.2 + i * 3, top - 9]], SNOW, 0.8);
+      G(p, gy, 56); });
+    // Copán: the Hieroglyphic Stairway, every riser carved with glyphs, and a carved stela before it
+    add('l-copan', 54, 44, p => { const gy = 41; const top = tiers(p, 30, gy, 44, 22, 5, 5.6, 1.2, STONE);
+      p.poly([[22, gy], [25, top], [35, top], [38, gy]], PAPER, 1.2);
+      for (let y = gy - 2.4, r = 0; y > top + 1; y -= 2.4, r++) { const f = (gy - y) / (gy - top), x0 = 22 + 3 * f, x1 = 38 - 3 * f; p.line([[x0, y], [x1, y]], 0.5); for (let x = x0 + 1 + (r % 2); x < x1 - 1; x += 2.2) p.rect(x, y + 0.5, 1, 1.2, INK, 0); }
+      shrine(p, 30, top, 10, 5, 1, STONE);
+      p.rect(5, gy - 19, 6, 19, STONE, 1.3); p.ell(8, gy - 15, 1.8, 2, PAPER, 0.8); for (let y = gy - 11; y < gy - 1; y += 2.5) p.line([[6, y], [10, y]], 0.5); p.poly([[4.4, gy - 19], [8, gy - 21.5], [11.6, gy - 19]], STONE, 1);
+      p.ell(15, gy - 1.5, 3, 1.6, STONE, 1); G(p, gy, 54); });
+    // Calakmul: Structure II, one of the largest Maya pyramids, a vast stepped mass rising out of the forest
+    add('l-calakmul', 64, 44, p => { const gy = 41; const top = tiers(p, 32, gy, 58, 22, 6, 4.6, 1.5, STONE); stair(p, 32, gy, top, 10, 6); shrine(p, 32, top, 9, 5, 1, STONE);
+      crowns(p, [[3, 1.1], [9, 0.9], [15, 0.8], [49, 0.85], [55, 1], [61, 1.1]], gy, 5); G(p, gy, 64); });
+    // Caral: the oldest city of the Americas, its great platform mound and the sunken round plaza before it
+    add('l-caral', 64, 34, p => { const gy = 31; const top = tiers(p, 42, gy, 40, 22, 4, 4.4, 1.6, '#E8C9A0'); stair(p, 42, gy, top, 6, 4);
+      p.ell(13, gy - 3, 11, 3.4, '#E8C9A0', 1.3); p.ell(13, gy - 3, 7, 2.1, '#D3AB72', 1); for (let a = 0; a < 6; a++) { const t = Math.PI * (0.15 + a * 0.14); p.line([[13 + Math.cos(t) * 7, gy - 3 - Math.sin(t) * 2.1], [13 + Math.cos(t) * 11, gy - 3 - Math.sin(t) * 3.4]], 0.5); }
+      G(p, gy, 64); });
+    // Chan Chan: the great adobe city of the Chimú, tall walls with friezes worked like fishing nets
+    add('l-chanchan', 64, 34, p => { const gy = 31;
+      p.rect(4, gy - 20, 56, 13, ADOBE, 1.4); p.x.save(); p.x.beginPath(); p.x.rect(5, gy - 18, 54, 6); p.x.clip(); for (let x = 3; x < 62; x += 3) { p.line([[x, gy - 18], [x + 6, gy - 12]], 0.5); p.line([[x + 6, gy - 18], [x, gy - 12]], 0.5); } p.x.restore(); p.line([[5, gy - 18], [59, gy - 18]], 0.7); p.line([[5, gy - 12], [59, gy - 12]], 0.7);
+      p.rect(0, gy - 8, 64, 8, ADOBE, 1.4); for (let i = 0; i < 8; i++) p.rect(3 + i * 8, gy - 6, 4, 2, '#C98E5A', 0.6);
+      p.rect(24, gy - 5, 5, 5, INK, 0); p.hatch([[44, gy - 20], [60, gy - 20], [60, gy - 8], [44, gy - 8]], 80, 2.2, 0.5); G(p, gy, 64); });
+    // Tiwanaku: the Gateway of the Sun, a single carved block with its frieze and the figure at the centre, the Akapana behind
+    add('l-tiwanaku', 56, 40, p => { const gy = 37;
+      tiers(p, 40, gy - 4, 30, 18, 3, 3.4, 1, '#C9B89A');
+      p.rect(8, gy - 22, 28, 22, '#BFB4A2', 1.5); p.rect(18.5, gy - 13, 7, 13, '#3A2C20', 1);
+      p.rect(9.5, gy - 21, 25, 6, '#BFB4A2', 0.8); for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) if (i < 3 || i > 4) p.rect(10.4 + i * 3, gy - 20.4 + r * 2.8, 2, 2, '#BFB4A2', 0.6);
+      p.rect(19.8, gy - 21, 4.4, 5.6, '#BFB4A2', 0.9); for (let a = 0; a < 7; a++) { const t = Math.PI * (1 + a / 6); p.line([[22 + Math.cos(t) * 2.2, gy - 19 + Math.sin(t) * 1.8], [22 + Math.cos(t) * 3.4, gy - 19 + Math.sin(t) * 2.8]], 0.5); }
+      p.hatch([[29, gy - 22], [36, gy - 22], [36, gy], [29, gy]], 80, 2, 0.6); G(p, gy, 56); });
+    // Sacsayhuamán above Cusco: three terraces of zigzag walls built of great fitted polygonal stones
+    add('l-sacsayhuaman', 64, 36, p => { const gy = 33;
+      for (let k = 2; k >= 0; k--) { const yb = gy - k * 8, yt = yb - 9, x0 = 2 + k * 5, x1 = 62 - k * 5, n = 4 + (2 - k);
+        const top = []; for (let i = 0; i <= n * 2; i++) { const x = x0 + (x1 - x0) * i / (n * 2); top.push([x, yt + (i % 2 ? 2.4 : 0)]); }
+        p.poly(top.concat([[x1, yb], [x0, yb]]), '#D6CBB4', 1.3);
+        const R = p.R; for (let s = 0; s < (x1 - x0) / 4.2; s++) { const sx = x0 + 2 + s * 4.2 + (R() - 0.5) * 1.6; p.line([[sx, yt + 2.6], [sx + (R() - 0.5) * 2, yt + 5], [sx + (R() - 0.5) * 1.5, yb - 0.3]], 0.6); if (R() < 0.6) p.line([[sx - 2, yt + 4.5 + R() * 2.5], [sx + 2, yt + 5 + R() * 2.5]], 0.5); }
+        p.hatch(top.slice(n).concat([[x1, yb], [x0 + (x1 - x0) / 2, yb]]), 100, 2.2, 0.5); }
+      G(p, gy, 64); });
     add('l-djenne', 52, 36, p => { const gy = 33; p.rect(4, gy - 16, 44, 16, '#D9B07A', 1.5); for (const tx of [10, 26, 42]) { p.poly([[tx - 4, gy - 16], [tx - 3, gy - 26], [tx, gy - 30], [tx + 3, gy - 26], [tx + 4, gy - 16]], '#D9B07A', 1.4); for (let y = gy - 18; y > gy - 28; y -= 3) p.line([[tx - 5, y], [tx + 5, y]], 0.8); } G(p, gy, 52); });
     add('l-tablemountain', 64, 30, p => { const gy = 27; p.poly([[2, gy], [10, gy - 10], [14, gy - 18], [50, gy - 18], [54, gy - 10], [62, gy]], PAPER, 1.6); p.hatch([[14, gy - 18], [50, gy - 18], [54, gy - 10], [62, gy], [2, gy], [10, gy - 10]], 90, 2.6, 0.6); p.poly([[12, gy - 18], [20, gy - 24], [44, gy - 24], [52, gy - 18]], SNOW, 1, 0); p.col(BLUE).line([[0, gy + 2], [64, gy + 2]], 1).col(INK); });
     add('l-causeway', 40, 24, p => { for (let r = 0; r < 2; r++) for (let i = 0; i < 6; i++) { const cx = 4 + i * 6 + r * 3, cy = 10 + r * 6, rr = 3; const pts = []; for (let k = 0; k < 6; k++) pts.push([cx + Math.cos(k * Math.PI / 3) * rr, cy + Math.sin(k * Math.PI / 3) * rr * 0.6]); p.poly(pts, PAPER, 1.1); } p.col(BLUE).line([[0, 21], [40, 21]], 1).col(INK); });

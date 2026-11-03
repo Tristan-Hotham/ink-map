@@ -191,7 +191,8 @@
     // ---- resting clouds: how many, and how strong, at this zoom
     const DBG = String(opts.dbg || '');   // QA only (?cloudsdbg=norest,noshadow,nodrift)
     function restCount(z) { if (DBG.includes('norest')) return 0; if (z >= 13) return 0; if (z >= 11) return 2; if (z >= 8.5) return 3; if (z >= 5.5) return 4; if (z >= 3) return 6; return 7; }
-    function restAlpha(z) { return z >= 12 ? 0.5 : z >= 9 ? 0.66 : 0.8; }
+    // (and from zoom 12 they fade out, gone by 13)
+    function restAlpha(z) { return (z >= 12 ? 0.5 * Math.max(0, Math.min(1, 13 - z)) : z >= 9 ? 0.66 : 0.8); }
     function restScale(z) { return z < 3 ? 1.15 : z < 6 ? 1.08 : z < 9 ? 1.0 : 0.88; }
     // a cloud of this size at (cx, cy) keeps clear of the middle 60% of the view (both ways)
     function clearOfMiddle(cx, cy, hw, hh, W, H) {
@@ -221,6 +222,8 @@
     function runRest(el, k) {
       if (!st.on || !st.shown) return;
       const z = map.getZoom(), [W, H] = size();
+      // a cloud whose drift ends at a height with no resting clouds (zoom 13 and in) does not come back
+      if (restAlpha(z) < 0.02 || restCount(z) === 0) { el.style.opacity = '0'; return; }
       const p = placeRest(el, k, z, W, H);
       if (!p) { el.style.opacity = '0'; el.__t = setTimeout(() => runRest(el, k + 1), 4000); return; }
       const a = restAlpha(z);
@@ -378,7 +381,19 @@
       for (const a of drifts()) { try { if (a.playState === 'paused') a.play(); } catch (e) {} }
       if (!m) return;
       const z = map.getZoom();
-      if (m.zoomed && (Math.abs(z - m.z0) > 0.25 || m.n)) {
+      // the clouds of a flight down to the deep zooms clear at once when the map rests there
+      if (z >= 13 && fly.children.length) {
+        for (const el of [...fly.children]) {
+          const op = getComputedStyle(el).opacity;
+          el.getAnimations().forEach(a => { a.onfinish = null; a.pause(); });
+          el.animate([{ opacity: op }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).onfinish = () => el.remove();
+        }
+        st.flying = 0; veil.style.display = 'none';
+      }
+      // (small zooms add up: compare with the zoom the set was laid for, and re-lay in the fade band 12 to 13 or when the
+      // count for this height differs, so wheel steps of a quarter level can never carry clouds down to the deep zooms)
+      const zr = st.restZ == null ? z : st.restZ;
+      if ((m.zoomed && (Math.abs(z - m.z0) > 0.25 || m.n)) || Math.abs(z - zr) > 0.6 || restCount(z) !== restCount(zr) || (Math.max(z, zr) > 12 && Math.abs(z - zr) > 0.05)) {
         // a new set for the new height, faded in
         rest.getAnimations().forEach(a => a.cancel()); rest.style.transition = 'none'; rest.style.transform = ''; rest.style.opacity = '0';
         layRest(); requestAnimationFrame(() => { rest.style.transition = 'opacity 1.4s ease'; rest.style.opacity = '1'; });

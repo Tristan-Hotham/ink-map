@@ -23,7 +23,7 @@ r4 = lambda v: round(v, 4)
 feat = lambda lon, lat, p: {'type': 'Feature', 'properties': p, 'geometry': {'type': 'Point', 'coordinates': [r4(lon), r4(lat)]}}
 lm = [feat(lon, lat, {'n': n, 'i': ic, 'z': z, 'w': w}) for n, lon, lat, ic, z, w in C.LANDMARKS]
 dump({'type': 'FeatureCollection', 'features': lm}, os.path.join(DATA, 'landmarks.geojson'))
-LM_NAMES = {n.lower() for n, *_ in C.LANDMARKS}
+LM_NAMES = {n.lower() for n, *_ in C.LANDMARKS} | {n.lower() for n in getattr(C, 'LANDMARK_ALIASES', [])}
 dropped = 0
 for fn in sorted(glob.glob(os.path.join(DATA, 'heritage', '*_*.json'))):
     rows = json.load(open(fn))
@@ -32,3 +32,7 @@ for fn in sorted(glob.glob(os.path.join(DATA, 'heritage', '*_*.json'))):
         dropped += len(rows) - len(keep)
         with open(fn, 'w') as f: json.dump(keep, f, separators=(',', ':'), ensure_ascii=False)
 print('landmarks', len(lm), 'heritage rows dropped as landmarks', dropped)
+# (and the landmark count in data/features_summary.json, which code/02d_features.py writes)
+_fs = os.path.join(DATA, 'features_summary.json')
+if os.path.exists(_fs):
+    _s = json.load(open(_fs)); _s['landmarks'] = len(lm); json.dump(_s, open(_fs, 'w'), indent=1)

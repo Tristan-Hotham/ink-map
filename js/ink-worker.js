@@ -540,14 +540,14 @@ let herIdx = null; const herTiles = new Map();
 function heritageIndex() {
   if (!herIdx) herIdx = (async () => {
     if (!CFG.heritage) return null;
-    try { const r = await fetch(CFG.heritage + 'index.json'); if (!r.ok) return null; const j = await r.json(); j.set = new Set(j.tiles); return j; } catch (e) { return null; }
+    try { const r = await fetch(CFG.heritage + 'index.json' + (CFG.dv || '')); if (!r.ok) return null; const j = await r.json(); j.set = new Set(j.tiles); return j; } catch (e) { return null; }
   })();
   return herIdx;
 }
 function heritageBin(bx, by) {
   const k = bx + '_' + by;
   if (!herTiles.has(k)) herTiles.set(k, (async () => {
-    try { const r = await fetch(CFG.heritage + k + '.json'); return r.ok ? await r.json() : []; } catch (e) { return []; }
+    try { const r = await fetch(CFG.heritage + k + '.json' + (CFG.dv || '')); return r.ok ? await r.json() : []; } catch (e) { return []; }
   })());
   return herTiles.get(k);
 }
@@ -826,10 +826,11 @@ async function townPoints(z, x, y, avoid) {
     if (P.kind === 'capital') b = Math.max(b, dr < 0.1 ? 2 : dr < 0.22 ? 1 : 0); else if (P.kind === 'city' && P.rank <= 3) b = Math.max(b, dr < 0.12 ? 1 : 0);
     return b;
   };
-  const pickHouse = (P, dr, hh, tx, ty, gnx, gny) => {
+  const pickHouse = (P, dr, hh, tx, ty, gnx, gny, urban) => {
     const b = band(P, dr, tx, ty, gnx, gny);
     if (b > 0 && hash3(Math.round(gnx * 4e7), 13, Math.round(gny * 4e7)) < TALLP[b] * (hgt || cbds.length || CFG.houseBand ? 1 : 0.6)) return { t: 'tw-' + P.st.tw + '-' + b, big: 1 };
-    const L = (P.kind === 'village' || P.kind === 'hamlet' || dr > 0.75) ? P.st.r : P.st.h;
+    // (dense city fabric far from the centre keeps the town houses of its region, not the rural ones)
+    const L = (P.kind === 'village' || P.kind === 'hamlet' || dr > 0.75) && !(urban > 0.5) ? P.st.r : P.st.h;
     return { t: L[Math.floor(hh * L.length)] };
   };
   const kmPerN = 40075 * Math.cos(latOfY((y + 0.5) / n) * DEG);   // km per unit of normalised x at this latitude
@@ -840,6 +841,13 @@ async function townPoints(z, x, y, avoid) {
   const at = (m, tx, ty) => m && m[Math.max(0, Math.min(MS - 1, Math.floor(ty * MS))) * MS + Math.max(0, Math.min(MS - 1, Math.floor(tx * MS)))] === 1;
   // building density round a point (share of a 5 x 5 mask window covered)
   const dens = (tx, ty) => { if (!bld) return 0; let c = 0; const i0 = Math.floor(tx * MS), j0 = Math.floor(ty * MS); for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) { const i = i0 + di, j = j0 + dj; if (i >= 0 && j >= 0 && i < MS && j < MS && bld[j * MS + i]) c++; } return c / 25; };
+  // round 7: dense city fabric (built-up land packed with buildings) is filled with houses wherever it lies, not only near
+  // a place's centre: a great city's districts far from its centre point (Kyoto, Tokyo, Seoul, Paris, Cairo) read as town,
+  // not as scattered outskirts. 0 in open or leafy ground, 1 where the buildings cover two thirds of the ground or more.
+  const urb = (ins, dn) => (ins || dn >= 0.3) ? Math.max(0, Math.min(1, (dn - 0.25) / 0.4)) : 0;
+  // (a higher cap for densely built tiles was tried: 15% more drawings cost Paris at zoom 14 about a third of its panning frame
+  // rate in the software renderer, so the cap stays at CFG.TMAX; dense fabric away from the centre is ranked with the inner streets instead, above)
+  const tmax = CFG.TMAX;
   const near = (nx, ny) => { let best = null, bd = 1e9; for (const P of places) { const d = Math.hypot((nx - P.nx) * kmPerN, (ny - P.ny) * kmPerN) / P.R; if (d < bd) { bd = d; best = P; } } return [best, bd]; };
   // occupancy grid in tile pixels (512 a tile), so houses never overprint each other or a heritage drawing
   const OC = 7, occ = new Set();
@@ -901,15 +909,16 @@ async function townPoints(z, x, y, avoid) {
               const tx = hx / 512, ty = hy / 512;
               if (at(wet, tx, ty)) continue;
               const gnx = (x + tx) / n, gny = (y + ty) / n, [P, dr] = near(gnx, gny);
-              if (!P || dr > 1.6) continue;
-              const ins = at(built, tx, ty), dn = dens(tx, ty);
+              if (!P) continue;
+              const ins = at(built, tx, ty), dn = dens(tx, ty), u = urb(ins, dn);
+              if (dr > 1.6 && !u) continue;
               if (!ins && dn < 0.12 && dr > 0.5) continue;
               // keep share: the old core is packed; beyond it, houses only where OpenStreetMap maps buildings
-              const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
+              const keep = Math.max(Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn)), u * 0.8 * w);
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
               if (h >= keep) continue;
-              const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)), tx, ty, gnx, gny);
-              cand.push({ hx, hy, dr, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
+              const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)), tx, ty, gnx, gny, u);
+              cand.push({ hx, hy, dr: u ? Math.min(dr, 0.45 + 0.6 * (1 - u)) : dr, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
             }
           }
           carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
@@ -926,14 +935,15 @@ async function townPoints(z, x, y, avoid) {
     const tx = hx / 512, ty = hy / 512;
     if (tx < 0 || ty < 0 || tx >= 1 || ty >= 1 || at(wet, tx, ty)) continue;
     const gnx = (x + tx) / n, gny = (y + ty) / n, [P, dr] = near(gnx, gny);
-    if (!P || dr > 1.3) continue;
-    const ins = at(built, tx, ty), dn = dens(tx, ty);
+    if (!P) continue;
+    const ins = at(built, tx, ty), dn = dens(tx, ty), u = urb(ins, dn);
+    if (dr > 1.3 && !u) continue;
     if (!ins && dn < 0.2 && dr > ((P.kind === 'village' || P.kind === 'hamlet') ? 0.65 : 0.4)) continue;   // the old core counts as built even where the tile maps nothing
     const small = P.kind === 'village' || P.kind === 'hamlet';
-    const keep = dr < 0.18 ? 0.95 : small && dr < 0.6 ? 0.8 - 0.6 * dr : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
+    const keep = Math.max(dr < 0.18 ? 0.95 : small && dr < 0.6 ? 0.8 - 0.6 * dr : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn)), u * 0.55);
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
-    const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)), tx, ty, gnx, gny);
-    cand.push({ hx, hy, dr: dr + 0.001, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+    const ph = pickHouse(P, dr, hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)), tx, ty, gnx, gny, u);
+    cand.push({ hx, hy, dr: (u ? Math.min(dr, 0.45 + 0.6 * (1 - u)) : dr) + 0.001, big: ph.big, it: { nx: gnx, ny: gny, t: ph.t, a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
   }
   // the old cores of cities and capitals packed tighter still (a finer grid, offset from the one above), so a city centre reads as built up
   for (const P of places) {
@@ -950,7 +960,7 @@ async function townPoints(z, x, y, avoid) {
   // place from the centre outwards, so the cap on drawings per tile thins the edges, never the old core
   cand.sort((a, b) => a.dr - b.dr);
   for (const c of cand) {
-    if (out.length >= CFG.TMAX) break;
+    if (out.length >= tmax) break;
     if (!free(c.hx, c.hy, c.big ? 1 : 0)) continue;
     take(c.hx, c.hy, c.big ? 1 : 0); out.push(c.it);
   }

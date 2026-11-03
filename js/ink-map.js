@@ -716,7 +716,7 @@
     const placeLayer = (id, filter, opts) => L({ id, type: 'symbol', source: 'ofm', 'source-layer': 'place', filter, minzoom: opts.minzoom || 0, maxzoom: opts.maxzoom || 24,
       layout: TXT(Object.assign({ 'text-field': opts.field || NAME_LOCAL, 'text-font': [opts.font || 'Ink Roman'], 'text-size': opts.size, 'icon-image': opts.icon || '', 'icon-size': opts.iconSize || 0.5,
         'text-variable-anchor': opts.icon ? ['left', 'right', 'top', 'bottom'] : ['center'], 'text-radial-offset': opts.icon ? 0.75 : 0, 'text-justify': 'auto', 'text-max-width': 9,
-        'symbol-sort-key': ['coalesce', ['get', 'rank'], 30], 'icon-overlap': 'never', 'icon-optional': false, 'text-letter-spacing': opts.ls || 0.04, 'text-transform': opts.transform || 'none' })),
+        'symbol-sort-key': ['coalesce', ['get', 'rank'], 30], 'icon-overlap': 'never', 'icon-optional': false, 'text-letter-spacing': opts.ls || 0.04, 'text-transform': opts.transform || 'none' }, opts.padding ? { 'text-padding': opts.padding } : {})),
       paint: { 'text-color': opts.color || INK.red, 'text-halo-color': HALO, 'text-halo-width': 1.4, 'text-halo-blur': 0.5, 'text-opacity': opts.opacity, 'icon-opacity': opts.opacity } }, opts.group || 'names');
     const CL = ['get', 'class'];
 
@@ -822,7 +822,18 @@
       opacity: ramp(3, 3.6, null, null) });
     placeLayer('towns', ['==', CL, 'town'], { minzoom: 6.5, size: iz(7, 11.5, 10, 14, 13, 16), icon: 's-town', iconSize: iz(7, 0.5, 11, 0.65), opacity: ramp(6.5, 7.6, null, null) });
     placeLayer('villages', ['==', CL, 'village'], { minzoom: 9, size: iz(9, 10.5, 13, 14), icon: 's-village', iconSize: iz(9, 0.55, 13, 0.72), opacity: ramp(9, 9.8, null, null) });
-    placeLayer('hamlets', ['in', CL, ['literal', ['hamlet', 'suburb', 'quarter', 'neighbourhood', 'isolated_dwelling']]], { minzoom: 10.3, size: iz(10.5, 10, 15, 13), icon: 's-hamlet', iconSize: iz(11, 0.8, 15, 1), opacity: ramp(10.3, 10.9, null, null), color: INK.redDeep });
+    placeLayer('hamlets', ['in', CL, ['literal', ['hamlet', 'isolated_dwelling']]], { minzoom: 10.3, size: iz(10.5, 10, 15, 13), icon: 's-hamlet', iconSize: iz(11, 0.8, 15, 1), opacity: ramp(10.3, 10.9, null, null), color: INK.redDeep });
+    // round 7: in a dense city the minor quarters (OpenStreetMap place=quarter and neighbourhood, and Japan's numbered chome
+    // and small cho, often tagged as suburbs) crowded out everything else at zoom 13 to 15. Suburbs (the major districts) keep
+    // their names, with wide room round them from zoom 13 so they only show where there is space; the minor quarters are
+    // left out from zoom 13 to 15.5, then come back, still asking for room, and are placed after every other name.
+    const NLC = ['downcase', ['coalesce', ['get', 'name:latin'], ['get', 'name_int'], ['get', 'name'], '']], NRAW = ['coalesce', ['get', 'name'], ''];
+    const tail = (e, k) => ['slice', e, ['max', 0, ['-', ['length', e], k]]];
+    const JPQ = ['any', ['in', '丁目', NRAW], ['in', 'chome', NLC], ['in', 'chōme', NLC], ['==', tail(NLC, 3), 'cho'], ['==', tail(NLC, 3), 'chō'], ['==', tail(NRAW, 1), '町']];
+    const MINORQ = ['any', ['in', CL, ['literal', ['quarter', 'neighbourhood']]], ['all', ['==', CL, 'suburb'], JPQ]];
+    placeLayer('suburbs', ['all', ['==', CL, 'suburb'], ['!', JPQ]], { minzoom: 10.3, padding: iz(12.5, 2, 13.5, 26), size: iz(10.5, 10.5, 15, 13.5), icon: 's-hamlet', iconSize: iz(11, 0.8, 15, 1), opacity: ramp(10.3, 10.9, null, null), color: INK.redDeep });
+    placeLayer('quarters', MINORQ, { minzoom: 10.3, maxzoom: 13, padding: 8, size: iz(10.5, 10, 13, 11.5), icon: 's-hamlet', iconSize: iz(11, 0.75, 13, 0.85), opacity: ramp(10.3, 10.9, 12.6, 13), color: INK.redDeep });
+    placeLayer('quarters-near', MINORQ, { minzoom: 15.5, padding: 14, size: iz(15.5, 12, 18, 14), icon: 's-hamlet', iconSize: iz(15.5, 0.9, 18, 1), opacity: ramp(15.5, 15.9, null, null), color: INK.redDeep });
     placeLayer('islands', ['all', ['==', CL, 'island'], ['!', ['in', NAME_EN, ['literal', ['Great Britain', 'Ireland', 'Iceland']]]]], { minzoom: 7, font: 'Ink Italic', size: iz(7, 11, 12, 14), opacity: ramp(7, 8, null, null) });
     // peaks with names, and their heights
     L({ id: 'peaks', type: 'symbol', source: 'ofm', 'source-layer': 'mountain_peak', minzoom: 8.8,
@@ -967,7 +978,7 @@
     // placement priority is top-down: reorder so names come in a sensible order (most important on top)
     // capitals before every other name but the countries, so a capital is lettered whenever another city is, and before its sights
     const order = ['countries', 'country-uk', 'nations', 'nations-pt', 'capitals', 'regions-sea', 'regions-sea-pt', 'regions-world', 'seas', 'bigcities', 'cities', 'landmarks', 'famous-peaks', 'regions-land', 'lake-names-ink', 'lake-names-ink-l', 'lake-names-ink-pt', 'states', 'towns', 'landmark-names', 'landmarks-near',
-      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'xplaces', 'xbeaches', 'peaks', 'parks', 'park-edge-names', 'hills', 'wall-names', 'airports', 'heritage', 'harbours', 'quarries', 'beasts', 'city-marks'];
+      'famous-peak-names', 'villages', 'islands', 'lake-names-ne', 'lake-names', 'lake-names-l', 'river-names-ne', 'river-names', 'hamlets', 'suburbs', 'xplaces', 'xbeaches', 'peaks', 'parks', 'park-edge-names', 'hills', 'wall-names', 'airports', 'heritage', 'harbours', 'quarries', 'quarters', 'quarters-near', 'beasts', 'city-marks'];
     const named = order.map(id => layers.find(l => l.id === id));
     const rest = layers.filter(l => !order.includes(l.id));
     // walls, towers and star forts go on top of the drawn towns, so the houses never hide a town wall
@@ -1000,7 +1011,7 @@
     // its first view, and only while the zoom is in the range where its layers show; the heavy detail files come in only when
     // you zoom in to them. [source, [[file, from zoom, to zoom, before first idle?], ...]], later stages replace earlier ones.
     const LAZY = o.lazy === false ? [] : [
-      ['world', [['data/world_ink_far.geojson?v=20261105', 0, 1.9, true], ['data/world_ink.geojson?v=20261105', 1.9, 4.6, true]]],   // the far marks alone for the world view
+      ['world', [['data/world_ink_far.geojson?v=20261104r7', 0, 1.9, true], ['data/world_ink.geojson?v=20261104r7', 1.9, 4.6, true]]],   // the far marks alone for the world view
       // (round 4: the river, lake and wall names start at zoom 3 to 3.5, so their files wait until the map is near it)
       ['walls', [['data/walls_major.geojson?v=20261103', 2.8, 99], ['grid:walls', 9.6, 99]]],
       ['forts', [['data/forts_points.geojson?v=20261103', 4.5, 99], ['grid:forts', 10.4, 99]]],
@@ -1012,14 +1023,14 @@
     const SRC = {
         labels: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_countries.geojson', attribution: 'Lettering lines: Natural Earth, ONS' },
         regions: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/labels_regions.geojson' },
-        landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson?v=20261103r4', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
+        landmarks: { type: 'geojson', data: base + 'data/landmarks.geojson?v=20261104r7', attribution: 'Heritage: <a href="https://www.wikidata.org/" target="_blank">Wikidata</a> (CC0)' },
         peaks: { type: 'geojson', data: base + 'data/peaks_famous.geojson' },
         walls: { type: 'geojson', tolerance: 0.3, data: base + 'data/walls.geojson?v=20261101c' },
         forts: { type: 'geojson', tolerance: 0.15, data: base + 'data/forts.geojson?v=20261101c' },
         rivers: { type: 'geojson', tolerance: 0.5, data: base + 'data/rivers.geojson', attribution: 'River and lake names: Natural Earth' },
         lakes: { type: 'geojson', data: base + 'data/lakes.geojson' },
         decor: { type: 'geojson', data: base + 'data/decor.geojson', attribution: 'Ship lanes: CLIWOC' },
-        world: { type: 'geojson', tolerance: 0.6, maxzoom: 5, data: base + 'data/world_ink.geojson?v=20261105', attribution: 'World ink: AWS Terrain Tiles, RESOLVE Ecoregions 2017' },
+        world: { type: 'geojson', tolerance: 0.6, maxzoom: 5, data: base + 'data/world_ink.geojson?v=20261104r7', attribution: 'World ink: AWS Terrain Tiles, RESOLVE Ecoregions 2017' },
         lakesink: { type: 'geojson', buffer: 512, tolerance: 0.2, data: base + 'data/lakes_lettered.geojson?v=20261102' },
     };
     for (const [id] of LAZY) SRC[id].data = EMPTY;
@@ -1051,12 +1062,12 @@
   // a small pool of workers; each tile always goes to the same worker (by x) so elevation caches are reused
   let pool = null;
   function setupProtocol(o, ofmTemplate) {
-    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls_boxes.json?v=20261103', houseRegions: o.base + 'data/house_regions.json?v=20261103', snowZone: o.snowZone || null }, o.workerConfig || {}) };
+    const cfg = { config: Object.assign({ ofm: ofmTemplate, dem: o.dem, demMax: o.demMax, biomes: o.base + 'data/biomes.png', heritage: o.base + 'data/heritage/', dv: '?v=20261104r7', hills: o.base + 'data/hills/', places: o.base + 'data/places/', walls: o.base + 'data/walls_boxes.json?v=20261103', houseRegions: o.base + 'data/house_regions.json?v=20261103', snowZone: o.snowZone || null }, o.workerConfig || {}) };
     if (pool) { pool.forEach(w => w.postMessage(cfg)); return; }
     const n = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
     pool = [];
     for (let i = 0; i < n; i++) {
-      const w = new Worker(o.base + 'js/ink-worker.js?v=20261103r6');
+      const w = new Worker(o.base + 'js/ink-worker.js?v=20261104r7');
       w.onmessage = (ev) => {
         const m = ev.data, p = pending.get(m.id); if (!p) return; pending.delete(m.id);
         if (m.err) { console.warn('ink tile', m.err); p.res({ data: new ArrayBuffer(0) }); }

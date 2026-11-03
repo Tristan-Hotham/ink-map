@@ -275,6 +275,67 @@ for f in feats:
             range_pts.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': round(max(rank, f['properties']['z'] + dz), 1), 's': round(sc, 2), 'v': (i * 7 + int(f['properties']['rl'])) % 3},
                               'geometry': {'type': 'Point', 'coordinates': [round(lon, 2), round(lat, 2)]}})
 
+# round 7: the far view was too heavy (Africa and much of Asia nearly black at zoom 0.9). Outside the great named ranges
+# (axes drawn by hand below, with a half-width in degrees) every other range mark comes a zoom later, so the rows there are
+# half as dense at every far zoom, and all are drawn a little smaller; then a cap per screen area at each half zoom (at most CAP_G marks in a
+# cell of CELL_PX screen pixels within a great range, CAP_O elsewhere): marks over the cap are put off to the next half zoom
+# and tested again there, so the great ranges stay boldest and nowhere is inked solid.
+GREAT = {
+    'Himalaya': ([(73.5, 35.5), (77, 33.5), (81, 30.5), (85, 28.3), (89, 27.8), (93, 28), (96.5, 28.5)], 1.6),
+    'Karakoram and Hindu Kush': ([(67, 34.5), (71, 36), (74.5, 36), (77.5, 35.5)], 1.3),
+    'Pamir': ([(71, 38.5), (75, 38.5)], 1.3),
+    'Tian Shan': ([(69, 41.5), (75, 41.5), (80, 42), (86, 43.3), (94, 43)], 1.4),
+    'Kunlun': ([(76, 36.5), (82, 36), (88, 36.3), (94, 36), (99, 35)], 1.0),
+    'Altai': ([(84, 50), (89, 49), (93, 47.5), (97, 46)], 1.4),
+    'Alps': ([(5.5, 44), (7, 46), (10, 46.5), (13, 47), (16, 47.5)], 1.2),
+    'Pyrenees': ([(-2, 43), (3, 42.5)], 0.8),
+    'Carpathians': ([(17.5, 49), (22, 49), (25, 47.5), (26, 45.5), (22.5, 45.3)], 1.0),
+    'Caucasus': ([(37, 44), (42, 43), (47, 41.5), (49.5, 40.5)], 1.2),
+    'Atlas': ([(-9.5, 30.5), (-6, 32), (-2, 33.5), (3, 35.5), (9, 35.5)], 1.3),
+    'Zagros': ([(45, 36.5), (48, 33.5), (52, 30), (56, 27.5)], 1.6),
+    'Taurus': ([(29, 37), (33, 37), (37, 38), (41, 38.5)], 1.0),
+    'Urals': ([(59, 51.5), (59, 56), (59.5, 61), (60, 65), (64, 68)], 1.4),
+    'Scandinavian Mountains': ([(6, 59), (8, 61.5), (13, 64), (16, 67), (20, 69)], 1.6),
+    'Rocky Mountains': ([(-106, 35), (-106, 39), (-108.5, 43), (-112, 46), (-115, 49), (-118, 52.5), (-123, 56), (-127, 60)], 2.2),
+    'Sierra Nevada and Cascades': ([(-118, 35.5), (-120, 38), (-121.5, 41.5), (-121.7, 46), (-121.5, 49)], 1.0),
+    'Coast Mountains and Alaska Range': ([(-125, 50), (-130, 55), (-136, 59), (-142, 61), (-150, 63), (-153, 61)], 1.6),
+    'Brooks Range': ([(-162, 68), (-152, 68), (-143, 68.5)], 1.3),
+    'Sierra Madre Occidental': ([(-109.5, 30), (-106, 26), (-104, 22), (-101, 19.3), (-97, 18)], 1.5),
+    'Sierra Madre Oriental': ([(-101, 27), (-99.5, 23), (-98, 20)], 1.0),
+    'Appalachians': ([(-85, 34.5), (-82, 36.5), (-79, 38.5), (-77, 40.5), (-74, 42), (-72, 44), (-69, 46)], 1.4),
+    'Andes': ([(-75, 11), (-73.5, 7), (-76.5, 3), (-78.5, -2), (-77, -9), (-72, -14), (-69, -17), (-68, -22), (-69, -28), (-70, -33), (-71, -38), (-72, -43), (-73, -48), (-73.5, -52)], 2.0),
+    'Great Dividing Range': ([(145.5, -15), (146.5, -20), (149, -25), (151.5, -29), (150, -33), (148.5, -36.5), (146, -37.5)], 1.5),
+    'Drakensberg': ([(27, -33), (29, -30), (30.5, -27.5), (31, -25)], 1.2),
+    'Southern Alps': ([(167, -46), (169.5, -44), (172, -42.3)], 1.0),
+}
+great_zone = prep(unary_union([LineString(ax).buffer(w) for ax, w in GREAT.values()]))
+CELL_PX, CAP_G, CAP_O = int(os.environ.get('WCELL', 32)), int(os.environ.get('WCAPG', 12)), int(os.environ.get('WCAPO', 6))
+n_great = 0
+for f in range_pts:
+    pr = f['properties']
+    if great_zone.contains(Point(*f['geometry']['coordinates'])):
+        # (and the great ranges themselves come most of a zoom sooner and a little larger, so they lead the far view)
+        pr['g'] = 1; n_great += 1; pr['z'] = round(max(0.0, pr['z'] - 0.8), 1); pr['s'] = round(pr['s'] * 1.12, 2)
+    else:
+        # half of them (every other one, by a hash of the place) a zoom later
+        lo, la = f['geometry']['coordinates']
+        if math.modf(abs(math.sin(lo * 12.9898 + la * 78.233) * 43758.5453))[0] < 0.5:
+            pr['z'] = round(min(pr['z'] + 1.0, max(pr['z'], 2.9)), 1)
+        pr['s'] = round(pr['s'] * 0.9, 2)
+_xy = np.array([merc(*f['geometry']['coordinates']) for f in range_pts])
+for zl in [0.0, 0.5, 1.0, 1.5, 2.0, 2.5]:
+    cw = CELL_PX / (512 * 2 ** zl)
+    order = sorted([i for i, f in enumerate(range_pts) if f['properties']['z'] <= zl],
+                   key=lambda i: (-range_pts[i]['properties'].get('g', 0), range_pts[i]['properties']['z'], -range_pts[i]['properties']['s']))
+    cnt = {}
+    for i in order:
+        pr = range_pts[i]['properties']
+        k = (int(_xy[i, 0] / cw), int(_xy[i, 1] / cw))
+        if cnt.get(k, 0) >= (CAP_G if pr.get('g') else CAP_O):
+            pr['z'] = round(zl + 0.5, 1); continue
+        cnt[k] = cnt.get(k, 0) + 1
+range_pts = [f for f in range_pts if f['properties']['z'] < 3]   # (put off past zoom 3: the tile glyphs have taken over)
+
 # upland hills: rolling high ground that is not range country (relief at least 350 m within about 40 km, above 250 m),
 # a scatter of small hill marks on a nested grid, so the Highlands, the Ethiopian and Brazilian highlands and the
 # Appalachian plateaus have a texture far out
@@ -317,7 +378,7 @@ dump(out, os.path.join(DATA, 'world_ink.geojson'))
 # round 4: the marks of the farthest view (first zoom 2 or less) also in a file of their own, which the page loads for the
 # world view; the whole file follows once the map nears zoom 2
 dump({'type': 'FeatureCollection', 'features': [f for f in out['features'] if f['properties']['z'] <= 2]}, os.path.join(DATA, 'world_ink_far.geojson'))
-stats = {'ranges': n_range, 'range_peaks': len(range_pts), 'range_relief_m': 1000, 'range_min_elev_m': 600, 'lower_range_relief_m': 650, 'lower_range_min_elev_m': 400, 'range_window_km': 40,
+stats = {'ranges': n_range, 'range_peaks': len(range_pts), 'range_peaks_great': n_great, 'great_ranges': sorted(GREAT), 'far_cap': {'cell_px': CELL_PX, 'great': CAP_G, 'other': CAP_O}, 'range_relief_m': 1000, 'range_min_elev_m': 600, 'lower_range_relief_m': 650, 'lower_range_min_elev_m': 400, 'range_window_km': 40,
          'long_low_range_relief_m': 450, 'long_low_range_min_elev_m': 300, 'long_low_range_min_km': 700, **{k + 's': v for k, v in counts.items()},
          'sand_ecoregions': sorted(sand_names)}
 json.dump(stats, open(os.path.join(DATA, 'world_ink_stats.json'), 'w'), indent=1)
