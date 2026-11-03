@@ -1,0 +1,40 @@
+{
+ "life": {
+  "whale": 1388,
+  "dolphin": 368,
+  "flyfish": 349,
+  "serpent": 435,
+  "kraken": 88,
+  "berg": 733,
+  "floe": 680
+ },
+ "life_total": 4041,
+ "wrecks": 475,
+ "wreck_chests": 25,
+ "named": {
+  "rose": 7,
+  "legend": 6,
+  "atlantis": 1,
+  "whirl": 6,
+  "ghost": 7,
+  "mermaid": 7,
+  "kraken": 1,
+  "fleet": 12,
+  "pirate": 33,
+  "wreck": 475
+ },
+ "rhumb_lines": 224,
+ "lanes": 90,
+ "wind_squares": {
+  "all": 537,
+  "djf": 328,
+  "jja": 356
+ },
+ "bytes": {
+  "lanes.json": 46995,
+  "life.json": 102148,
+  "rhumb.geojson": 111797,
+  "sea.geojson": 152078,
+  "wind.json": 26347
+ }
+}

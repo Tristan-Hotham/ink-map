@@ -114,12 +114,14 @@ footer p{margin:0 0 10px}
 .chip{flex:0 0 auto;font:500 12px/1 var(--mono);background:rgba(251,245,228,.94);color:#2B2119;border:1px solid #9C8656;border-radius:999px;padding:8px 11px;cursor:pointer;min-height:34px;white-space:nowrap;box-shadow:0 1px 3px rgba(60,40,10,.14)}
 .chip:hover{background:#EFE1BC}
 .chip.lyr{background:#2B2119;color:#F6EED8;border-color:#2B2119}
-.lp{position:absolute;right:54px;top:104px;z-index:6;background:rgba(251,245,228,.98);border:1px solid #9C8656;border-radius:4px;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);color:#2B2119;box-shadow:0 3px 12px rgba(60,40,10,.25);display:none;min-width:220px;max-height:calc(100% - 120px);overflow:auto}
+.lp{position:absolute;right:54px;top:104px;z-index:9;background:rgba(251,245,228,.98);border:1px solid #9C8656;border-radius:4px;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);color:#2B2119;box-shadow:0 3px 12px rgba(60,40,10,.25);display:none;min-width:220px;max-height:calc(100% - 120px);overflow:auto}
 .lp.open{display:block}
 .lp h4{margin:0 0 6px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#7A6A52}
 .lp label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer;min-height:30px}
 .lp input{accent-color:#A3261B;width:16px;height:16px}
 .lp hr{border:0;border-top:1px solid #E2D3AE;margin:6px 0}
+.lp h5{margin:9px 0 1px;padding-top:7px;border-top:1px solid #E2D3AE;font:600 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#A3261B}
+.lp h4+h5{border-top:0;padding-top:0;margin-top:4px}
 .key{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 14px;margin:10px 0 4px}
 .key h3{grid-column:1/-1;margin:12px 0 2px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .key div{display:flex;align-items:center;gap:8px;min-height:34px;font:400 13px/1.25 var(--mono)}
@@ -189,21 +191,41 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     </div>
     <div class="lp" id="lp" role="dialog" aria-label="Map layers">
       <h4>Layers</h4>
+      <h5>Land</h5>
       <label><input type="checkbox" data-g="mountains" checked> Ink mountains and hills</label>
       <label><input type="checkbox" data-g="forests" checked> Forests, marsh and moor</label>
       <label><input type="checkbox" data-g="biomes" checked> Deserts, grassland, jungle, taiga and ice</label>
       <label><input type="checkbox" data-g="farms" checked> Fields, orchards and vineyards</label>
       <label><input type="checkbox" data-g="rivers" checked> Rivers and lakes</label>
+      <label><input type="checkbox" data-g="sea" checked> Sea shading and ripples</label>
       <label><input type="checkbox" data-g="names" checked> Place names</label>
       <label><input type="checkbox" data-g="borders" checked> Borders</label>
       <label><input type="checkbox" data-g="roads" checked> Roads and tracks</label>
-      <label><input type="checkbox" data-g="sea" checked> Sea shading and ripples</label>
-      <label><input type="checkbox" data-g="heritage" checked> Heritage, monuments and parks</label>
-      <label><input type="checkbox" data-g="towns" checked> Drawn towns (zoom 12 and closer)</label>
-      <label><input type="checkbox" data-g="animals" checked> Beasts, sea life and ships</label>
-      <label><input type="checkbox" data-g="flight" checked> Flight: airports and balloons</label>
       <label><input type="checkbox" data-g="hillshade"> Hill shading</label>
-      <hr>
+      <h5>Life</h5>
+      <label><input type="checkbox" data-g="towns" checked> Drawn towns (zoom 12 and closer)</label>
+      <label><input type="checkbox" data-g="lifeland" checked> Hedges, walls, moors, fens and ricks</label>
+      <label><input type="checkbox" data-g="lifeind" checked> Early industry: mills, kilns, forges</label>
+      <label><input type="checkbox" data-g="lifetown" checked> Town life: inns, markets, tourneys</label>
+      <label><input type="checkbox" data-g="liferoad" checked> Travellers, carts, trains and barges</label>
+      <label><input type="checkbox" data-g="lifesmoke" checked> Chimney smoke</label>
+      <label><input type="checkbox" data-g="animals" checked> Beasts, whales and ships far out</label>
+      <label><input type="checkbox" data-g="flight" checked> Flight: airports and balloons</label>
+      <h5>Sea</h5>
+      <label><input type="checkbox" data-g="sealife" checked> Sea life: whales, dolphins, serpents, mermaids, ice</label>
+      <label><input type="checkbox" data-g="seaships" checked> Ships: merchants under sail, fishing fleets, pirates, ghost ships</label>
+      <label><input type="checkbox" data-g="seawrecks" checked> Notable shipwrecks and treasure</label>
+      <label><input type="checkbox" data-g="sealegend" checked> Whirlpools and islands of legend</label>
+      <label><input type="checkbox" data-g="seachart" checked> Rhumb lines, compass roses and wind-heads</label>
+      <h5>History</h5>
+      <label><input type="checkbox" data-g="heritage" checked> Heritage, monuments and parks</label>
+      <label><input type="checkbox" data-g="lifehist" checked> Roman roads, pilgrim ways, battles, lost villages, abbeys, wrecks</label>
+      <h5>Game</h5>
+      <label><input type="checkbox" id="folkBox" checked> Hidden folk (zoom 15 and closer)</label>
+      <label><input type="checkbox" id="travBox"> Your traveller</label>
+      <h5>Style</h5>
+      <label><input type="checkbox" id="winterBox" checked> Winter: deep snow, frozen lakes</label>
+      <label><input type="checkbox" data-g="tint" checked> Watercolour tints</label>
       <label><input type="checkbox" id="compassBox" checked> Compass rose</label>
       <label><input type="checkbox" id="frameBox"> Decorative border</label>
       <label><input type="checkbox" id="modern"> Plain modern map</label>
@@ -226,7 +248,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 <p class="lede" style="margin-top:6px">Maps in old books and fantasy novels have a look everyone recognises, made famous by the maps Tolkien drew for his books: rows of inked mountains, clusters of trees, coasts traced again and again with thin lines, and names lettered in red across the land. They are drawn by hand, so they only ever show one place at one scale. I wanted a Tolkien-style map of the whole world that works everywhere and at every zoom, built only from open data, so you can fly from the whole world to Britain to a single Lakeland valley and keep the same drawn feel all the way down.</p>
 <p>Every mountain glyph above sits on the highest point of its patch of ground, sized by how far that point rises above the land around it. Every tree sits inside a wood mapped in OpenStreetMap. Nothing is traced from any artist's map; the drawing rules are mine, and the data do the rest. Start with Great Britain, then try the Lake District, the Alps or the Himalaya, or search for your own home and press "Ink your home" to save it as a poster.</p>
 <div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap via OpenFreeMap; AWS Terrain Tiles; RESOLVE Ecoregions; Wikidata; Natural Earth; ONS; CLIWOC</div>
-<p class="src">Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap using the OpenMapTiles schema. Elevation from AWS Terrain Tiles. Biomes from RESOLVE Ecoregions 2017 (CC BY 4.0). Heritage sites and summits from Wikidata (CC0). Ship lanes from the CLIWOC logbook database. Country and nation outlines for the lettering from Natural Earth and the ONS. Tap any name, peak or drawing for details; the square button at the top right fills the screen.</p>
+<p class="src">Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap using the OpenMapTiles schema. Elevation from AWS Terrain Tiles. Biomes from RESOLVE Ecoregions 2017 (CC BY 4.0). Heritage sites and summits from Wikidata (CC0). Ship lanes and sea winds from the CLIWOC logbook database; shipwrecks also from NOAA AWOIS; piracy hotspots from the Crime at Sea database (CC BY 4.0). Country and nation outlines for the lettering from Natural Earth and the ONS. Tap any name, peak or drawing for details; the square button at the top right fills the screen.</p>
 
 <details open><summary>Key</summary>
 <div class="key" id="key"></div>
@@ -261,6 +283,8 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 <p>Closer in, the countryside is drawn in the same hand. From zoom 7 farmland takes a faint ochre wash and meadows a green one, so farming country reads differently from forest and moor; from about zoom 10 each field is hatched in ploughed strips running one of four ways, vineyards are rows of stakes, orchards little round trees and allotments small plots, and parks and gardens get a green wash, trees and a railing line, with parterres in formal gardens. Beasts of the countryside are sprinkled sparsely where the land suits them, a few to a tile: deer and boar in the woods, sheep on the moors, cattle on the farms, eagles over the mountains, herons by the water. They are drawn in the manner of a medieval bestiary, cut out on a gilt ground, and they are pictures, not sightings.</p>
 <p>Capitals are lettered on a ribbon with a small shield, before any other city, and the great cities on a banner; from zoom 6.5 a drawn walled city with its gates, cathedral and castle marks them until the streets take over. Main roads become pale tracks between faint ink lines, the lakes of the Lake District are lettered along their length in blue, and national parks are named along the inside of their dotted boundary. In the Layers panel you can add a decorative border, or turn off the compass rose.</p>
 
+<p>The sea is alive too. Whales spout, dolphins leap, flying fish skim the warm seas and sea serpents and krakens lurk far from land, as on the old charts; icebergs and sea ice fill the polar seas in the winter look. Fishing fleets work the real banks, from Dogger Bank to the Grand Banks, merchant ships sail real passages from eighteenth century logbooks, and pirate ships haunt the places where pirate attacks have been reported. Notable wrecks lie where they sank, the sailing-era ones with a treasure chest for decoration; whirlpools turn at Corryvreckan, the Maelstrom and the Strait of Messina; islands of legend such as Hy-Brasil and St Brendan's Isle sit where old charts put them, lettered as legend; compass roses throw rhumb lines across the open ocean, and wind-heads blow from the edges of the world. Your traveller can take to the water at any coast in a rowing boat, cog, caravel, longship or galleon, in your own colours, and sail with the logbooks' winds behind (or against) you.</p>
+
 <h2><span class="n">04 · Ink your home</span>A poster of anywhere</h2>
 <p>Search for anywhere, frame it, and press "Ink your home". The page draws the same view again at two or three times your screen's pixels and saves it as a PNG poster, with your own title (or the place you searched for) in a cartouche, a compass rose, an ink scale bar and the credits in small print. The map data stay under their own licences, and OpenStreetMap's licence asks for its credit to travel with the picture, so every poster carries it.</p>
 
@@ -285,6 +309,9 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 <li>Office for National Statistics, Local Authority Districts (2023) boundaries, contains OS data © Crown copyright and database right 2023 (Open Government Licence v3.0).</li>
 <li>Fonts: MedievalSharp, IM Fell English, IM Fell English SC and IM Fell Great Primer Italic (SIL Open Font License 1.1), from Google Fonts.</li>
 <li>MapLibre GL JS 4.7.1 (BSD 3-Clause).</li>
+<li>History layers: Roman roads from Itiner-e (de Soto and others, 2025; CC BY 4.0); pilgrim routes from OpenStreetMap (ODbL); battles, shipwrecks and monastic houses from Wikidata (CC0); deserted medieval villages from Beresford's Lost Villages, University of Hull (CC BY-NC-SA 4.0), and Wikidata.</li>
+<li>Hidden folk: every figure is an original drawing; places from Wikidata (CC0), Natural Earth and the lists above.</li>
+<li>The sea: notable shipwrecks from Wikidata (CC0) and NOAA AWOIS (public domain); piracy hotspots from Crime at Sea (Benden and others, 2021; CC BY 4.0); merchant passages and prevailing winds from the CLIWOC logbooks (1750 to 1854); Natural Earth land for the sea mask. Legends, whirlpools, fishing banks, mermaids and ghost ships are placed by hand, and every sea drawing is original.</li>
 </ul></details>
 
 <div class="cta"><a class="p" href="https://doi.org/10.5281/zenodo.23860253">Read the paper</a><a href="https://github.com/Tristan-Hotham/ink-map">Data and code</a><a href="https://blog.tristanhotham.com/2026/10/31/ink-map/">Blog post</a></div>
@@ -299,9 +326,13 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="js/curated.js?v=20261102"></script>
+<script src="js/ink-palette.js?v=20261104"></script>
 <script src="js/ink-icons.js?v=20261102"></script>
 <script src="js/ink-map.js?v=20261102"></script>
-<script src="js/ink-extras.js?v=20261102"></script>
+<script src="js/ink-extras.js?v=20261104"></script>
+<script src="js/ink-life-art.js?v=20261102"></script>
+<script src="js/ink-life.js?v=20261104"></script>
+<!-- folk and sea: the hidden folk game, the lively sea and the traveller (js/ink-folk-art.js, js/ink-sea-art.js, js/ink-folk.js, js/ink-sea.js, js/ink-traveller.js) load after the map's first view -->
 <script>
 (function () {
   const qs = new URLSearchParams(location.search);
@@ -329,6 +360,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
   const start = qs.get('at') ? qs.get('at').split(',').map(Number) : null;
   InkMap.create('map', Object.assign(opts, { mapOptions: start ? { center: [start[1], start[0]], zoom: start[2] } : { bounds: PRESETS[2][1], fitBoundsOptions: { padding: 10 } } })).then(m => {
     map = window.__map = m;
+    if (window.InkLife) InkLife.attach(map);   // countryside and town life (js/ink-life.js)
     document.getElementById('nojs').remove();
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     // start with the attribution folded on small screens (the (i) button opens it)
@@ -341,8 +373,19 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     const upd = () => { zb.textContent = 'zoom ' + map.getZoom().toFixed(1); };
     map.on('zoom', upd); upd();
     setupLayers(map); setupSearch(map); setupPopups(map); setupPoster(map);
+    // folk: the hidden folk game and the traveller, loaded once the map has drawn its first view
+    // the sea (js/ink-sea-art.js, js/ink-sea.js) comes with them: its layers, data and animation all wait for this moment
+    const game = () => loadScripts(['js/ink-folk-art.js?v=20261104', 'js/ink-sea-art.js?v=20261104', 'js/ink-folk.js?v=20261104', 'js/ink-sea.js?v=20261104', 'js/ink-traveller.js?v=20261104'])
+      .then(() => { if (window.InkSea) InkSea.attach(map); if (window.InkFolk) InkFolk.init(map); setupGame(map); }).catch(e => console.warn('folk', e));
+    if (map.loaded()) setTimeout(game, 500); else map.once('idle', () => setTimeout(game, 500));
   }).catch(e => { console.error(e); const n = document.getElementById('nojs'); if (n) n.textContent = 'The map could not load: ' + e.message; });
-  try { buildKey(); } catch (e) { console.warn('key', e); }
+  // the key (about a hundred little drawings) is drawn when it comes near the screen, not before the map's first frame
+  (function () {
+    const el = document.getElementById('key'); let done = false;
+    const go = () => { if (done) return; done = true; try { buildKey(); } catch (e) { console.warn('key', e); } };
+    if (el && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); go(); } }, { rootMargin: '600px' }); io.observe(el); }
+    else setTimeout(go, 4000);
+  })();
   // the title cartouche folds away (folded from the start on phones, and when the map fills the screen)
   const ct = document.getElementById('cartouche'), ctT = document.getElementById('ctToggle');
   const fold = f => { ct.classList.toggle('folded', f); ctT.setAttribute('aria-expanded', String(!f)); };
@@ -358,16 +401,18 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       ['Heritage', [['h-castle', 'Castle'], ['h-palace', 'Palace'], ['h-parliament', 'Parliament'], ['h-cityhall', 'Town or city hall'], ['h-cathedral', 'Cathedral or abbey'], ['h-church', 'Church or chapel'], ['h-monastery', 'Monastery'], ['h-mosque', 'Mosque'], ['h-temple', 'Temple'], ['h-pagoda', 'Pagoda'], ['h-synagogue', 'Synagogue'], ['h-mansion', 'Great house'], ['h-ruins', 'Ruins'], ['h-stone_circle', 'Stone circle'], ['h-standing_stone', 'Standing stone'], ['h-cairn', 'Cairn'], ['h-barrow', 'Barrow'], ['h-hillfort', 'Hillfort'], ['h-starfort', 'Star fort (its real outline, moat and rampart from zoom 11)'], ['h-battle', 'Battlefield'], ['h-lighthouse', 'Lighthouse'], ['h-windmill', 'Windmill'], ['h-tower', 'Tower'], ['h-skyscraper', 'Tall building'], ['h-bridge', 'Bridge'], ['h-monument', 'Monument'], ['h-park', 'Park or garden'], ['h-natpark', 'National park']]],
       ['Famous monuments (each drawn in its own way)', [['l-eiffel', 'Eiffel Tower'], ['l-bigben', 'Westminster'], ['l-opera', 'Sydney Opera House'], ['l-tajmahal', 'Taj Mahal'], ['l-pyramids', 'Pyramids of Giza'], ['l-machupicchu', 'Machu Picchu'], ['l-liberty', 'Statue of Liberty'], ['l-stonehenge', 'Stonehenge']]],
       ['Land and water', [['bigpeak', 'Great summit, with its name and height'], ['ms1', 'Mountain above the snow line'], ['snowf0', 'Snowfield or glacier'], ['m2', 'Mountain'], ['h3', 'Hill'], ['h-waterfall', 'Waterfall'], ['h-cave', 'Cave'], ['h-spring', 'Spring'], ['h-pass', 'Mountain pass'], ['h-gorge', 'Gorge or canyon'], ['h-glacier_mark', 'Glacier'], ['quarry', 'Quarry or mine'], ['anchor', 'Harbour']]],
+      ['Woods and winter', [['t1', 'Broadleaf tree in a mapped wood'], ['c2', 'Conifer in a mapped wood'], ['tb0', 'Bare tree in winter'], ['cs0', 'Snow-laden conifer in winter'], ['th2-s', 'Snowy roofs in the drawn towns'], ['citybig-s', 'Walled city under snow']]],
       ['Beasts of the countryside (zoom 6 to 14)', [['a_deer', 'Deer in the woods'], ['a_boar', 'Boar in the woods'], ['a_sheep', 'Sheep on moor and pasture'], ['a_cow', 'Cattle on farmland'], ['a_eagle', 'Eagle over the mountains'], ['a_heron', 'Heron by the water'], ['a_fish', 'Fish in lake or sea']]],
       ['Animals and the sea', [['a_elephant', 'Animal in its native range'], ['a_humpback_s', 'Whales where they gather'], ['a_turtle', 'Sea turtle'], ['ship', 'Sailing ship on a historic lane'], ['a_serpent', 'Sea serpent <i>(decorative)</i>']]],
       ['Flight', [['ornithopter', 'Busy airport: a flying machine taking off'], ['airfield', 'Airfield'], ['balloon', 'Hot-air balloon <i>(decorative)</i>']]],
     ];
     const el = document.getElementById('key'); if (!el || !window.InkIcons) return;
-    const ms = InkMap.sprites.mountainSprite, hs = InkMap.sprites.hillSprite;
+    const ms = InkMap.sprites.mountainSprite, hs = InkMap.sprites.hillSprite, SP = InkMap.sprites;
+    const TREES = { t1: () => SP.treeSprite(1, false), c2: () => SP.treeSprite(2, true), tb0: () => SP.bareTreeSprite(0), cs0: () => SP.snowConiferSprite(0) };
     for (const [h, items] of K) {
       const hd = document.createElement('h3'); hd.textContent = h; el.appendChild(hd);
       for (const [id, label] of items) {
-        let c = /^m\d$/.test(id) ? ms(+id[1]) : /^h\d$/.test(id) ? hs(+id[1]) : InkIcons.draw(id, ms);
+        let c = TREES[id] ? TREES[id]() : /^m\d$/.test(id) ? ms(+id[1]) : /^h\d$/.test(id) ? hs(+id[1]) : InkIcons.draw(id, ms);
         if (!c) continue;
         const d = document.createElement('div'); d.appendChild(c); const sp = document.createElement('span'); sp.innerHTML = label; d.appendChild(sp); el.appendChild(d);
       }
@@ -388,7 +433,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       const m = modern.checked;
       boxes.forEach(b => {
         const g = b.dataset.g;
-        const inkOnly = ['mountains', 'forests', 'biomes', 'sea', 'farms'].includes(g);
+        const inkOnly = ['mountains', 'forests', 'biomes', 'sea', 'farms', 'tint'].includes(g);
         InkMap.setGroup(map, g, b.checked && !(m && inkOnly));
       });
       InkMap.setGroup(map, 'paper', !m); InkMap.setGroup(map, 'modern', m); InkMap.setGroup(map, 'coast', !m);
@@ -398,12 +443,34 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
         map.setPaintProperty(id, 'text-halo-color', m ? 'rgba(255,255,255,0.9)' : saved[id].h);
       });
       map.setPaintProperty('rivers', 'line-color', m ? '#7FB2D9' : InkMap.INK.blue);
+      if (InkMap.setWinter) InkMap.setWinter(map, wb.checked && !m);   // ART: the Winter toggle
     }
+    const wb = document.getElementById('winterBox');   // ART: Winter toggle (on by default, remembered)
+    wb.checked = InkMap.isWinter ? InkMap.isWinter(map) : true; wb.addEventListener('change', apply);
     boxes.forEach(b => b.addEventListener('change', apply)); modern.addEventListener('change', apply);
     const rose = document.getElementById('rose'), cb = document.getElementById('compassBox'), fb = document.getElementById('frameBox');
     cb.addEventListener('change', () => { rose.style.display = cb.checked ? '' : 'none'; });
     let frame = null;
-    fb.addEventListener('change', () => { if (fb.checked && !frame) frame = InkExtras.frameOverlay(document.getElementById('map')); if (frame) frame.style.display = fb.checked ? '' : 'none'; });
+    fb.addEventListener('change', () => { if (fb.checked && !frame) frame = InkExtras.frameOverlay(document.getElementById('map'), map); if (frame) frame.style.display = fb.checked ? '' : 'none'; });
+  }
+
+  function loadScripts(list) {
+    return list.reduce((p, src) => p.then(() => new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = () => rej(new Error('script ' + src)); document.body.appendChild(el); })), Promise.resolve());
+  }
+  // the Game section of the layers panel: the hidden folk and your traveller (the folk panel has the same switches)
+  function setupGame(map) {
+    const fb = document.getElementById('folkBox'), tb = document.getElementById('travBox'), lp = document.getElementById('lp');
+    const FOLK = ['folk', 'folk-found', 'folk-big'];
+    const applyFolk = () => FOLK.forEach(l => { if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', fb.checked ? 'visible' : 'none'); });
+    fb.addEventListener('change', applyFolk);
+    if (window.InkFolk) InkFolk.onData(() => setTimeout(applyFolk, 0));
+    const T = window.InkTraveller;
+    if (!T) tb.closest('label').style.display = 'none';
+    else { tb.checked = T.active(); tb.addEventListener('change', () => T.setActive(tb.checked)); }
+    document.getElementById('lyrBtn').addEventListener('click', () => {   // keep in step with the folk panel's own switches
+      if (T) tb.checked = T.active();
+      if (map.getLayer('folk')) fb.checked = map.getLayoutProperty('folk', 'visibility') !== 'none';
+    });
   }
 
   // ---------------- search
