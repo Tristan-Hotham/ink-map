@@ -1,0 +1,30 @@
+{
+ "roman_roads.json": {
+  "features": 14749,
+  "bytes": 2866375
+ },
+ "pilgrim_routes.json": {
+  "features": 6472,
+  "bytes": 1905637
+ },
+ "battles_heritage_overlap": 7528,
+ "battles.json": {
+  "features": 14555,
+  "bytes": 2305364
+ },
+ "lost_beresford": 2074,
+ "lost_wikidata": 3374,
+ "lost_villages.json": {
+  "features": 5448,
+  "bytes": 713654
+ },
+ "wrecks.json": {
+  "features": 24949,
+  "bytes": 3674487
+ },
+ "monasteries_dissolved": 455,
+ "monasteries.json": {
+  "features": 4695,
+  "bytes": 824293
+ }
+}
