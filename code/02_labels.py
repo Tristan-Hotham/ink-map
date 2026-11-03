@@ -126,13 +126,14 @@ SIZES = {
 # oceans: a larger italic, from the world view
 SIZES['ocean'] = ([(1, 12.5), (3, 16), (5, 20), (7, 23)], [(1, .32), (4, .48), (7, .6)], 'IMFeGPit28P.ttf')
 SIZES['low'] = SIZES['up']
-# the four nations of the United Kingdom (layer nations): smaller than country names, from zoom 5
-SIZES['nation'] = ([(5, 12), (6, 14), (7, 17), (9, 24)], [(5, .3), (7, .4), (9, .5)], 'MedievalSharp.ttf')
+# the four nations of the United Kingdom (layer nations): smaller than country names, from zoom 4.5 (where
+# "United Kingdom" gives way to them)
+SIZES['nation'] = ([(4, 10), (5, 12), (6, 14), (7, 17), (9, 24)], [(5, .3), (7, .4), (9, .5)], 'MedievalSharp.ttf')
 # ranges, deserts and regions beyond Britain and Ireland (layer regions-world): small far out, so the great ranges
 # can be lettered from the world view
 SIZES['world'] = ([(1, 8.5), (2, 9.5), (3, 11), (4, 13), (6, 16), (9, 19), (11, 21)], [(1, .16), (2, .2), (5, .3), (8, .4), (11, .5)], 'MedievalSharp.ttf')
 # lakes lettered along their length (layer lake-names-ink)
-SIZES['lake'] = ([(9, 11), (12, 14), (15, 15.5)], [(9, .12), (12, .1)], 'IMFeGPit28P.ttf')
+SIZES['lake'] = ([(9, 12), (12, 14.5), (15, 15.5)], [(9, .12), (12, .1)], 'IMFeGPit28P.ttf')
 TTF = os.environ.get('INK_TTF', os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'fonts', 'ttf'))
 _fonts = {}
 
@@ -280,11 +281,11 @@ for k, nm in nations.items():
     if k == 'N':
         # Northern Ireland is too small for its name on one line: lettered on two lines at its middle (layer nations-pt)
         c = largest(u).representative_point()
-        feats.append({'type': 'Feature', 'properties': {'name': nm, 'kind': 'nation', 'z': 5.4, 'lr': 2, 'uk': 2, 'zf': 5.4},
+        feats.append({'type': 'Feature', 'properties': {'name': nm, 'kind': 'nation', 'z': 4.5, 'lr': 2, 'uk': 2, 'zf': 4.5},
                       'geometry': {'type': 'Point', 'coordinates': [round(c.x, 4), round(c.y, 4)]}})
         continue
     pts = arc_for(gm, max_angle=45)
-    feats += line_feature(pts, {'name': nm, 'kind': 'nation', 'z': 4.6, 'lr': 2, 'uk': 2}, 5, 9, ext=1.6)
+    feats += line_feature(pts, {'name': nm, 'kind': 'nation', 'z': 4.5, 'lr': 2, 'uk': 2}, 4, 9, ext=1.6)
 
 dump({'type': 'FeatureCollection', 'features': feats}, os.path.join(DATA, 'labels_countries.geojson'))
 print('countries', len(feats), os.path.getsize(os.path.join(DATA, 'labels_countries.geojson')) // 1024, 'KB')
@@ -478,6 +479,11 @@ reg = []
 uk_set = {r[0] for r in R_UK}
 for name, kind, z, pts, *zmax in R:
     reg += line_feature(smooth(pts), {'name': name.upper(), 'kind': kind, 'z': z, 'uk': 1 if name in uk_set else 0}, z - 1, zmax[0] if zmax else 12, ext=2.0 if kind in ('sea', 'ocean') else 2.2)
+# the seas round Great Britain are too narrow for a curved name at zoom 4 to 5, where the four nations are first lettered:
+# there they are lettered straight at a point, on two lines where need be (layer regions-sea-pt)
+for name, lon, lat in [('Irish Sea', -4.45, 53.9), ('English Channel', -2.6, 50.05), ('Celtic Sea', -7.6, 50.65)]:
+    reg.append({'type': 'Feature', 'properties': {'name': name.upper(), 'kind': 'sea', 'z': 4.4, 'uk': 1, 'zb': 4, 'zf': 4.4},
+                'geometry': {'type': 'Point', 'coordinates': [lon, lat]}})
 dump({'type': 'FeatureCollection', 'features': reg}, os.path.join(DATA, 'labels_regions.geojson'))
 print('regions', len(reg))
 
@@ -609,7 +615,18 @@ for name, osm, pts in LAKES:
             break
     if line is None:
         line = smooth(pts)
-    lake_feats += line_feature(line, {'name': name, 'kind': 'lake', 'osm': '|'.join(osm)}, 8, 15, ext=1.5)
+    props = {'name': name, 'kind': 'lake', 'osm': '|'.join(osm)}
+    # zoom 8 to 11: along the lake (drawn out a little past its ends where the name is longer than the lake)
+    fe = line_feature(line, props, 8, 11, ext=2.4)
+    lake_feats += fe
+    # where the lake is still too short for its name (zoom 9 to 11), lettered straight at its middle (layer lake-names-ink-pt)
+    mid = unmerc(*_resample(line, 0.5, 0.5, 1)[0][0])
+    for zb in range(9, 12):
+        if zb not in {f['properties']['zb'] for f in fe}:
+            lake_feats.append({'type': 'Feature', 'properties': dict(props, zb=zb, zf=zb), 'geometry': {'type': 'Point', 'coordinates': [round(mid[0], 5), round(mid[1], 5)]}})
+    # zoom 12 to 16: the whole axis once, lettered along it wherever it shows on screen (layer lake-names-ink-l, line placement)
+    whole, _ = _resample(line, 0, 1, 24)
+    lake_feats.append({'type': 'Feature', 'properties': dict(props, zb=12, zf=12, whole=1), 'geometry': {'type': 'LineString', 'coordinates': [[round(c, 5) for c in unmerc(x, y)] for x, y in whole]}})
 dump({'type': 'FeatureCollection', 'features': lake_feats}, os.path.join(DATA, 'lakes_lettered.geojson'))
 print('lettered lakes', len(LAKES), 'fitted to OpenStreetMap', n_fitted, 'features', len(lake_feats))
 lake_osm = sorted({a for _, osm, _ in LAKES for a in osm})

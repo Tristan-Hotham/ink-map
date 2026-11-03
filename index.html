@@ -71,16 +71,18 @@ footer p{margin:0 0 10px}
 .mapband{width:100vw;margin-left:calc(50% - 50vw);margin-top:0;padding:0}
 #map{position:relative;height:calc(100vh - 43px);height:calc(100svh - 43px);min-height:460px;border:0;border-bottom:1px solid #BCA676;background:#F3E5BF;margin:0 auto;overflow:hidden}
 /* the title as a cartouche on the map */
-.cartouche{position:absolute;left:14px;top:14px;z-index:5;max-width:min(400px,calc(100% - 28px));background:rgba(251,243,220,.95);color:#2B2119;border:2px solid #2B2119;outline:1px solid #2B2119;outline-offset:-6px;padding:12px 16px 12px;box-shadow:0 3px 14px rgba(60,40,10,.22)}
+.cartouche{position:absolute;left:14px;top:14px;z-index:5;max-width:min(310px,calc(100% - 28px));background:rgba(251,243,220,.95);color:#2B2119;border:2px solid #2B2119;outline:1px solid #2B2119;outline-offset:-6px;padding:10px 14px 10px;box-shadow:0 3px 14px rgba(60,40,10,.22)}
 .cartouche::before,.cartouche::after{content:"";position:absolute;width:9px;height:9px;background:#A3261B;border:1px solid #2B2119;border-radius:50%}
 .cartouche::before{left:-6px;top:-6px}.cartouche::after{right:-6px;bottom:-6px}
-.cartouche h1{font:900 clamp(26px,3.2vw,40px)/.98 var(--display);letter-spacing:-.015em;margin:6px 0 0;text-wrap:balance;color:#2B2119}
+.cartouche h1{font:900 clamp(21px,2.2vw,29px)/1 var(--display);letter-spacing:-.015em;margin:6px 0 0;text-wrap:balance;color:#2B2119}
 .cartouche h1 .a{color:#A3261B;font-family:var(--hand);font-weight:400;letter-spacing:.03em}
-.cartouche .dek{font-size:15px;line-height:1.38;margin:8px 0 0;color:#2B2119}
-.cartouche .byline{font:400 11.5px/1.35 var(--mono);color:#6E604E;margin-top:8px}
+.cartouche .dek{font-size:13.5px;line-height:1.36;margin:6px 0 0;color:#2B2119}
+.cartouche .byline{font:400 11px/1.35 var(--mono);color:#6E604E;margin-top:6px}
+.ct-fold{position:absolute;right:6px;top:5px;width:26px;height:26px;border:0;background:none;color:#A3261B;font:400 18px/1 var(--hand);cursor:pointer;padding:0}
+.ct-fold:hover{color:#2B2119}.cartouche.folded .ct-fold{display:none}
 .cartouche .kicker{color:#6E604E}
 .ct-toggle{display:none;font:400 17px/1 var(--hand);color:#A3261B;background:none;border:0;padding:2px 0;cursor:pointer;letter-spacing:.03em;min-height:30px}
-.cartouche.folded .ct-body{display:none}.cartouche.folded .ct-toggle{display:block}.cartouche.folded{padding:6px 12px}
+.cartouche.folded .ct-body{display:none}.cartouche.folded .ct-toggle{display:block}.cartouche.folded{padding:4px 11px}
 .cartouche.folded .ct-toggle span{display:inline-block;transform:rotate(-90deg)}
 .ov-bl{position:absolute;left:12px;bottom:12px;z-index:4;display:flex;align-items:flex-end;gap:6px;pointer-events:none}
 .rose svg{display:block;filter:drop-shadow(0 1px 2px rgba(60,40,10,.2))}
@@ -155,7 +157,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
   .ov-top{left:8px;top:8px}
   .cartouche{left:8px;top:100px;max-width:calc(100% - 16px);padding:10px 12px}
   .cartouche h1{font-size:25px}.cartouche .dek{font-size:14px}
-  .ct-toggle{display:block}
+  .ct-toggle{display:block}.ct-fold{display:none}
   .ov-bl{left:8px;bottom:8px}.rose svg{width:46px;height:auto}
   .ov-bl .zbadge{display:none}
   .cue{display:none}
@@ -174,7 +176,8 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
   <div id="map" data-fullscreen-map role="application" aria-label="Zoomable hand-inked style world map">
     <div class="nojs" id="nojs">Loading the map. It needs JavaScript and WebGL.</div>
     <div class="cartouche" id="cartouche">
-      <button class="ct-toggle" id="ctToggle" aria-expanded="true" aria-controls="ctBody" title="Fold the title">The Inked World <span aria-hidden="true">▾</span></button>
+      <button class="ct-toggle" id="ctToggle" aria-expanded="true" aria-controls="ctBody" title="Show the title">The Inked World <span aria-hidden="true">▾</span></button>
+      <button class="ct-fold" id="ctFold" aria-controls="ctBody" title="Fold the title" aria-label="Fold the title">▴</button>
       <div class="ct-body" id="ctBody">
         <div class="kicker"><b>Data study</b><span>2026</span></div>
         <h1>A <span class="a">Tolkien-style</span> map of the whole world</h1>
@@ -276,7 +279,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 <div class="figure"><img src="img/world.jpg" alt="The ink map of the whole world: parchment, black coasts with blue ripples, rows of ink peaks along the Rockies, Andes, Alps, Himalaya and the ranges of central Asia, and red lettering for countries, oceans and seas" loading="lazy" style="width:100%;border:1px solid var(--border)"><p class="src">The world at zoom 1.6. Rendered from saved OpenFreeMap and Terrain Tiles.</p></div>
 
 <h2><span class="n">03 · The living map</span>Monuments, towns, beasts and ships</h2>
-<p>Old maps were never only land and water. Here, more than a quarter of a million heritage sites from Wikidata fade in as you zoom, the best known first (ranked by how many Wikipedia articles they have): castles, palaces and parliaments, cathedrals, churches and monasteries, mosques and temples, great houses, ruins, stone circles, standing stones, cairns, barrows and hillforts, battlefields, lighthouses, windmills and tall buildings, each as a small ink drawing with its name in red italic once there is room. In Britain and Ireland every one is kept; elsewhere the commoner kinds need a few more articles before they are drawn. About 150 world-famous monuments, from the Eiffel Tower and the Sydney Opera House to Machu Picchu and the Taj Mahal, have drawings of their own and show from the world view; Hadrian's Wall, the Great Wall, Offa's Dyke and hundreds of other walls, dykes and aqueducts follow their real lines in OpenStreetMap, and so do thousands of town walls, from York to the Roman walls of Lugo. Star forts get a drawing of their own: from Palmanova to Fort McHenry, the real bastioned outline is drawn with a blue moat outside and a hachured rampart inside, and further out a little star fort marks the spot.</p>
+<p>Old maps were never only land and water. Here, more than a quarter of a million heritage sites from Wikidata fade in as you zoom, the best known first (ranked by how many Wikipedia articles they have): castles, palaces and parliaments, cathedrals, churches and monasteries, mosques and temples, great houses, ruins, stone circles, standing stones, cairns, barrows and hillforts, battlefields, lighthouses, windmills and tall buildings, each as a small ink drawing with its name in red italic once there is room. In Britain and Ireland every one is kept; elsewhere the commoner kinds need a few more articles before they are drawn. About 160 world-famous monuments, from the Eiffel Tower and the Sydney Opera House to Machu Picchu and the Taj Mahal, have drawings of their own and show from the world view; Hadrian's Wall, the Great Wall, Offa's Dyke and hundreds of other walls, dykes and aqueducts follow their real lines in OpenStreetMap, and so do thousands of town walls, from York to the Roman walls of Lugo. Star forts get a drawing of their own: from Palmanova to Fort McHenry, the real bastioned outline is drawn with a blue moat outside and a hachured rampart inside, and further out a little star fort marks the spot.</p>
 <p>The great summits, each country's highest point and the famous peaks, get a finer drawing with snow and their name and height in red over a flourish. Every mountain above the snow line for its latitude (about 3,500 m in the tropics, falling towards the poles) gets a white cap with fine snow lines, and the highest rugged ground is hatched in pale blue for snowfields and glaciers. Capitals are drawn as walled cities, cities as clusters of roofs and spires, towns and villages smaller. From zoom 12 the towns fill in: little townhouses line both sides of the real streets, facing them, densest round a market square and church at the centre and thinning out with the buildings mapped in OpenStreetMap, and great cities keep a ring of wall and towers round the old core.</p>
 <p>Far out, animals stand in their native ranges, as on a medieval map: elephants and lions in Africa, tigers and pandas in Asia, bison and moose in North America, kangaroos in Australia, penguins on the Antarctic coast. Whales gather where they really do, humpbacks off Hawaii and Tonga, blue whales off Sri Lanka and California, sperm whales off the Azores and Kaikoura. Sailing ships leave the great historic ports along lanes taken from real logbooks of 1750 to 1850. The busiest airports are drawn as flying machines in the manner of Renaissance notebooks, taking off along the runway, and a few hot-air balloons drift over places famous for them. The sea serpents and the balloons are decoration, and the key says so.</p>
 
@@ -386,11 +389,21 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     if (el && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); go(); } }, { rootMargin: '600px' }); io.observe(el); }
     else setTimeout(go, 4000);
   })();
-  // the title cartouche folds away (folded from the start on phones, and when the map fills the screen)
+  // the title cartouche folds away to a small title tab: folded from the start on phones, after the first pan, zoom or tap on
+  // the map on larger screens, and when the map fills the screen; the tab opens it again
   const ct = document.getElementById('cartouche'), ctT = document.getElementById('ctToggle');
   const fold = f => { ct.classList.toggle('folded', f); ctT.setAttribute('aria-expanded', String(!f)); };
   if (matchMedia('(max-width:600px)').matches) fold(true);
   ctT.addEventListener('click', () => fold(!ct.classList.contains('folded')));
+  document.getElementById('ctFold').addEventListener('click', () => fold(true));
+  (function () {
+    const mapEl = document.getElementById('map'); let done = false;
+    const first = e => {
+      if (done || (e && e.target && e.target.closest && e.target.closest('.cartouche,.ov,.lp,.pdlg,.mfs-btn,.maplibregl-ctrl'))) return;
+      done = true; fold(true); ['pointerdown', 'wheel', 'keydown'].forEach(t => mapEl.removeEventListener(t, first, true));
+    };
+    ['pointerdown', 'wheel', 'keydown'].forEach(t => mapEl.addEventListener(t, first, { capture: true, passive: true }));
+  })();
   ct.querySelector('h1').addEventListener('click', () => { if (matchMedia('(max-width:600px)').matches) fold(true); });
   document.addEventListener('fullscreenchange', () => { if (document.fullscreenElement) fold(true); });
 
@@ -399,7 +412,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
     const K = [
       ['Settlements', [['s-capital', 'Capital: walled city'], ['citybig', 'Capital or great city, middle zooms'], ['s-city', 'City'], ['s-town', 'Town'], ['s-village', 'Village'], ['th2', 'Townhouses on real streets, zoom 12 and closer'], ['market', 'Market square'], ['stall0', 'Market stall'], ['green', 'Village green'], ['walltower', 'Town wall and tower']]],
       ['Heritage', [['h-castle', 'Castle'], ['h-palace', 'Palace'], ['h-parliament', 'Parliament'], ['h-cityhall', 'Town or city hall'], ['h-cathedral', 'Cathedral or abbey'], ['h-church', 'Church or chapel'], ['h-monastery', 'Monastery'], ['h-mosque', 'Mosque'], ['h-temple', 'Temple'], ['h-pagoda', 'Pagoda'], ['h-synagogue', 'Synagogue'], ['h-mansion', 'Great house'], ['h-ruins', 'Ruins'], ['h-stone_circle', 'Stone circle'], ['h-standing_stone', 'Standing stone'], ['h-cairn', 'Cairn'], ['h-barrow', 'Barrow'], ['h-hillfort', 'Hillfort'], ['h-starfort', 'Star fort (its real outline, moat and rampart from zoom 11)'], ['h-battle', 'Battlefield'], ['h-lighthouse', 'Lighthouse'], ['h-windmill', 'Windmill'], ['h-tower', 'Tower'], ['h-skyscraper', 'Tall building'], ['h-bridge', 'Bridge'], ['h-monument', 'Monument'], ['h-park', 'Park or garden'], ['h-natpark', 'National park']]],
-      ['Famous monuments (each drawn in its own way)', [['l-eiffel', 'Eiffel Tower'], ['l-bigben', 'Westminster'], ['l-opera', 'Sydney Opera House'], ['l-tajmahal', 'Taj Mahal'], ['l-pyramids', 'Pyramids of Giza'], ['l-machupicchu', 'Machu Picchu'], ['l-liberty', 'Statue of Liberty'], ['l-stonehenge', 'Stonehenge']]],
+      ['Famous monuments (each drawn in its own way)', [['l-eiffel', 'Eiffel Tower'], ['l-bigben', 'Westminster'], ['l-opera', 'Sydney Opera House'], ['l-tajmahal', 'Taj Mahal'], ['l-pyramids', 'Pyramids of Giza'], ['l-machupicchu', 'Machu Picchu'], ['l-liberty', 'Statue of Liberty'], ['l-empire', 'Empire State Building'], ['l-hagiasophia', 'Hagia Sophia'], ['l-stonehenge', 'Stonehenge']]],
       ['Land and water', [['bigpeak', 'Great summit, with its name and height'], ['ms1', 'Mountain above the snow line'], ['snowf0', 'Snowfield or glacier'], ['m2', 'Mountain'], ['h3', 'Hill'], ['h-waterfall', 'Waterfall'], ['h-cave', 'Cave'], ['h-spring', 'Spring'], ['h-pass', 'Mountain pass'], ['h-gorge', 'Gorge or canyon'], ['h-glacier_mark', 'Glacier'], ['quarry', 'Quarry or mine'], ['anchor', 'Harbour']]],
       ['Woods and winter', [['t1', 'Broadleaf tree in a mapped wood'], ['c2', 'Conifer in a mapped wood'], ['tb0', 'Bare tree in winter'], ['cs0', 'Snow-laden conifer in winter'], ['th2-s', 'Snowy roofs in the drawn towns'], ['citybig-s', 'Walled city under snow']]],
       ['Beasts of the countryside (zoom 6 to 14)', [['a_deer', 'Deer in the woods'], ['a_boar', 'Boar in the woods'], ['a_sheep', 'Sheep on moor and pasture'], ['a_cow', 'Cattle on farmland'], ['a_eagle', 'Eagle over the mountains'], ['a_heron', 'Heron by the water'], ['a_fish', 'Fish in lake or sea']]],
@@ -588,7 +601,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
 
   // ---------------- popups
   function setupPopups(map) {
-    const LAY = ['beasts', 'harbours', 'quarries', 'lake-names-ink', 'park-edge-names', 'capitals', 'bigcities', 'city-marks', 'nations', 'nations-pt', 'world-ranges', 'fort-icons', 'fort-line', 'fort-rampart', 'famous-peak-names', 'famous-peaks', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'lake-names-ne', 'wall-towers', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
+    const LAY = ['beasts', 'harbours', 'quarries', 'lake-names-ink', 'lake-names-ink-l', 'lake-names-ink-pt', 'park-edge-names', 'capitals', 'bigcities', 'city-marks', 'nations', 'nations-pt', 'country-uk', 'regions-sea-pt', 'world-ranges', 'fort-icons', 'fort-line', 'fort-rampart', 'famous-peak-names', 'famous-peaks', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'lake-names-ne', 'wall-towers', 'heritage', 'animals', 'serpents', 'ships', 'flyers', 'balloons', 'airports', 'wall-names', 'walls', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'islands', 'states', 'peaks', 'parks', 'lake-names', 'lake-names-l', 'river-names', 'town', 'relief', 'trees', 'tufts', 'biome', 'rivers'];
     const HT = { barrow: 'Barrow', battle: 'Battlefield', bridge: 'Bridge', cairn: 'Cairn', castle: 'Castle', cathedral: 'Cathedral, abbey or minster', cave: 'Cave', church: 'Church or chapel', cityhall: 'Town or city hall', glacier_mark: 'Glacier', gorge: 'Gorge or canyon', hillfort: 'Hillfort', lighthouse: 'Lighthouse', mansion: 'Great house', monastery: 'Monastery', monument: 'Monument', mosque: 'Mosque', natpark: 'National park or protected area', pagoda: 'Pagoda', palace: 'Palace', park: 'Park or garden', parliament: 'Parliament or seat of government', pass: 'Mountain pass', pyramid: 'Pyramid', ruins: 'Ruins or archaeological site', skyscraper: 'Tall building', spring: 'Spring', standing_stone: 'Standing stone', stone_circle: 'Stone circle', synagogue: 'Synagogue', temple: 'Temple', tower: 'Tower', waterfall: 'Waterfall', windmill: 'Windmill' };
     const wd = q => q ? `<br><a href="https://www.wikidata.org/wiki/${esc(q)}" target="_blank" rel="noopener">Wikidata ${esc(q)}</a>` : '';
     const wp = w => w ? `<br><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(String(w).replace(/ /g, '_'))}" target="_blank" rel="noopener">Wikipedia</a>` : '';
@@ -623,11 +636,11 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       else if (id === 'beasts') h = `<b class="t">${esc(cap1(p.a))}</b>Drawn where the country suits it (woods, moor, farmland, mountains or water, from OpenStreetMap and the elevation); a picture, not a sighting.`;
       else if (id === 'harbours') h = `<b class="t">${esc(nm || 'Harbour')}</b>Harbour or ferry terminal (OpenStreetMap).`;
       else if (id === 'quarries') h = `<b class="t">${esc(nm || 'Quarry')}</b>Quarry or mine (OpenStreetMap land use).`;
-      else if (id === 'lake-names-ink') h = `<b class="t">${esc(p.name)}</b>Lake, lettered along its length.`;
+      else if (id.startsWith('lake-names-ink')) h = `<b class="t">${esc(p.name)}</b>Lake, lettered along its length.`;
       else if (id === 'park-edge-names') h = `<b class="t">${esc(p.name_en || p.name)}</b>National park; its boundary is the dotted green line.`;
       else if (id === 'world-ranges') h = `<b class="t">Mountain range</b>Drawn along high, rugged ground: at least 1,000 m of relief within about 40 km (some lower ranges at 650 m), from the elevation tiles.`;
       else if (id === 'nations' || id === 'nations-pt') h = `<b class="t">${esc(cap(p.name))}</b>Nation of the United Kingdom.`;
-      else if (id === 'countries') h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'nation' ? 'Nation of the United Kingdom' : 'Country'}.`;
+      else if (id === 'countries' || id === 'country-uk') h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'nation' ? 'Nation of the United Kingdom' : 'Country'}.`;
       else if (id.startsWith('regions')) h = `<b class="t">${esc(cap(p.name))}</b>${p.kind === 'sea' ? 'Sea, firth or bay' : p.kind === 'up' ? 'Upland or hill country' : 'Lowland country'}; name placed by hand.`;
       else if (id === 'seas') h = `<b class="t">${esc(p.name_en || p.name)}</b>${cap(p.class)}.`;
       else if (id === 'rivers' || id === 'river-names') h = `<b class="t">${esc(nm || 'Unnamed ' + p.class)}</b>${cap(p.class || 'river')}.`;
@@ -642,9 +655,9 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       if (!DECOR.includes(id)) {
         const title = p.w || null, qid = p.q || null;
         let name = p.n || nm || p.name_en || p.name || '';
-        if (id === 'countries' || id.startsWith('nations') || id.startsWith('regions') || id === 'lake-names-ink') name = cap(p.name || '');
-        if (id === 'lake-names-ink') name = p.name;
-        const broad = ['countries', 'nations', 'nations-pt', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names-ne', 'lake-names-ne', 'states', 'river-names', 'rivers', 'animals', 'flyers'].includes(id);
+        if (id === 'countries' || id === 'country-uk' || id.startsWith('nations') || id.startsWith('regions') || id.startsWith('lake-names-ink')) name = cap(p.name || '');
+        if (id.startsWith('lake-names-ink')) name = p.name;
+        const broad = ['countries', 'country-uk', 'regions-sea-pt', 'nations', 'nations-pt', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names-ne', 'lake-names-ne', 'states', 'river-names', 'rivers', 'animals', 'flyers'].includes(id);
         if (title || qid || name) look = { title, qid, name, broad, lat: e.lngLat.lat, lng: e.lngLat.lng };
       }
       if (look) h += '<div class="wk"><span class="wk-l">Looking it up on Wikipedia…</span></div>';
@@ -656,7 +669,7 @@ body.maponly{padding:0}body.maponly .wrap,body.maponly .theme,body.maponly .topb
       });
     });
     map.on('mousemove', e => {
-      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['capitals', 'bigcities', 'beasts', 'lake-names-ink', 'park-edge-names', 'nations', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'lake-names', 'parks', 'peaks', 'relief', 'countries', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
+      const fs = map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['capitals', 'bigcities', 'beasts', 'lake-names-ink', 'lake-names-ink-l', 'lake-names-ink-pt', 'park-edge-names', 'nations', 'cities', 'towns', 'villages', 'hamlets', 'xplaces', 'xbeaches', 'lake-names', 'parks', 'peaks', 'relief', 'countries', 'country-uk', 'regions-sea-pt', 'regions-land', 'regions-world', 'regions-sea', 'seas', 'river-names', 'heritage', 'landmarks', 'landmarks-near', 'landmark-names', 'hills', 'river-names-ne', 'famous-peaks', 'famous-peak-names', 'animals', 'ships', 'flyers', 'balloons', 'airports', 'walls'].filter(id => map.getLayer(id)) });
       map.getCanvas().style.cursor = fs.length ? 'pointer' : '';
     });
   }

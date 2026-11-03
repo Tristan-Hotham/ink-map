@@ -9,6 +9,7 @@ Output
   data/world_ink.geojson   Point features: kind=range (little peaks every 9 screen pixels along the axis of each high, rugged
                            range; z = first zoom, s = size from its relief, v = variant) and kind=dune / rain / taiga
                            (z = first zoom, v = variant)
+  data/world_ink_far.geojson the same marks of first zoom 2 or less, for the world view
   data/world_ink_stats.json counts and thresholds
 
 Ranges: relief is the highest minus the lowest ground within about 40 km on the ground (the window is widened towards the
@@ -75,6 +76,17 @@ def prune(sk, n):
 # tier 1: the great ranges; tier 2: lower ranges (Appalachians, Urals, Great Dividing Range), kept only where long
 mask1 = range_mask(1000, 600, 60)
 mask2 = range_mask(650, 400, 120) & ~ndimage.binary_dilation(mask1, iterations=3)
+# tier 3 (round 4): the long, low folded ranges (the Appalachians, the Great Dividing Range, the Drakensberg escarpment):
+# relief of at least 450 m within the window and ground above 300 m, kept only where the stretch runs for 700 km or more,
+# so the old worn-down ranges read far out beside the young high ones
+# (the length is measured on the whole low-range country, the higher parts included; the new ground joins tier 2)
+mask3 = range_mask(450, 300, 120) | mask1 | mask2
+_l3, _n3 = ndimage.label(mask3, structure=np.ones((3, 3)))
+_sk3 = prune(skeletonize(mask3), 5)
+_y3, _x3 = np.nonzero(_sk3)
+_km3 = np.zeros(_n3 + 1); np.add.at(_km3, _l3[_y3, _x3], km_px[_y3])
+mask3 &= (_km3 >= 700)[_l3] & ~ndimage.binary_dilation(mask1, iterations=3)
+mask2 = mask2 | mask3
 mask = mask1 | mask2
 sk = prune(skeletonize(mask1), 5) | prune(skeletonize(mask2), 5)
 DT = ndimage.distance_transform_edt(mask)
@@ -141,13 +153,20 @@ for L in lines:
     # the polar coasts (Greenland, the Arctic islands, Antarctica) are thinned: rugged everywhere, they would ink the poles black
     plat = abs(unmerc(0.5, mid.y / N)[1])
     polar = 0.9 if plat > 64 else 0.45 if plat > 58 else 0.0
-    zf = round(float(np.clip(2.4 - 0.7 * math.log10(max(ckm, 50) / 50) - 0.35 * math.log10(max(km, 50) / 50) - (rel - 1000) / 2000 + (0.4 if tier2 else 0) + polar, 0.0, 2.5)), 1)
+    # round 4: the great continental ranges in the north (the Brooks and Alaska ranges, the northern Rockies, the Scandinavian
+    # mountains) are not polar coasts: long stretches keep only a little of the polar thinning
+    if ckm >= 800 and plat < 72: polar *= 0.25
+    # and the relief term is halved, so broad ranges of lower relief (the Rockies, the Sierra Madre) come in with the high ones
+    zf = round(float(np.clip(2.4 - 0.7 * math.log10(max(ckm, 50) / 50) - 0.35 * math.log10(max(km, 50) / 50) - (rel - 1000) / 4000 + (0.3 if tier2 else 0) + polar, 0.0, 2.5)), 1)
     # half-width of the range country around the line (zoom 4 pixels, about 10 km): broad ranges get parallel rows
     hw = float(np.median([DT[min(N - 1, int(y)), min(N - 1, int(x))] for x, y in pts]))
     coords = [[round(c, 3) for c in unmerc(x / N, y / N)] for x, y in pts]
     if abs(coords[0][0] - coords[-1][0]) > 180:
         continue
-    feats.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': zf, 's': round(float(np.clip(0.75 + (rel - 1000) / 3000, 0.65, 1.25)), 2), 'rl': int(rel), 'hw': hw},
+    # size from the relief, with a floor that rises with the length of the whole range (round 4), so the Rockies, the
+    # Appalachians and the Brooks Range read as boldly far out as ranges of the same reach in Europe and Asia
+    sz = max(0.75 + (rel - 1000) / 3000, 0.8 + 0.12 * math.log10(max(ckm, 100) / 100))
+    feats.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': zf, 's': round(float(np.clip(sz, 0.7, 1.25)), 2), 'rl': int(rel), 'hw': hw},
                   'geometry': {'type': 'LineString', 'coordinates': coords}})
     n_range += 1
 
@@ -214,7 +233,7 @@ for kind, ok, cell, ranks, salt, keep in [('dune', dune_ok, 12, [0.0, 1.0, 2.0],
             continue
         v = int(((x * 9973 + y * 7919) * 1000) % 4)
         pts_feats.append({'type': 'Feature', 'properties': {'kind': kind, 'z': r, 'v': v},
-                          'geometry': {'type': 'Point', 'coordinates': [round(lon, 3), round(lat, 3)]}})
+                          'geometry': {'type': 'Point', 'coordinates': [round(lon, 2), round(lat, 2)]}})
         n += 1
     counts[kind] = n
 
@@ -254,7 +273,7 @@ for f in feats:
             if dn and not land.contains(Point(lon, lat)): continue
             sc = f['properties']['s'] * (0.85 if dn else 1.0)
             range_pts.append({'type': 'Feature', 'properties': {'kind': 'range', 'z': round(max(rank, f['properties']['z'] + dz), 1), 's': round(sc, 2), 'v': (i * 7 + int(f['properties']['rl'])) % 3},
-                              'geometry': {'type': 'Point', 'coordinates': [round(lon, 3), round(lat, 3)]}})
+                              'geometry': {'type': 'Point', 'coordinates': [round(lon, 2), round(lat, 2)]}})
 
 # upland hills: rolling high ground that is not range country (relief at least 350 m within about 40 km, above 250 m),
 # a scatter of small hill marks on a nested grid, so the Highlands, the Ethiopian and Brazilian highlands and the
@@ -282,9 +301,10 @@ for r in [0.8, 1.8, 2.8]:
 for x, y, r in kept:
     lon, lat = unmerc(x, y)
     if not land.contains(Point(lon, lat)): continue
-    hill_pts.append({'type': 'Feature', 'properties': {'kind': 'hill', 'z': r, 'v': int(((x * 9973 + y * 7919) * 1000) % 8)}, 'geometry': {'type': 'Point', 'coordinates': [round(lon, 3), round(lat, 3)]}})
+    hill_pts.append({'type': 'Feature', 'properties': {'kind': 'hill', 'z': r, 'v': int(((x * 9973 + y * 7919) * 1000) % 8)}, 'geometry': {'type': 'Point', 'coordinates': [round(lon, 2), round(lat, 2)]}})
 counts['hill'] = len(hill_pts)
 
+# (points are kept to 0.01 degree, about 1 km: far finer than a pixel at zoom 4)
 # deep-winter flag (sn = 1 inside the snow extent of code/02i_tints.py), so the style picks snowy marks by a property
 # rather than a costly point-in-polygon test on every mark
 _snowp = os.path.join(DATA, 'biomes_snow.geojson')
@@ -294,7 +314,11 @@ if os.path.exists(_snowp):
         if _sz.contains(Point(*f['geometry']['coordinates'])): f['properties']['sn'] = 1
 out = {'type': 'FeatureCollection', 'features': range_pts + hill_pts + pts_feats}
 dump(out, os.path.join(DATA, 'world_ink.geojson'))
-stats = {'ranges': n_range, 'range_peaks': len(range_pts), 'range_relief_m': 1000, 'range_min_elev_m': 600, 'lower_range_relief_m': 650, 'lower_range_min_elev_m': 400, 'range_window_km': 40, **{k + 's': v for k, v in counts.items()},
+# round 4: the marks of the farthest view (first zoom 2 or less) also in a file of their own, which the page loads for the
+# world view; the whole file follows once the map nears zoom 2
+dump({'type': 'FeatureCollection', 'features': [f for f in out['features'] if f['properties']['z'] <= 2]}, os.path.join(DATA, 'world_ink_far.geojson'))
+stats = {'ranges': n_range, 'range_peaks': len(range_pts), 'range_relief_m': 1000, 'range_min_elev_m': 600, 'lower_range_relief_m': 650, 'lower_range_min_elev_m': 400, 'range_window_km': 40,
+         'long_low_range_relief_m': 450, 'long_low_range_min_elev_m': 300, 'long_low_range_min_km': 700, **{k + 's': v for k, v in counts.items()},
          'sand_ecoregions': sorted(sand_names)}
 json.dump(stats, open(os.path.join(DATA, 'world_ink_stats.json'), 'w'), indent=1)
 print({k: v for k, v in stats.items() if k != 'sand_ecoregions'}, os.path.getsize(os.path.join(DATA, 'world_ink.geojson')) // 1024, 'KB')

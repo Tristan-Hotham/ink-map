@@ -1,8 +1,8 @@
 {
- "landmarks": 156,
+ "landmarks": 161,
  "famous_peaks": 535,
- "walls_osm": 992,
- "walls": 1270,
+ "walls_osm": 2740,
+ "walls": 11135,
  "heritage_files": 1196,
  "heritage_mb": 14.9,
  "heritage_max_file_kb": 2129,
@@ -67,14 +67,5 @@
   "flyer": 11,
   "ship": 62
  },
- "ships": 62,
- "water_hills": {
-  "rivers": 1057,
-  "lakes": 2029,
-  "hills": 90658,
-  "hills_uk_ie": 8401,
-  "hills_files": 802,
-  "hills_mb": 3.8,
-  "hills_max_file_kb": 437
- }
+ "ships": 62
 }

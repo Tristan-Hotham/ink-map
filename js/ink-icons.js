@@ -131,22 +131,122 @@
   const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
   // a fringe of icicles under the eaves (drawn before the front wall, so they hang over it)
   function icicles(p, a, b, gy) { const n = Math.max(2, Math.round((b[0] - a[0]) / 2.4)); p.col(ICE); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, xx = a[0] + (b[0] - a[0]) * t, yy = a[1] + (b[1] - a[1]) * t; p.line([[xx, yy], [xx, yy + 0.9 + (i % 3) * 0.5]], 0.45); } p.col(INK); }
-  function bhVariant(p, v) {
-    // seen from high up, so roofs dominate and walls are short, as on Braun and Hogenberg's plans
-    const gy = 26;
-    if (v === 0) bhBox(p, 6, gy, 13, 4.5, 13, 3);
-    else if (v === 1) bhBox(p, 9, gy, 8, 6, 15, 4.5, { gable: true, brown: true });
-    else if (v === 2) bhBox(p, 2, gy, 22, 4.5, 12, 3, { party: 3, doorAt: 0.2, chimney: true });
-    else if (v === 3) bhBox(p, 8, gy, 10, 6, 14, 4.5, { gable: true, chimney: true });
-    else if (v === 4) bhBox(p, 5, gy, 15, 5, 14, 3, { brown: true, chimney: true });
-    else if (v === 5) { bhBox(p, 4, gy - 2, 10, 4.5, 12, 3); bhBox(p, 13, gy, 7, 5.5, 14, 4, { gable: true }); }
-    else if (v === 6) bhBox(p, 6, gy, 12, 7, 12, 3, { chimney: true });
-    else if (v === 7) bhBox(p, 4, gy, 17, 4.5, 12, 3, { party: 2, brown: true });
-    // gabled rows in the other roof colours
-    else if (v === 8) { bhBox(p, 2, gy, 8, 6, 14, 4.5, { gable: true, roof: 2 }); bhBox(p, 10, gy, 8, 6.5, 14, 4.5, { gable: true, roof: 4, chimney: true }); bhBox(p, 18, gy, 8, 6, 14, 4.5, { gable: true, roof: 2 }); }
-    else if (v === 9) bhBox(p, 5, gy, 15, 5, 13, 3, { roof: 3, chimney: true, party: 2 });
-    else if (v === 10) { bhBox(p, 3, gy, 9, 6, 14, 4.5, { gable: true, roof: 5 }); bhBox(p, 12, gy, 9, 7, 14, 5, { gable: true, roof: 0, chimney: true }); }
-    else bhBox(p, 4, gy, 16, 5, 12, 3.4, { roof: 4, party: 3, doorAt: 0.3 });
+  // ---------------- townhouses of the drawn towns (round 4): the bird's-eye town plan look. Steep roofs seen at an angle
+  // dominate, in muted tiles, slate, stone slates and thatch; short walls, timber-framed (cream render and dark beams),
+  // stone (coursed, with quoins) or rendered; chimneys; several roof forms (eaves to the street, gable to the street,
+  // hipped, a cross wing, a jettied upper floor, a row of narrow gables). Under snow the snow lies on the slopes, but the
+  // dark eaves, the ridge, the gable ends, the chimneys and the walls still show, so a winter town never reads as white boxes.
+  const TH_ROOFS = [['#8E4A34', '#653224'], ['#6E6470', '#4C4452'], ['#9A6A44', '#6E4A2E'], ['#B4472E', '#86301F'], ['#76776A', '#53554A'], ['#B39257', '#86693A'], ['#7B4A3E', '#56322A']];
+  const TH_WALLS = { timber: ['#EFE3C4', '#CDB98F'], stone: ['#CFC3A6', '#A8997A'], render: ['#E8D8B0', '#C4AE80'] };
+  const BEAM = '#4A3526';
+  function thSlope(p, eave0, eave1, top1, top0, col, shadeCol, shaded, snowSide) {
+    // one roof slope: eave edge eave0-eave1, top edge top1-top0; tiles, then (winter) snow laid down from the top
+    const quad = [eave0, eave1, top1, top0];
+    p.poly(quad, shaded ? shadeCol : col, 0.9);
+    // tile courses parallel to the eaves
+    for (let k = 1; k < 5; k++) { const t = k / 5; p.col('rgba(30,20,14,0.42)').line([lerp(eave0, top0, t), lerp(eave1, top1, t)], 0.45); }
+    p.col(INK);
+    if (SNOWY) {
+      // the snow covers the slope from the ridge down to a soft, uneven edge a little above the eaves
+      const n = 6, edge = [];
+      for (let i = 0; i <= n; i++) { const u = i / n, e = lerp(eave0, eave1, u), tp = lerp(top0, top1, u), dip = 0.2 + 0.07 * Math.sin(i * 2.3 + eave0[0]); edge.push(lerp(e, tp, dip)); }
+      p.poly([top0, top1].concat(edge.slice().reverse()).reverse(), snowSide ? SNOWSH : SNOW, 0);
+      p.col(snowSide ? 'rgba(110,135,160,0.55)' : 'rgba(150,170,190,0.6)').line(edge, 0.5).col(INK);
+    }
+    // dark eaves: the tile edge and its shadow under it
+    p.col(TH_ROOFS[6][1]).line([eave0, eave1], 1.25).col(INK);
+  }
+  function thWall(p, pts, mat, shaded, x0, x1, top, gy) {
+    const [W, WS] = TH_WALLS[mat];
+    p.poly(pts, shaded ? WS : W, 0.9);
+    if (shaded) { p.hatch(pts, 70, 1.5, 0.45, 'rgba(43,33,25,0.45)'); return; }
+    if (mat === 'timber') {
+      p.col(BEAM);
+      p.line([[x0 + 0.5, gy], [x0 + 0.5, top]], 0.9); p.line([[x1 - 0.5, gy], [x1 - 0.5, top]], 0.9);
+      const mid = top + (gy - top) * 0.45; p.line([[x0, mid], [x1, mid]], 0.7);
+      const bays = Math.max(1, Math.round((x1 - x0) / 4.5));
+      for (let i = 1; i < bays; i++) { const xx = x0 + (x1 - x0) * i / bays; p.line([[xx, gy], [xx, top]], 0.6); }
+      p.line([[x0 + 0.5, mid], [x0 + (x1 - x0) / bays, top]], 0.5);
+      p.col(INK);
+    } else if (mat === 'stone') {
+      p.col('rgba(95,80,58,0.55)');
+      for (let yy = top + 1.6; yy < gy - 0.5; yy += 1.6) p.line([[x0 + 0.4, yy], [x1 - 0.4, yy]], 0.35);
+      p.col(INK); p.rect(x0, top, 1.3, gy - top, '#E3D8BE', 0.4); p.rect(x1 - 1.3, top, 1.3, gy - top, '#E3D8BE', 0.4);
+    }
+  }
+  function thOpenings(p, x0, x1, top, gy, doorAt, door) {
+    const w = x1 - x0, n = Math.max(1, Math.round(w / 4.2));
+    if (gy - top >= 4.5) for (let i = 0; i < n; i++) { const cx = x0 + (i + 0.5) * w / n; p.rect(cx - 0.65, top + 1.1, 1.3, 1.5, '#3A2C20', 0); }
+    if (door !== false) { const dx = x0 + w * (doorAt || 0.5); p.poly([[dx - 0.85, gy], [dx - 0.85, gy - 2.2], [dx, gy - 2.9], [dx + 0.85, gy - 2.2], [dx + 0.85, gy]], '#3A2C20', 0); }
+  }
+  function thChimney(p, cx, base, h) {
+    p.rect(cx - 0.9, base - h, 1.8, h, '#8A5A44', 0.8);
+    p.rect(cx - 1.2, base - h - 0.7, 2.4, 0.8, '#3A2C20', 0);
+    if (SNOWY) p.ell(cx, base - h - 0.8, 1.3, 0.6, SNOW, 0.3);
+  }
+  // one house: o = {x, gy, w, hw (wall), d (depth), rh (roof rise), form, mat, roof, chim, door, jetty}
+  function thHouse(p, o) {
+    const { x: x0, gy, w, hw, d, rh } = o, [T, TS] = TH_ROOFS[o.roof];
+    const dx = DV[0] * d, dy = DV[1] * d, top = gy - hw, x1 = x0 + w;
+    const A = [x0, gy], B = [x1, gy], At = [x0, top], Bt = [x1, top];
+    const Bb = [B[0] + dx, B[1] + dy], Bbt = [Bt[0] + dx, Bt[1] + dy], Abt = [At[0] + dx, At[1] + dy];
+    p.poly([B, Bb, Bbt, Bt], TH_WALLS[o.mat][1], 0.9); p.hatch([B, Bb, Bbt, Bt], 70, 1.5, 0.45, 'rgba(43,33,25,0.45)');   // side wall, in shade
+    if (o.form === 'gable') {
+      const F = [x0 + w / 2, top - rh], Fb = [F[0] + dx, F[1] + dy];
+      thSlope(p, Bt, Bbt, Fb, F, T, TS, true, true);                       // right slope, in shade
+      thSlope(p, At, Abt, Fb, F, T, TS, false, false);                      // left slope, lit
+      p.col(TH_ROOFS[6][1]).line([F, Fb], 1.1).col(INK);                   // ridge
+      thWall(p, [A, B, Bt, F, At], o.mat, false, x0, x1, top, gy);         // gable front
+      p.col(BEAM).line([At, F, Bt], 0.9).col(INK);
+      p.rect(F[0] - 0.6, top - rh * 0.5, 1.2, 1.3, '#3A2C20', 0);          // loft window
+      thOpenings(p, x0, x1, top, gy, o.doorAt, o.door);
+      if (o.chim) thChimney(p, F[0] + dx * 0.6 + 1.6, F[1] + dy * 0.6 + 2.2, 2.6);
+    } else {
+      // ridge along the street (hipped: the ridge is shortened and the ends slope too)
+      // the ridge stands high over the street front; the gable end at the side shows the pitch
+      const hip = o.form === 'hip' ? Math.min(w * 0.28, 3.2) : 0, rr = rh * 0.85;
+      const R1 = [x0 + dx / 2 + hip, top + dy / 2 - rr], R2 = [x1 + dx / 2 - hip, top + dy / 2 - rr];
+      thSlope(p, Abt, Bbt, R2, R1, T, TS, true, true);                      // back slope, in shade, seen beyond the ridge
+      if (hip) thSlope(p, Bt, Bbt, R2, R2, T, TS, true, true);              // hipped end, in shade
+      else { p.poly([Bt, Bbt, R2], TH_WALLS[o.mat][1], 0.9); p.col(BEAM).line([Bt, R2, Bbt], 0.8).col(INK); if (SNOWY) p.col(SNOW).line([R2, lerp(R2, Bt, 0.35)], 0.9).col(INK); }   // gable end
+      thSlope(p, At, Bt, R2, R1, T, TS, false, false);                      // front slope, the big one
+      if (hip) thSlope(p, At, At, R1, R1, T, TS, false, false);
+      p.col(TH_ROOFS[6][1]).line([R1, R2], 1.1).col(INK);                  // ridge
+      if (o.dormer) { const c = lerp(lerp(At, Bt, 0.5), lerp(R1, R2, 0.5), 0.38); p.poly([[c[0] - 1.6, c[1] + 1.4], [c[0] - 1.6, c[1] - 0.6], [c[0], c[1] - 2.2], [c[0] + 1.6, c[1] - 0.6], [c[0] + 1.6, c[1] + 1.4]], TH_WALLS[o.mat][0], 0.7); p.rect(c[0] - 0.5, c[1] - 0.4, 1, 1.2, '#3A2C20', 0); }
+      if (o.jetty) {   // a jettied upper floor: the upper wall oversails the lower on a beam
+        const jt = top + hw * 0.48;
+        thWall(p, [A, B, [x1, jt], [x0, jt]], o.mat === 'timber' ? 'stone' : o.mat, false, x0, x1, jt, gy);
+        thWall(p, [[x0 - 0.6, jt], [x1 + 0.6, jt], Bt, At], 'timber', false, x0, x1, top, jt);
+        p.col(BEAM).line([[x0 - 0.8, jt], [x1 + 0.8, jt]], 1.1).col(INK);
+      } else thWall(p, [A, B, Bt, At], o.mat, false, x0, x1, top, gy);
+      thOpenings(p, x0, x1, top, gy, o.doorAt, o.door);
+      if (o.chim) { const t = o.chimAt || 0.72; thChimney(p, lerp(R1, R2, t)[0] + 0.4, lerp(R1, R2, t)[1] + 1.4, 2.8); }
+      if (o.chim2) thChimney(p, lerp(R1, R2, 0.18)[0], lerp(R1, R2, 0.18)[1] + 1.4, 2.4);
+    }
+    p.col(INK).line([A, B], 1.1);
+  }
+  // sixteen townhouse drawings: one or a few houses each, in different forms, sizes, walls and roofs
+  const TH_N = 16;
+  function thVariant(p, v) {
+    const gy = 33, H = (o) => thHouse(p, Object.assign({ gy, hw: 4.5, d: 12, rh: 6, form: 'eaves', mat: 'timber', roof: 0, chim: false }, o));
+    switch (v) {
+      case 0: H({ x: 6, w: 13, rh: 6.5, chim: true }); break;
+      case 1: H({ x: 10, w: 9, hw: 5.5, d: 14, rh: 8, form: 'gable', roof: 1, mat: 'stone' }); break;
+      case 2: H({ x: 3, w: 9, hw: 5.5, d: 12, rh: 7.5, form: 'gable', roof: 2, chim: true }); H({ x: 12, w: 8, hw: 6.5, d: 12, rh: 8.5, form: 'gable', roof: 0 }); H({ x: 20, w: 8, hw: 5, d: 12, rh: 7, form: 'gable', roof: 6, mat: 'render' }); break;
+      case 3: H({ x: 5, w: 15, hw: 5, rh: 7, form: 'hip', roof: 1, mat: 'stone', chim: true, chimAt: 0.5 }); break;
+      case 4: H({ x: 9, w: 10, hw: 5, d: 13, rh: 8.5, form: 'gable', roof: 3, mat: 'render', chim: true }); break;
+      case 5: H({ x: 3, w: 11, rh: 6, roof: 4, mat: 'stone' }); H({ x: 13, w: 8, hw: 5.5, d: 13, rh: 7.5, form: 'gable', roof: 4, mat: 'stone', chim: true }); break;
+      case 6: H({ x: 8, w: 10, hw: 7, d: 13, rh: 8, form: 'gable', roof: 0, chim: true }); break;
+      case 7: H({ x: 5, w: 15, hw: 4, d: 11, rh: 6, roof: 5, mat: 'render', doorAt: 0.3 }); break;
+      case 8: H({ x: 9, w: 10, hw: 6, d: 15, rh: 9.5, form: 'gable', roof: 6, mat: 'timber', chim: true }); break;
+      case 9: H({ x: 3, w: 9, hw: 5, d: 12, rh: 7.5, form: 'gable', roof: 2 }); H({ x: 12, w: 10, hw: 5.5, rh: 6.5, roof: 0, mat: 'stone', chim: true }); break;
+      case 10: H({ x: 5, w: 16, hw: 5, rh: 7, form: 'hip', roof: 3, mat: 'render', chim: true, chimAt: 0.3, dormer: true }); break;
+      case 11: H({ x: 1, w: 7, hw: 6, d: 12, rh: 8, form: 'gable', roof: 1, mat: 'stone' }); H({ x: 8, w: 7, hw: 7, d: 12, rh: 8.5, form: 'gable', roof: 3, chim: true }); H({ x: 15, w: 7, hw: 5.5, d: 12, rh: 7.5, form: 'gable', roof: 2, mat: 'render' }); break;
+      case 12: H({ x: 9, w: 9, hw: 4.5, d: 11, rh: 7, form: 'gable', roof: 4, mat: 'stone', chim: true }); break;
+      case 13: H({ x: 4, w: 12, hw: 6.5, rh: 6, jetty: true, roof: 1, chim: true }); H({ x: 16, w: 7, hw: 5, d: 12, rh: 7.5, form: 'gable', roof: 1, mat: 'render' }); break;
+      case 14: H({ x: 6, w: 9, hw: 6, d: 12, rh: 8, form: 'gable', roof: 6, jetty: true }); H({ x: 15, w: 9, hw: 5, d: 12, rh: 7.5, form: 'gable', roof: 0, mat: 'stone', chim: true }); break;
+      default: H({ x: 8, w: 11, hw: 5, d: 13, rh: 8.5, form: 'gable', roof: 3, mat: 'stone', chim: true }); break;
+    }
   }
 
   // ---------------- settlements
@@ -185,8 +285,8 @@
     add('s-hamlet', 20, 18, p => { house(p, 4, 14, 10, 6, 5); });
     // townhouses for the drawn towns, all seen from one viewpoint (high in the south, a little to the east), as on the
     // bird's-eye town plans of the sixteenth century: cream walls, red tiled roofs, every house turned the same way
-    for (let v = 0; v < 12; v++) add('th' + v, 32, 30, p => { bhVariant(p, v); }, 3000 + v);
-    for (let v = 0; v < 12; v++) add('th' + v + '-s', 32, 30, p => { SNOWY = true; try { bhVariant(p, v); } finally { SNOWY = false; } }, 3000 + v);
+    for (let v = 0; v < TH_N; v++) add('th' + v, 34, 36, p => { thVariant(p, v); }, 3000 + v);
+    for (let v = 0; v < TH_N; v++) add('th' + v + '-s', 34, 36, p => { SNOWY = true; try { thVariant(p, v); } finally { SNOWY = false; } }, 3000 + v);
     add('market', 30, 26, p => {
       p.poly([[3, 22], [27, 22], [24, 14], [6, 14]], PAPER, 1.4);   // a cobbled square with a market cross and stalls
       for (let i = 0; i < 4; i++) p.dot(8 + i * 5, 19, 0.7);
@@ -319,7 +419,6 @@
     add('l-moai', 44, 40, p => { const gy = 37; for (const [mx, s] of [[9, 0.85], [22, 1], [35, 0.9]]) { const h = 28 * s; p.poly([[mx - 4.5 * s, gy], [mx - 5 * s, gy - h * 0.7], [mx - 4 * s, gy - h], [mx + 4 * s, gy - h], [mx + 5.5 * s, gy - h * 0.62], [mx + 3.8 * s, gy - h * 0.55], [mx + 4 * s, gy]], PAPER, 1.5); p.line([[mx - 3 * s, gy - h * 0.72], [mx + 2 * s, gy - h * 0.72]], 1.1); p.hatch([[mx + 1 * s, gy - h], [mx + 4 * s, gy - h], [mx + 4 * s, gy], [mx + 1 * s, gy]], 85, 1.7, 0.6); } G(p, gy, 44); });
     add('l-forbidden', 60, 36, p => { const gy = 33; p.rect(2, gy - 6, 56, 6, '#E8C9A0', 1.3); p.rect(10, gy - 15, 40, 9, '#B23A2E', 1.3); for (let i = 0; i < 8; i++) p.line([[12 + i * 5, gy - 15], [12 + i * 5, gy - 6]], 0.8, 0); p.poly([[5, gy - 15], [9, gy - 19], [51, gy - 19], [55, gy - 15], [57, gy - 17]], '#C9A24A', 1.3); p.poly([[14, gy - 19], [18, gy - 25], [42, gy - 25], [46, gy - 19]], '#C9A24A', 1.3); p.line([[1, gy - 13], [5, gy - 15]], 1); });
     add('l-chichen', 54, 40, p => { const gy = 37; for (let k = 0; k < 5; k++) { const w = 48 - k * 8; p.rect(27 - w / 2, gy - (k + 1) * 5, w, 5, PAPER, 1.3); } p.rect(21, gy - 31, 12, 6, PAPER, 1.4); p.line([[24, gy], [26, gy - 25]], 0.9); p.line([[30, gy], [28, gy - 25]], 0.9); p.hatch([[27, gy - 25], [51, gy], [27, gy]], 100, 2, 0.6); G(p, gy, 54); });
-    add('l-empire', 26, 66, p => { const gy = 63; const steps = [[4, 22, 18], [6, 20, 30], [8, 18, 44], [10, 16, 52]]; for (const [l, r, h] of steps) p.rect(l, gy - h, r - l, h - (h === 18 ? 0 : steps[steps.findIndex(s => s[2] === h) - 1][2]), PAPER, 1.3); p.line([[13, gy - 52], [13, gy - 63]], 1.4); p.hatch([[13, gy - 52], [22, gy - 52], [22, gy], [13, gy]], 90, 1.8, 0.6); G(p, gy, 26); });
     add('l-cntower', 24, 70, p => { const gy = 67; p.poly([[8, gy], [11, gy - 44], [13, gy - 44], [16, gy]], PAPER, 1.4); p.ell(12, gy - 46, 5, 3, PAPER, 1.4); p.rect(10.8, gy - 58, 2.4, 10, PAPER, 1.1); p.line([[12, gy - 58], [12, gy - 68]], 1.1); G(p, gy, 24); });
     add('l-petronas', 36, 66, p => { const gy = 63; for (const tx of [9, 27]) { p.poly([[tx - 5, gy], [tx - 5, gy - 34], [tx - 4, gy - 42], [tx - 2.5, gy - 48], [tx - 1, gy - 52], [tx, gy - 62], [tx + 1, gy - 52], [tx + 2.5, gy - 48], [tx + 4, gy - 42], [tx + 5, gy - 34], [tx + 5, gy]], PAPER, 1.4); for (let y = gy - 6; y > gy - 46; y -= 6) p.line([[tx - 4, y], [tx + 4, y]], 0.6); } p.rect(14, gy - 30, 8, 2.2, PAPER, 1); G(p, gy, 36); });
     add('l-marinabay', 56, 38, p => { const gy = 35; for (const tx of [12, 28, 44]) { p.rect(tx - 4, gy - 26, 8, 26, PAPER, 1.4); p.hatch([[tx, gy - 26], [tx + 4, gy - 26], [tx + 4, gy], [tx, gy]], 90, 1.8, 0.6); } p.poly([[4, gy - 26], [6, gy - 30], [54, gy - 30], [52, gy - 26]], PAPER, 1.4); p.col(BLUE).line([[0, gy + 2], [56, gy + 2]], 1).col(INK); });
@@ -336,6 +435,141 @@
     add('l-gopuram', 30, 52, p => { const gy = 49; for (let k = 0; k < 7; k++) { const w = 26 - k * 3; p.rect(15 - w / 2, gy - (k + 1) * 6, w, 6, k % 2 ? '#E8C9A0' : PAPER, 1.1); } p.rect(10, gy - 45, 10, 3, PAPER, 1.1); G(p, gy, 30); });
     add('l-stupa', 34, 40, p => { const gy = 37; p.rect(5, gy - 5, 24, 5, PAPER, 1.3); p.ell(17, gy - 5, 10, 11, '#E3C46B', 1.6, Math.PI, Math.PI * 2); p.poly([[14, gy - 15], [17, gy - 36], [20, gy - 15]], '#E3C46B', 1.3); for (let k = 0; k < 4; k++) p.line([[15 + k * 0.4, gy - 19 - k * 4], [19 - k * 0.4, gy - 19 - k * 4]], 0.7); G(p, gy, 34); });
     add('l-potala', 60, 40, p => { const gy = 37; p.poly([[2, gy], [8, gy - 22], [52, gy - 22], [58, gy]], SNOW, 1.6); p.rect(22, gy - 30, 18, 12, '#B23A2E', 1.4); for (let r = 0; r < 4; r++) p.wins(9 + r * 1.5, gy - 5 - r * 5, 42 - r * 3, 10 - r, 2.5); p.rect(24, gy - 33, 14, 3, '#C9A24A', 1.1); });
+    // ---- round 4: more of the world's best-known buildings, each drawn in its own way
+    // the Empire State Building redrawn: an Art Deco tower stepping back in setbacks to a mast
+    add('l-empire', 28, 72, p => { const gy = 69, cx = 14;
+      const tiers = [[11, 0, 14], [9, 14, 30], [7.5, 30, 48], [5.5, 48, 54], [3.6, 54, 58]];
+      for (const [hw, y0, y1] of tiers) { p.rect(cx - hw, gy - y1, hw * 2, y1 - y0, SNOW, 1.2); p.hatch([[cx + hw * 0.25, gy - y1], [cx + hw, gy - y1], [cx + hw, gy - y0], [cx + hw * 0.25, gy - y0]], 90, 1.6, 0.6); }
+      for (let x0 = cx - 6; x0 <= cx + 6; x0 += 2.4) p.line([[x0, gy - 16], [x0, gy - 46]], 0.4);
+      p.poly([[cx - 2.4, gy - 58], [cx - 1.6, gy - 62], [cx + 1.6, gy - 62], [cx + 2.4, gy - 58]], PAPER, 1);
+      p.line([[cx, gy - 62], [cx, gy - 71]], 1.3); p.dot(cx, gy - 71, 0.8, RED); G(p, gy, 28); });
+    add('l-chrysler', 24, 72, p => { const gy = 69, cx = 12;
+      p.rect(cx - 8, gy - 22, 16, 22, SNOW, 1.3); p.rect(cx - 6, gy - 44, 12, 22, SNOW, 1.3); p.hatch([[cx + 1, gy - 44], [cx + 6, gy - 44], [cx + 6, gy], [cx + 1, gy]], 90, 1.6, 0.6);
+      // the crown of stacked arches with triangular windows, and the spire
+      for (let k = 0; k < 5; k++) { const w = 6 - k * 1.1, y = gy - 44 - k * 4; p.ell(cx, y, w, 4.2, '#D8D2C4', 1, Math.PI, Math.PI * 2); for (let i = -1; i <= 1; i++) p.poly([[cx + i * w * 0.5 - 0.6, y - 0.4], [cx + i * w * 0.5, y - 2.2], [cx + i * w * 0.5 + 0.6, y - 0.4]], '#3A2C20', 0); }
+      p.poly([[cx - 1.1, gy - 62], [cx, gy - 71], [cx + 1.1, gy - 62]], '#D8D2C4', 1); G(p, gy, 24); });
+    add('l-capitol', 60, 46, p => { const gy = 43;
+      p.rect(3, gy - 10, 54, 10, SNOW, 1.4); p.wins(4, gy - 7, 52, 12, 4); p.rect(22, gy - 16, 16, 6, SNOW, 1.3);
+      for (let i = 0; i < 6; i++) p.line([[23.5 + i * 2.6, gy - 10], [23.5 + i * 2.6, gy - 16]], 0.7);
+      p.poly([[21, gy - 16], [30, gy - 20], [39, gy - 16]], SNOW, 1.2);
+      p.rect(24, gy - 25, 12, 5, SNOW, 1.2); for (let i = 0; i < 6; i++) p.line([[25 + i * 2, gy - 20], [25 + i * 2, gy - 25]], 0.6);
+      p.ell(30, gy - 25, 7, 8, SNOW, 1.5, Math.PI, Math.PI * 2); p.hatch([[30, gy - 33], [37, gy - 25], [30, gy - 25]], 70, 1.6, 0.6);
+      p.rect(28.8, gy - 37, 2.4, 4, SNOW, 1); p.line([[30, gy - 37], [30, gy - 41]], 1); p.dot(30, gy - 42, 0.9); G(p, gy, 60); });
+    add('l-taipei101', 26, 72, p => { const gy = 69, cx = 13;
+      p.rect(cx - 5, gy - 12, 10, 12, '#B9C9C2', 1.3);
+      for (let k = 0; k < 8; k++) { const y = gy - 12 - k * 6; p.poly([[cx - 4, y], [cx - 6, y - 6], [cx + 6, y - 6], [cx + 4, y]], '#B9C9C2', 1.1); }
+      p.hatch([[cx + 1, gy - 60], [cx + 6, gy - 60], [cx + 5, gy], [cx + 1, gy]], 90, 1.8, 0.55);
+      p.rect(cx - 2.4, gy - 64, 4.8, 4, '#B9C9C2', 1); p.line([[cx, gy - 64], [cx, gy - 71]], 1.2); G(p, gy, 26); });
+    add('l-shard', 26, 70, p => { const gy = 67, cx = 13;
+      p.poly([[cx - 9, gy], [cx - 1.2, gy - 64], [cx + 0.6, gy - 58], [cx + 9, gy]], '#C7D6DE', 1.4);
+      p.poly([[cx + 0.6, gy - 58], [cx + 1.8, gy - 66], [cx + 2.2, gy - 54], [cx + 9, gy]], '#9FB3C0', 1.1);
+      for (let y = gy - 6; y > gy - 56; y -= 5) { const t = (gy - y) / 64; p.line([[cx - 9 + t * 7.8, y], [cx + 9 - t * 8.4, y]], 0.4); }
+      G(p, gy, 26); });
+    add('l-gherkin', 26, 52, p => { const gy = 49, cx = 13; const pts = [];
+      for (let i = 0; i <= 30; i++) { const t = i / 30, y = gy - t * 44, r = 8.5 * Math.sin(Math.PI * Math.min(1, 0.18 + t * 0.85)) + (t < 0.1 ? 0 : 0); pts.push([cx - Math.max(r, 0.5), y]); }
+      const rhs = pts.map(([x, y]) => [2 * cx - x, y]).reverse(); const sil = pts.concat(rhs);
+      p.poly(sil, '#B9CBC4', 1.4);
+      p.x.save(); p.x.beginPath(); sil.forEach((q, i) => i ? p.x.lineTo(q[0], q[1]) : p.x.moveTo(q[0], q[1])); p.x.closePath(); p.x.clip();
+      p.col('#46594F'); for (let k = -6; k < 10; k++) p.line([[cx - 12 + k * 3, gy], [cx + 4 + k * 3, gy - 46]], 0.9); p.col(INK); p.x.restore();
+      p.hatch([[cx + 2, gy - 46], [cx + 10, gy - 30], [cx + 10, gy], [cx + 2, gy]], 90, 2, 0.5); G(p, gy, 26); });
+    add('l-arctriomphe', 44, 42, p => { const gy = 39;
+      p.rect(5, gy - 30, 34, 30, SNOW, 1.6); p.rect(4, gy - 34, 36, 4, SNOW, 1.3); p.rect(5, gy - 37, 34, 3, SNOW, 1.1);
+      p.poly([[15, gy], [15, gy - 13], [16.5, gy - 18], [22, gy - 21], [27.5, gy - 18], [29, gy - 13], [29, gy]], '#3A2C20', 1.2);
+      p.rect(7, gy - 26, 6, 8, '#E6DCC6', 0.7); p.rect(31, gy - 26, 6, 8, '#E6DCC6', 0.7);
+      p.line([[5, gy - 28], [39, gy - 28]], 0.7); p.hatch([[32, gy - 30], [39, gy - 30], [39, gy], [32, gy]], 90, 1.8, 0.6); p.flag(22, gy - 37, 0.8); G(p, gy, 44); });
+    add('l-versailles', 64, 34, p => { const gy = 30;
+      p.rect(2, gy - 11, 60, 11, SNOW, 1.4); p.wins(3, gy - 8, 58, 16, 4);
+      p.rect(24, gy - 16, 16, 5, SNOW, 1.3); p.poly([[23, gy - 16], [32, gy - 20], [41, gy - 16]], SNOW, 1.1);
+      for (const x0 of [2, 52]) p.rect(x0, gy - 14, 10, 3, '#6E7E90', 1.1);
+      p.line([[2, gy - 11], [62, gy - 11]], 1.2); for (let i = 0; i < 12; i++) p.dot(4 + i * 5, gy - 12.2, 0.5, '#C9A24A');
+      p.poly([[16, gy + 1], [48, gy + 1], [52, gy + 4], [12, gy + 4]], '#E3D7B8', 0.9); G(p, gy + 3, 64); });
+    add('l-whitetower', 40, 44, p => { const gy = 41;
+      p.poly([[1, gy], [3, gy - 9], [37, gy - 9], [39, gy]], PAPER, 1.3); p.crenels(2, gy - 9, 36, 8);
+      p.rect(9, gy - 28, 22, 19, SNOW, 1.6); p.wins(10, gy - 24, 20, 4, 4); p.hatch([[22, gy - 28], [31, gy - 28], [31, gy - 9], [22, gy - 9]], 90, 1.8, 0.6);
+      for (const tx of [10, 30]) p.tower(tx, gy - 9, 4.4, 24, 'dome', { win: false, shade: false });
+      p.tower(20, gy - 9, 4, 21, 'dome', { win: false, shade: false }); p.flag(20, gy - 32.5, 0.8); G(p, gy, 40); });
+    add('l-stpauls', 48, 52, p => { const gy = 49;
+      p.rect(3, gy - 13, 42, 13, SNOW, 1.4); p.wins(4, gy - 10, 40, 8, 4);
+      for (const tx of [7, 41]) { p.rect(tx - 3, gy - 22, 6, 9, SNOW, 1.2); p.ell(tx, gy - 22, 3, 4, SNOW, 1.1, Math.PI, Math.PI * 2); p.line([[tx, gy - 26], [tx, gy - 28]], 0.9); }
+      p.rect(15, gy - 20, 18, 7, SNOW, 1.3); for (let i = 0; i < 7; i++) p.line([[16.5 + i * 2.5, gy - 13], [16.5 + i * 2.5, gy - 20]], 0.6);
+      p.ell(24, gy - 20, 9, 11, '#C9D3D8', 1.6, Math.PI, Math.PI * 2); p.hatch([[24, gy - 31], [33, gy - 20], [24, gy - 20]], 70, 1.6, 0.6);
+      p.rect(22.4, gy - 36, 3.2, 5, SNOW, 1); p.line([[24, gy - 36], [24, gy - 41]], 1); p.line([[22.6, gy - 39.5], [25.4, gy - 39.5]], 0.8); G(p, gy, 48); });
+    add('l-edinburgh', 56, 46, p => { const gy = 43;
+      p.poly([[0, gy], [6, gy - 12], [14, gy - 18], [44, gy - 20], [52, gy - 10], [56, gy]], '#B7A98A', 1.5); p.hatch([[30, gy - 20], [44, gy - 20], [52, gy - 10], [56, gy], [30, gy]], 70, 2.2, 0.6);
+      p.rect(12, gy - 27, 30, 9, PAPER, 1.4); p.crenels(12, gy - 27, 30, 8); p.wins(13, gy - 24, 28, 7, 3);
+      p.tower(18, gy - 27, 6, 10, 'cren', { win: false }); p.tower(36, gy - 27, 5, 7, 'cren', { win: false });
+      p.rect(25, gy - 32, 8, 5, PAPER, 1.1); p.poly([[24.5, gy - 32], [29, gy - 36], [33.5, gy - 32]], '#6E7E90', 1);
+      p.flag(18, gy - 40, 0.9, '#3D6E9E'); G(p, gy, 56); });
+    add('l-alhambra', 60, 40, p => { const gy = 37;
+      p.poly([[0, gy], [4, gy - 8], [56, gy - 8], [60, gy]], '#D9B98A', 1.3); p.hatch([[0, gy], [4, gy - 8], [56, gy - 8], [60, gy]], 15, 2.4, 0.5);
+      p.rect(4, gy - 16, 52, 8, '#E3B58A', 1.4); p.crenels(4, gy - 16, 52, 12);
+      p.tower(12, gy - 8, 9, 18, 'cren', { win: false, fill: '#E3B58A' }); p.tower(46, gy - 8, 8, 14, 'cren', { win: false });
+      for (let i = 0; i < 6; i++) { const x0 = 20 + i * 3.6; p.line([[x0, gy - 8], [x0, gy - 12], [x0 + 1.8, gy - 14], [x0 + 3.6, gy - 12], [x0 + 3.6, gy - 8]], 0.7); }
+      p.col('#5E8A5A'); for (const tx of [27, 31, 35]) p.line([[tx, gy - 16], [tx, gy - 23]], 1.6); p.col(INK); G(p, gy, 60); });
+    add('l-hagiasophia', 58, 46, p => { const gy = 43;
+      p.rect(10, gy - 12, 38, 12, '#E4C9A6', 1.4); p.wins(11, gy - 9, 36, 8, 4);
+      p.ell(19, gy - 12, 6, 5, '#E4C9A6', 1.2, Math.PI, Math.PI * 2); p.ell(39, gy - 12, 6, 5, '#E4C9A6', 1.2, Math.PI, Math.PI * 2);
+      p.rect(21, gy - 17, 16, 5, '#E4C9A6', 1.2); p.ell(29, gy - 17, 10, 9, '#9FB3C0', 1.6, Math.PI, Math.PI * 2); p.hatch([[29, gy - 26], [39, gy - 17], [29, gy - 17]], 70, 1.6, 0.6);
+      for (let i = 0; i < 7; i++) p.dot(21.5 + i * 2.5, gy - 18.5, 0.45);
+      p.line([[29, gy - 26], [29, gy - 30]], 0.9);
+      for (const mx of [4, 54]) { p.poly([[mx - 1.6, gy], [mx - 1.2, gy - 30], [mx + 1.2, gy - 30], [mx + 1.6, gy]], SNOW, 1.1); p.poly([[mx - 1.3, gy - 30], [mx, gy - 37], [mx + 1.3, gy - 30]], '#6E7E90', 0.9); p.line([[mx - 2, gy - 22], [mx + 2, gy - 22]], 0.8); }
+      G(p, gy, 58); });
+    add('l-bluemosque', 60, 48, p => { const gy = 45;
+      p.rect(9, gy - 10, 42, 10, SNOW, 1.4); p.wins(10, gy - 7, 40, 9, 3.5);
+      for (const [dx, r] of [[16, 4], [44, 4], [22, 5], [38, 5]]) p.ell(dx, gy - 10, r, r * 0.9, '#8FA6BA', 1.1, Math.PI, Math.PI * 2);
+      p.rect(23, gy - 15, 14, 5, SNOW, 1.1); p.ell(30, gy - 15, 8, 8, '#8FA6BA', 1.5, Math.PI, Math.PI * 2); p.line([[30, gy - 23], [30, gy - 27]], 0.9);
+      for (const mx of [3, 8, 52, 57]) { p.poly([[mx - 1.1, gy], [mx - 0.8, gy - 34], [mx + 0.8, gy - 34], [mx + 1.1, gy]], SNOW, 0.9); p.poly([[mx - 0.9, gy - 34], [mx, gy - 40], [mx + 0.9, gy - 34]], '#6E7E90', 0.8); for (const yy of [16, 26]) p.line([[mx - 1.6, gy - yy], [mx + 1.6, gy - yy]], 0.6); }
+      G(p, gy, 60); });
+    add('l-cologne', 40, 70, p => { const gy = 67;
+      p.rect(7, gy - 18, 26, 18, '#B9AE9C', 1.5); p.ell(20, gy - 10, 3.6, 4.4, '#3A2C20', 0.8);
+      for (const tx of [11, 29]) { p.rect(tx - 4, gy - 46, 8, 46, '#B9AE9C', 1.4); p.wins(tx - 3, gy - 40, 6, 2, 7); p.poly([[tx - 4, gy - 46], [tx, gy - 66], [tx + 4, gy - 46]], '#A39883', 1.3); for (let y = gy - 50; y > gy - 64; y -= 3) p.line([[tx - 1.2, y], [tx + 1.2, y]], 0.5); p.dot(tx, gy - 66, 0.8); }
+      p.hatch([[24, gy - 46], [33, gy - 46], [33, gy], [24, gy]], 90, 1.6, 0.55); G(p, gy, 40); });
+    add('l-budaparl', 64, 42, p => { const gy = 37;
+      p.rect(2, gy - 11, 60, 11, SNOW, 1.4); p.wins(3, gy - 8, 58, 18, 4);
+      for (let i = 0; i < 9; i++) { const tx = 5 + i * 6.8; p.line([[tx, gy - 11], [tx, gy - 15]], 0.8); p.poly([[tx - 0.8, gy - 15], [tx, gy - 18], [tx + 0.8, gy - 15]], SNOW, 0.6); }
+      p.rect(25, gy - 18, 14, 7, SNOW, 1.2); p.ell(32, gy - 18, 7, 9, '#B23A2E', 1.5, Math.PI, Math.PI * 2); p.poly([[30.4, gy - 26], [32, gy - 33], [33.6, gy - 26]], SNOW, 1); p.line([[32, gy - 33], [32, gy - 36]], 0.8);
+      p.col(BLUE).line([[0, gy + 2], [64, gy + 2]], 1).line([[6, gy + 4], [58, gy + 4]], 0.8).col(INK); });
+    add('l-atomium', 40, 52, p => { const gy = 49, cx = 20, cy = gy - 26, R = 13;
+      const S = [[0, 0], [R, -R * 0.8], [-R, -R * 0.8], [R, R * 0.8], [-R, R * 0.8], [0, -R * 1.5], [0, R * 1.2]];
+      for (const [x, y] of S.slice(1)) p.line([[cx, cy], [cx + x, cy + y]], 1.6);
+      p.line([[cx - R, cy - R * 0.8], [cx + R, cy - R * 0.8]], 1.1); p.line([[cx - R, cy + R * 0.8], [cx + R, cy + R * 0.8]], 1.1);
+      p.line([[cx - R, cy + R * 0.8], [cx - R - 2, gy]], 1.2); p.line([[cx + R, cy + R * 0.8], [cx + R + 2, gy]], 1.2); p.line([[cx, cy + R * 1.2], [cx, gy]], 1.2);
+      for (const [x, y] of S) { p.ell(cx + x, cy + y, 3.3, 3.3, '#C9D3DA', 1.2); p.ell(cx + x + 1, cy + y + 1, 1.6, 1.6, '#9FB3C0', 0); }
+      G(p, gy, 40); });
+    add('l-pearltower', 30, 72, p => { const gy = 69, cx = 15;
+      for (const dx of [-7, 0, 7]) p.line([[cx + dx, gy], [cx + dx * 0.25, gy - 16]], 1.3);
+      p.ell(cx, gy - 18, 6, 6, '#C25A6E', 1.4); p.ell(cx - 1.6, gy - 19.6, 2, 2, '#E79AAA', 0);
+      p.rect(cx - 1.4, gy - 46, 2.8, 22, SNOW, 1.1); p.ell(cx, gy - 47, 4, 4, '#C25A6E', 1.3); p.ell(cx, gy - 54, 1.8, 1.8, '#C25A6E', 1);
+      p.line([[cx, gy - 51], [cx, gy - 71]], 1.1); for (const yy of [33, 39]) p.ell(cx, gy - yy, 1.6, 1.6, '#C25A6E', 0.8);
+      p.col(BLUE).line([[0, gy + 2], [30, gy + 2]], 1).col(INK); });
+    add('l-skytree', 24, 74, p => { const gy = 71, cx = 12;
+      p.poly([[cx - 7, gy], [cx - 2.2, gy - 40], [cx - 1.8, gy - 58], [cx + 1.8, gy - 58], [cx + 2.2, gy - 40], [cx + 7, gy]], '#DCE3E8', 1.3);
+      for (let y = gy - 4; y > gy - 56; y -= 4) { const t = (gy - y) / 58, w = 7 - t * 5; p.line([[cx - w, y], [cx + w, y - 4]], 0.4); p.line([[cx + w, y], [cx - w, y - 4]], 0.4); }
+      p.rect(cx - 3.6, gy - 37, 7.2, 3, '#DCE3E8', 1.1); p.rect(cx - 2.8, gy - 50, 5.6, 2.4, '#DCE3E8', 1);
+      p.line([[cx, gy - 58], [cx, gy - 73]], 1.1); G(p, gy, 24); });
+    add('l-templeheaven', 44, 50, p => { const gy = 47, cx = 22;
+      for (let k = 0; k < 3; k++) p.rect(cx - 20 + k * 3, gy - 3 - k * 3, 40 - k * 6, 3, SNOW, 1.1);
+      p.rect(cx - 10, gy - 17, 20, 8, '#B23A2E', 1.3); for (let i = 0; i < 5; i++) p.line([[cx - 8 + i * 4, gy - 9], [cx - 8 + i * 4, gy - 17]], 0.6);
+      for (const [w, y, h] of [[15, 17, 5], [11, 24, 5], [7, 31, 5]]) { p.poly([[cx - w, gy - y], [cx - w * 0.6, gy - y - h], [cx + w * 0.6, gy - y - h], [cx + w, gy - y]], '#3D5E9E', 1.2); if (y > 17) p.rect(cx - w * 0.6, gy - y + 0.5, w * 1.2, 2.5, '#B23A2E', 0.8); }
+      p.ell(cx, gy - 37, 2, 2, '#C9A24A', 1); G(p, gy, 44); });
+    add('l-kinkakuji', 44, 40, p => { const gy = 34, cx = 22, GOLD = '#D7AE45';
+      p.rect(cx - 13, gy - 8, 26, 8, '#E9DCC0', 1.3); p.wins(cx - 12, gy - 6, 24, 6, 4);
+      p.poly([[cx - 16, gy - 8], [cx - 11, gy - 12], [cx + 11, gy - 12], [cx + 16, gy - 8]], '#5A4636', 1.2);
+      p.rect(cx - 10, gy - 19, 20, 7, GOLD, 1.3); p.poly([[cx - 13, gy - 19], [cx - 8, gy - 23], [cx + 8, gy - 23], [cx + 13, gy - 19]], '#5A4636', 1.2);
+      p.rect(cx - 6, gy - 28, 12, 5, GOLD, 1.2); p.poly([[cx - 9, gy - 28], [cx - 3, gy - 33], [cx + 3, gy - 33], [cx + 9, gy - 28]], '#5A4636', 1.1); p.poly([[cx - 1, gy - 33], [cx, gy - 36], [cx + 1, gy - 33]], GOLD, 0.8);
+      p.col(BLUE).line([[2, gy + 2], [42, gy + 2]], 1).line([[8, gy + 4], [36, gy + 4]], 0.8).col(GOLD).line([[cx - 8, gy + 3], [cx + 8, gy + 3]], 0.8).col(INK); });
+    add('l-abusimbel', 60, 36, p => { const gy = 33;
+      p.poly([[0, gy], [4, gy - 28], [56, gy - 28], [60, gy]], '#E1BD86', 1.5); p.hatch([[46, gy - 28], [56, gy - 28], [60, gy], [46, gy]], 70, 2, 0.6);
+      for (let i = 0; i < 4; i++) { const x0 = 8 + i * 12.5 - (i > 1 ? -3 : 0); p.rect(x0, gy - 13, 8, 13, '#D3AB72', 1.1); p.ell(x0 + 4, gy - 17, 3, 4, '#D3AB72', 1.1); p.poly([[x0 + 0.6, gy - 19], [x0 + 4, gy - 23], [x0 + 7.4, gy - 19]], '#D3AB72', 1); }
+      p.rect(27, gy - 11, 6, 11, '#3A2C20', 0.9); G(p, gy, 60); });
+    add('l-harbourbridge', 66, 38, p => { const gy = 32;
+      const arch = []; for (let i = 0; i <= 30; i++) { const t = i / 30; arch.push([12 + t * 42, gy - 4 - Math.sin(t * Math.PI) * 22]); }
+      const arch2 = arch.map(([x, y], i) => [x, y + 3 + Math.sin(i / 30 * Math.PI) * 1.5]);
+      p.line(arch, 1.8); p.line(arch2, 1.2); for (let i = 1; i < 30; i += 2) p.line([arch[i], arch2[i]], 0.5);
+      for (let i = 2; i < 29; i += 3) p.line([arch2[i], [arch2[i][0], gy - 9]], 0.5);
+      for (const px of [8, 58]) { p.rect(px - 3, gy - 17, 6, 17, '#D6CBB4', 1.3); p.rect(px - 3.6, gy - 19, 7.2, 2, '#D6CBB4', 1); }
+      p.line([[0, gy - 9], [66, gy - 9]], 1.6);
+      p.col(BLUE).line([[0, gy + 2], [66, gy + 2]], 1).line([[8, gy + 4], [58, gy + 4]], 0.8).col(INK); });
     add('l-japancastle', 44, 50, p => { const gy = 47; p.poly([[4, gy], [8, gy - 12], [36, gy - 12], [40, gy]], PAPER, 1.5); p.hatch([[4, gy], [8, gy - 12], [36, gy - 12], [40, gy]], 0, 2.4, 0.6); for (let k = 0; k < 4; k++) { const w = 28 - k * 5, y = gy - 12 - k * 8; p.rect(22 - w / 2 + 2, y - 6, w - 4, 6, SNOW, 1.2); p.poly([[22 - w / 2 - 1, y - 6], [22 - w / 2 + 3, y - 9], [22 + w / 2 - 3, y - 9], [22 + w / 2 + 1, y - 6]], '#4A5560', 1.2); } });
     add('l-torii', 40, 36, p => { const gy = 31; const c = '#B23A2E'; p.rect(9, gy - 22, 3, 22, c, 1.2); p.rect(28, gy - 22, 3, 22, c, 1.2); p.poly([[3, gy - 25], [20, gy - 27], [37, gy - 25], [38, gy - 28], [20, gy - 30], [2, gy - 28]], c, 1.2); p.rect(6, gy - 20, 28, 2.5, c, 1); p.col(BLUE).line([[0, gy + 2], [40, gy + 2]], 1).line([[5, gy + 4], [35, gy + 4]], 0.8).col(INK); });
     add('l-buddha', 34, 42, p => { const gy = 39; p.poly([[0, gy], [0, 3], [34, 3], [34, gy]], '#E8C9A0', 1.2); p.hatch([[0, gy], [0, 3], [34, 3], [34, gy]], 75, 2.8, 0.5); p.ell(17, 13, 6, 7, PAPER, 1.4); p.poly([[6, gy], [8, 22], [17, 19], [26, 22], [28, gy]], PAPER, 1.4); p.line([[14, 13], [16, 13]], 0.7); p.line([[18, 13], [20, 13]], 0.7); });

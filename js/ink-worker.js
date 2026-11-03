@@ -680,6 +680,7 @@ function realWalls() {
   })();
   return wallBoxes;
 }
+const TH_N = 16;   // townhouse drawings th0 to th15 (js/ink-icons.js)
 async function townPoints(z, x, y, avoid) {
   if (z < 12 || !CFG.ofm || z > CFG.ofmMax) return [];
   const [buf, pbuf] = await Promise.all([fetchOfm(z, x, y), fetchOfm(z - 2, x >> 2, y >> 2)]);
@@ -764,10 +765,13 @@ async function townPoints(z, x, y, avoid) {
           const ax = part[k - 1][0] * sc, ay = part[k - 1][1] * sc, bx = part[k][0] * sc, by = part[k][1] * sc;
           const L = Math.hypot(bx - ax, by - ay); if (L < 0.5) continue;
           const ux = (bx - ax) / L, uy = (by - ay) / L;
-          for (let d = carry; d < L; d += step) {
+          // less regular spacing (round 4): each step along the street and each setback from it varies a little, so the
+          // houses read as a town grown plot by plot, not a row of copies
+          for (let d = carry; d < L; d += step * (0.78 + 0.5 * hash3(Math.round((ax + ux * d) * 97), Math.round((ay + uy * d) * 89), 53))) {
             const cx = ax + ux * d, cy = ay + uy * d;
             for (const side of [1, -1]) {
-              const nxv = -uy * side, nyv = ux * side, hx = cx + nxv * off, hy = cy + nyv * off;
+              const ofs = off * (0.82 + 0.4 * hash3(Math.round(cx * 71), Math.round(cy * 67), side + 59));
+              const nxv = -uy * side, nyv = ux * side, hx = cx + nxv * ofs, hy = cy + nyv * ofs;
               if (hx < 0 || hx >= 512 || hy < 0 || hy >= 512) continue;
               const tx = hx / 512, ty = hy / 512;
               if (at(wet, tx, ty)) continue;
@@ -779,7 +783,7 @@ async function townPoints(z, x, y, avoid) {
               const keep = Math.min(1, townKeep(dr) * w * (0.7 + 0.5 * dn));
               const h = hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 31);
               if (h >= keep) continue;
-              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * 12), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
+              cand.push({ hx, hy, dr, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 7, Math.round(gny * 4e7)) * TH_N), a: Math.round((Math.atan2(nxv, -nyv) * 180 / Math.PI + 360) % 360), o: 0 } });
             }
           }
           carry = (carry - L % step + step) % step; if (carry < 0.01) carry = step;
@@ -802,7 +806,7 @@ async function townPoints(z, x, y, avoid) {
     const small = P.kind === 'village' || P.kind === 'hamlet';
     const keep = dr < 0.18 ? 0.95 : small && dr < 0.6 ? 0.8 - 0.6 * dr : Math.min(1, townKeep(dr) * (0.25 + 0.6 * dn));
     if (hash3(Math.round(gnx * 4e7), Math.round(gny * 4e7), 47) >= keep) continue;
-    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * 12), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
+    cand.push({ hx, hy, dr: dr + 0.001, it: { nx: gnx, ny: gny, t: 'th' + Math.floor(hash3(Math.round(gnx * 4e7), 9, Math.round(gny * 4e7)) * TH_N), a: [0, 90, 180, 270][Math.floor(hash3(Math.round(gnx * 4e7), 11, 3) * 4)], o: 0 } });
   }
   // place from the centre outwards, so the cap on drawings per tile thins the edges, never the old core
   cand.sort((a, b) => a.dr - b.dr);
@@ -1145,13 +1149,24 @@ function inSnow(nx, ny) {
 const tagSnow = pts => { for (const p of pts) p.sz = inSnow(p.nx, p.ny); return pts; };
 
 const ABORT = { aborted: true };
+// stage timings (wall time, so stages of tiles built side by side overlap), sent back with each tile when CFG.prof is set (QA)
+const PROF = {};
 async function buildTile(z, x, y, parentKept, alive) {
+  let tm = performance.now();
+  const mark = k => { const t = performance.now(); PROF[k] = (PROF[k] || 0) + t - tm; tm = t; };
   // a tile nobody wants any more (the map zoomed or panned on) is given up between stages, so a fast fly-through does
   // not queue up seconds of work for tiles that will never be shown
   const check = () => { if (alive && !alive()) throw ABORT; };
   const T = new Writer();
+  // round 4: everything this tile will read over the network is asked for at once, at the start, so the fetches overlap
+  // instead of waiting on one another stage by stage (heritage, hills and places grids, the parent tile and wall boxes the
+  // town needs); each stage below then finds its data waiting
+  const quiet = p => p && p.catch(() => null);
+  const herP = quiet(heritagePoints(z, x, y));
+  const hillP = z >= 10 ? quiet(hillPoints(z, x, y)) : null, placeP = z >= 10 ? quiet(placePoints(z, x, y)) : null;
+  if (z >= 12 && CFG.ofm && z <= CFG.ofmMax) { quiet(fetchOfm(z - 2, x >> 2, y >> 2)); quiet(realWalls()); }
   const [relief0, water] = await Promise.all([reliefPoints(z, x, y), z <= CFG.ofmMax && CFG.ofm ? waterMask(z, x, y) : null]);
-  check();
+  mark('relief+water'); check();
   const n = Math.pow(2, z);
   const wetAt = (i, j) => water[Math.max(0, Math.min(MS - 1, j)) * MS + Math.max(0, Math.min(MS - 1, i))] === 1;
   const wet = p => { if (!water || water.none) return false; return wetAt(Math.floor((p.nx * n - x) * MS), Math.floor((p.ny * n - y) * MS)); };
@@ -1210,6 +1225,7 @@ async function buildTile(z, x, y, parentKept, alive) {
     if (pts.length) T.bytes(3, encodeLayer('biome', tagSnow(pts), ['r', 'b', 'v', 'sz'], z, x, y));
   }
   if (relief.length) T.bytes(3, encodeLayer('relief', tagSnow(relief), ['r', 'k', 's', 'v', 'e', 'rl', 'rg', 'sn', 'sz'], z, x, y));
+  mark('cap+biome'); 
   if (z >= 7 && CFG.ofm) {
     const oz = Math.min(z, CFG.ofmMax);
     if (oz === z) {
@@ -1224,7 +1240,9 @@ async function buildTile(z, x, y, parentKept, alive) {
           // conifers on the uplands and in the north, oak, ash and beech woods in the lowlands
           const elev = await elevSampler(z, x, y), BRw = await biomeRaster();
           const tLat = latOfY((y + 0.5) / n);
-          for (const p of nestedPoints(z, x, y, CFG.CT, 6, z + 1, 11)) {
+          // round 4: from zoom 13 a tile takes its trees only down to its own rank (not one finer), so a wooded tile close in
+          // carries about 2,600 trees at most rather than 10,000; the style fades the finer ranks in a zoom later
+          for (const p of nestedPoints(z, x, y, CFG.CT, 6, z >= 13 ? z : z + 1, 11)) {
             const i = at(p);
             const f = mask.forest && mask.forest[i], w = mask.wood && mask.wood[i];
             if ((!f && !w) || wet(p)) continue;
@@ -1240,7 +1258,7 @@ async function buildTile(z, x, y, parentKept, alive) {
         }
         if (z >= 9 && (mask.wet || mask.heath)) {
           const tufts = [];
-          for (const p of nestedPoints(z, x, y, CFG.CU, 8, z + 1, 23)) {
+          for (const p of nestedPoints(z, x, y, CFG.CU, 8, z >= 13 ? z : z + 1, 23)) {   // capped as the trees are
             const i = at(p);
             const wt = mask.wet && mask.wet[i], ht = mask.heath && mask.heath[i];
             if ((!wt && !ht) || wet(p)) continue;
@@ -1251,7 +1269,7 @@ async function buildTile(z, x, y, parentKept, alive) {
       }
     }
   }
-  check();
+  mark('cover+trees'); check();
   // beasts of the countryside: a few a tile, in country that suits them, on the same nested grid so they stay put as you zoom
   if (z >= 6 && z <= 14) {
     const BR2 = await biomeRaster(), beasts = [];
@@ -1280,23 +1298,24 @@ async function buildTile(z, x, y, parentKept, alive) {
     const kept = beasts.slice(0, 6);
     if (kept.length) T.bytes(3, encodeLayer('beasts', kept, ['r', 'a'], z, x, y));
   }
-  check();
+  mark('beasts'); check();
   // heritage drawings and, close in, the drawn towns
-  const her = await heritagePoints(z, x, y);
+  const her = (await herP) || [];
   if (her.length) T.bytes(3, encodeLayer('heritage', her, ['i', 'z', 'n', 'q', 'l'], z, x, y));
+  mark('heritage');
   if (z >= 10) {
-    const hills = await hillPoints(z, x, y);
+    const hills = (await hillP) || [];
     if (hills.length) T.bytes(3, encodeLayer('hills', hills, ['z', 'e', 'n'], z, x, y));
-    const xp = await placePoints(z, x, y);
+    const xp = (await placeP) || [];
     if (xp.length) T.bytes(3, encodeLayer('xplaces', xp, ['z', 'k', 'n', 'w'], z, x, y));
   }
-  check();
+  mark('hills+places'); check();
   if (z >= 12) {
     const town = await townPoints(z, x, y, her);
     town.sort((a, b) => a.ny - b.ny);
     if (town.length) T.bytes(3, encodeLayer('town', tagSnow(town), ['t', 'a', 'o', 'sz'], z, x, y));
   }
-  check();
+  mark('town'); check();
   // countryside and town life (js/ink-life.js draws it): fields, hedges and walls, moors, fens, industry, the modern
   // world turned medieval, and travellers on the roads
   if (z >= 9 && z <= CFG.ofmMax && CFG.ofm && CFG.life !== false) {
@@ -1309,6 +1328,7 @@ async function buildTile(z, x, y, parentKept, alive) {
       if (L.tracks.length) T.bytes(3, encodeLines('lifetrack', L.tracks, ['t', 'v'], z, x, y));
     } catch (e) { /* life is decoration: never fail a tile over it */ }
   }
+  mark('life');
   return { buf: new Uint8Array(T.a).buffer, kept: keptIds };
 }
 // finished tiles, kept a while: zooming back out and in again, or panning back, costs nothing
@@ -1339,7 +1359,7 @@ self.onmessage = async (ev) => {
     if (!live.has(m.id)) return;
     live.delete(m.id);
     const buf = res.buf.slice(0);
-    self.postMessage({ id: m.id, buf, kept: res.kept, ms: performance.now() - t0 }, [buf]);
+    self.postMessage({ id: m.id, buf, kept: res.kept, ms: performance.now() - t0, prof: CFG.prof ? PROF : undefined }, [buf]);
   } catch (e) {
     const was = live.delete(m.id);
     if (e === ABORT) { if (was) self.postMessage({ id: m.id, err: 'aborted' }); return; }
