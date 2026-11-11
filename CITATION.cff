@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this data or code, please cite it as below."
+title: "A Tolkien-Style Map of the Whole World: The Inked World, a Zoomable Map of the Modern Earth in the Style of a Hand-Inked Fantasy Map, Generated from Open Data"
+type: dataset
+authors:
+  - family-names: Hotham
+    given-names: Tristan
+    orcid: "https://orcid.org/0000-0003-4931-9349"
+    affiliation: "Independent researcher"
+doi: "10.5281/zenodo.23860253"
+url: "https://maps.tristanhotham.com/ink-map/"
+repository-code: "https://github.com/Tristan-Hotham/ink-map"
+license: CC-BY-4.0
+keywords:
+  - "Tolkien"
+  - "fantasy cartography"
+  - "hand-drawn map style"
+  - "cartography"
+  - "generative maps"
+  - "fantasy maps"
+  - "OpenStreetMap"
+  - "digital elevation model"
+  - "biomes"
+  - "ecoregions"
+  - "MapLibre"
+  - "label placement"
+  - "open data"
+  - "Tolkien-style map"
+  - "map of the whole world"
+  - "fantasy world map"
